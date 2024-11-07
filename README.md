@@ -12,6 +12,7 @@ MVC pattern
 Razor
 Windows forms
 HTML + JS
+
 Libraries
 Newtonsoft.Json
 XUnit
