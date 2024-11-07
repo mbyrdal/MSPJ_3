@@ -6,7 +6,7 @@ Brugeren kan søge (query) i databasen efter specifikke ophug på baggrund af fx
 
 This project is about a system for car scrapping dealership, where a client can get connected to a web-server with 
 connection to a database. The user can search (query) in the database after specific scrap part's VIN, make, etc.
-The database is a external MSSQL server. 
+The database is a external MSSQL server. ASP.Net Core template with MVC pattern.
 
 For software testing we're using the xUnit framework. We plan on using unit testing-, intergration-, and acceptance testing.
 Beside that are we also going to do performance testing. All composite methods and classes should be tested. 
@@ -16,5 +16,5 @@ The coding style we're using in this project is CamelCase, english names and no 
 For commentary for bigger functions we use XML syntax. 
 For additions in testing we use underscores _ example Test_ThisSpecificMethod.
 
-asp.net core template with MVC pattern. 
+ 
 
