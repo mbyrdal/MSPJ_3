@@ -10,6 +10,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="GuessClassTestingSuite.cs" />
+    <Compile Remove="GuestClassTestingSuite.cs" />
+    <Compile Remove="ModelTestingSuite.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="NewFile1.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="6.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
     <PackageReference Include="xunit" Version="2.5.3" />

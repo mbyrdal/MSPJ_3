@@ -20,6 +20,7 @@ namespace MSPJ_3.TestingEnvironment
             // Act
             // var myProduct = new Product();
 
+            // Assert
             // Assert.IsType<Product>(myProduct); // Expected type is Product
             // Assert.Equal(defaultName, myProduct.Name); // Expected value is "DefaultName"
             // Assert.Equal(defaultPrice, myProduct.Price); // Expected value is 1000
@@ -41,6 +42,7 @@ namespace MSPJ_3.TestingEnvironment
             // Act
             // var myProduct = new Product(Name, Price, DateListed);
 
+            // Assert
             // Assert.IsType<Product>(myProduct); // Expected type for myProduct is Product
             // Assert.Equal(Name, myProduct.Name); // Expected value is "DefaultName"
             // Assert.Equal(Price, myProduct.Price); // Expected value is 1000
