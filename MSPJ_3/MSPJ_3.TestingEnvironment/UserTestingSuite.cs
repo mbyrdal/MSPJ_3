@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MSPJ_3.TestingEnvironment
 {
-    public class UserTestingClass
+    public class UserTestingSuite
     {
         /// <summary>
         /// This test checks the validity of a User object created using the default implementation constructor.
@@ -42,12 +42,24 @@ namespace MSPJ_3.TestingEnvironment
         public void Test_User_CreateUsingParameters()
         {
             // Arrange
-
+            // string firstName = "Hans";
+            // string lastName = "Hansen";
+            // string address = "Danmarksgade 55, 9000 Aalborg";
+            // int phoneNum = 22446688;
+            // string email = "student1234@ucn.dk";
+            // password = "09JD08djuq980JUD80qdjk+980D";
 
             // Act
-
+            // User myCustomUser = new User(firstName, lastName, address, phoneNum, email, password);
 
             // Assert
+            // Assert.IsType<User>(myCustomUser);
+            // Assert.Equal(firstName, myCustomUser.FirstName); // Expected value is "Hans"
+            // Assert.Equal(lLastName, myCustomUser.FirstName); // Expected value is "Hansen"
+            // Assert.Equal(address, myCustomUser.Address); // Expected value is "Danmarksgade 55, 9000 Aalborg"
+            // Assert.Equal(phoneNum, myCustomUser.PhoneNumber); // Expected value is 224466888
+            // Assert.Equal(email, myCustomUser.Email) // Expected value is "student1234@ucn.dk"
+            // Assert.Equal(password, myCustomUser.Password) // Expected value is "09JD08djuq980JUD80qdjk+980D"
 
         }
     }
