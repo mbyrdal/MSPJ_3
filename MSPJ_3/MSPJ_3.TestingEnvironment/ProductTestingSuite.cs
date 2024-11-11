@@ -8,7 +8,7 @@ namespace MSPJ_3.TestingEnvironment
         /// Finally, the expected vs actual object types are also compared (expecting a Person class object).
         /// </summary>
         [Fact]
-        public void Test_Product_CreateObjectUsingDefaultConstructor()
+        public void Test_Product_CreateUsingDefaultConstructor()
         {
             // Arrange
             // No input arrangements needed since we are testing the default constructor.
@@ -32,7 +32,7 @@ namespace MSPJ_3.TestingEnvironment
         /// Finally, the expected vs actual object types are also compared (expecting a Person class object).
         /// </summary>
         [Fact]
-        public void Test_Product_CreateObjectUsingConstructor()
+        public void Test_Product_CreateUsingConstructor()
         {
             // Arrange
             // string Name = "Name";

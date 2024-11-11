@@ -1,5 +1,14 @@
 ﻿namespace MSPJ_3.TestingEnvironment
 {   /// Alt skal ændres inde i denne fil, det er kun kopieret indtil videre
+    // Til Shemon: Vi arbejder med Customers, og de har kun et unikt ID som attribute.
+    // Lav evt. nogle tests og edge cases, hvor:
+
+    //          - Customer object creation.
+    //          - Append ID to customer.
+    //          - Unique ID generation (Vigtig! Omfatter kobling + querying DB (vi bare en in-place DB), ID begraensninger m. edge cases osv.)
+    //          - Evt metoder, som vi knytter til Customer klassen.
+    // testes...
+
     public class GuestTestingSuite
     {
         /// <summary>
@@ -8,7 +17,7 @@
         /// Finally, the expected vs actual object types are also compared (expecting a Person class object).
         /// </summary>
         [Fact]
-        public void Test_Product_CreateObjectUsingDefaultConstructor()
+        public void Test_Product_CreateUsingDefaultConstructor()
         {
             // Arrange
             // No input arrangements needed since we are testing the default constructor.
@@ -32,7 +41,7 @@
         /// Finally, the expected vs actual object types are also compared (expecting a Person class object).
         /// </summary>
         [Fact]
-        public void Test_Product_CreateObjectUsingConstructor()
+        public void Test_Product_CreateUsingConstructor()
         {
             // Arrange
             // string Name = "Name";
