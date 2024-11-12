@@ -1,8 +1,35 @@
 ﻿@page
-@model IndexModel
+@model List<FrontEnd.Models.Car>
 @{
     ViewData["Title"] = "Home page";
 }
+
+<h2>
+    Data from dbo.Car in DMA-CSD-S235_10503098
+</h2>
+<table>
+    <thead>
+        <tr>
+            <th>VINNumber</th>
+            <th>Manufactor</th>
+            <th>Model</th>
+            <th>Production Year</th>
+            <th>Mileage</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var car in Model)
+        {
+            <tr>
+                <td>@car.VINNumber</td>
+                <td>@car.Manufactor</td>
+                <td>@car.Model</td>
+                <td>@car.ProductionYear</td>
+                <td>@car.Mileage</td>
+            </tr>
+        }
+    </tbody>
+</table>
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
