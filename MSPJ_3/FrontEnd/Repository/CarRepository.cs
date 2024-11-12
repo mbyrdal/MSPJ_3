@@ -10,6 +10,7 @@ namespace FrontEnd.Repository
 
         public CarRepository(IConfiguration configuration)
         {
+            // Retrieve the connection string from the appsettings.json file.
             _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
 
@@ -18,10 +19,13 @@ namespace FrontEnd.Repository
             // List of all cars in the dbo.Cars table
             var carsInDB = new List<Car>();
 
+            // Using ADO.NET to connect and fetch DB data.
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
-                SqlCommand cmd = new SqlCommand("SELECT * FROM dbo.Car", conn);
                 conn.Open();
+
+                // SQL query (command) to fetch all rows from the table dbo.Car
+                SqlCommand cmd = new SqlCommand("SELECT * FROM Car", conn);
 
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
@@ -29,7 +33,7 @@ namespace FrontEnd.Repository
                     {
                         var carItem = new Car
                         {
-                            VINNumber = reader.GetString(0),
+                            VINNumber = reader.GetString(0), // Column index 0, 1, 2 ...
                             Manufactor = reader.GetString(1),
                             Model = reader.GetString(2),
                             ProductionYear = reader.GetInt32(3),

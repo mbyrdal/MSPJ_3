@@ -6,7 +6,7 @@ using FrontEnd.Repository;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
-builder.Services.AddScoped<CarRepository>(); // Register 'Repository' for DI.
+builder.Services.AddTransient<CarRepository>(); // Register 'CarRepository' for DI.
 
 // Add services to the container.
 builder.Services.AddRazorPages();
@@ -30,5 +30,4 @@ app.UseAuthorization();
 
 app.MapRazorPages();
 
-app.MapDefaultControllerRoute();
 app.Run();
