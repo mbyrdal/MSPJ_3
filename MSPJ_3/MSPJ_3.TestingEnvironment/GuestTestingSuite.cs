@@ -9,53 +9,72 @@
     //          - Evt metoder, som vi knytter til Customer klassen.
     // testes...
 
-    public class GuestTestingSuite
+    public class GuestTestingSuite //Should be renamed to CustomerTestingSuite but im scared it deletes the entire document if i do it again:(
     {
         /// <summary>
-        /// This method tests the default constructor implementation of the Guest class.<br/>
-        /// Default/initial values for properties are compared to constructor-assigned ones. <br/>
-        /// Finally, the expected vs actual object types are also compared (expecting a Person class object).
+        /// This tests Customer with object creation and unique ID generation
         /// </summary>
         [Fact]
-        public void Test_Product_CreateUsingDefaultConstructor()
+        public void Customer_Id_ShouldBeSetCorrectly()
         {
             // Arrange
-            // No input arrangements needed since we are testing the default constructor.
-            // However, if we have a default value when using the constructor, then we can prepare those...
-
-            // string defaultName = "DefaultName";
-            // int defaultPrice = 1000;
+            // var customer = new Customer { Id = 1 };
 
             // Act
-            // var myProduct = new Product();
+            // int result = customer.Id;
 
             // Assert
-            // Assert.IsType<Product>(myProduct); // Expected type is Product
-            // Assert.Equal(defaultName, myProduct.Name); // Expected value is "DefaultName"
-            // Assert.Equal(defaultPrice, myProduct.Price); // Expected value is 1000
+            // Assert.Equal(1, result);
         }
 
         /// <summary>
-        /// This method tests a custom constructor implementation of the Product class.<br/>
-        /// Arranged values are compared to constructor-assigned ones.<br/>
-        /// Finally, the expected vs actual object types are also compared (expecting a Person class object).
+        /// This is a summary of Customer_ShouldInheritNameAndEmailFromUser()
+        /// 
         /// </summary>
         [Fact]
-        public void Test_Product_CreateUsingConstructor()
+        public void Customer_ShouldInheritNameAndEmailFromUser()
         {
             // Arrange
-            // string Name = "Name";
-            // int Price = 2500;
-            // var DateListed = new DateTime(2020, 10, 11); // October 11th, 2024
+            // var customer = new Customer {
+            // firstName = "Lars",
+            // lastName = "Larsen",
+            // address = "Fiskegade 1, 9000 Aalborg",
+            // phoneNum = 12345678,
+            // email = "larslarsen@live.dk",
+            // password = "jegElskerFisk" }
 
             // Act
-            // var myProduct = new Product(Name, Price, DateListed);
+            // string firstNameResult = customer.FirstName;
+            // string lastNameResult = customer.lastName;
+            // string addressResult = customer.Address;
+            // string phoneNumbResult = customer.PhoneNum;
+            // string emailResult = customer.EmailResult;
+            // string passwordResult = customer.PasswordResult;
 
             // Assert
-            // Assert.IsType<Product>(myProduct); // Expected type for myProduct is Product
-            // Assert.Equal(Name, myProduct.Name); // Expected value is "DefaultName"
-            // Assert.Equal(Price, myProduct.Price); // Expected value is 1000
-            // Assert.Equal(DateListed, myProduct.Date); // Expected value is "11/10/2020"
+            // Assert.Equal("Lars", firstNameResult);
+            // Assert.Equal("Larsen", lastNameResult);
+            // Assert.Equal("Fiskegade 1, 9000 Aalborg", addressResult);
+            // Assert.Equal(12345678, phoneNumResult);
+            // Assert.Equal("larslarsen@live.dk", emailResult);
+            // Assert.Equal("jegElskerFisk", passwordResult);
+        }
+
+        /// <summary>
+        /// This is a summary of Test_Customer_AppendIdToCustomer()
+        /// 
+        /// </summary>
+        [Fact]
+        public void Test_Customer_AppendIdToCustomer()
+        {
+            // Arrange
+            // 
+
+            // Act
+            // 
+
+            // Assert
+            // 
         }
     }
 }
