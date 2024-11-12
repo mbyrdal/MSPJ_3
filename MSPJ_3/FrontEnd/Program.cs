@@ -1,19 +1,17 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Data.SqlClient;
-using FrontEnd.Services;
+using FrontEnd.Repository;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<CarRepository>(); // Register 'Repository' for DI.
+
 // Add services to the container.
 builder.Services.AddRazorPages();
 
-builder.Services.AddControllersWithViews();
-builder.Services.AddScoped<Repository>(); // Register 'Repository' for DI.
-
 var app = builder.Build();
-
-// app.MapControllers(); skal måske bruges
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -32,4 +30,5 @@ app.UseAuthorization();
 
 app.MapRazorPages();
 
+app.MapDefaultControllerRoute();
 app.Run();

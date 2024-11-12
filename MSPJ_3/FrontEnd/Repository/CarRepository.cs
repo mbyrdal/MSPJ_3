@@ -2,13 +2,13 @@
 using Microsoft.Data.SqlClient;
 using System.Reflection.PortableExecutable;
 
-namespace FrontEnd.Services
+namespace FrontEnd.Repository
 {
-    public class Repository
+    public class CarRepository
     {
         private readonly string _connectionString;
 
-        public Repository(IConfiguration configuration)
+        public CarRepository(IConfiguration configuration)
         {
             _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
@@ -20,10 +20,10 @@ namespace FrontEnd.Services
 
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
-                conn.Open();
                 SqlCommand cmd = new SqlCommand("SELECT * FROM dbo.Car", conn);
+                conn.Open();
 
-                using(SqlDataReader reader = cmd.ExecuteReader())
+                using (SqlDataReader reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
                     {
