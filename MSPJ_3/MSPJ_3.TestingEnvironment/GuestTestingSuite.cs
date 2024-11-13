@@ -68,13 +68,13 @@
         public void Test_Customer_AppendIdToCustomer()
         {
             // Arrange
-            // 
+            // var customer = new Customer { Id = 100 };
 
             // Act
-            // 
+            // string result = customer.AppendId("1");
 
             // Assert
-            // 
+            // Assert.Equal("1001", result);
         }
     }
 }
