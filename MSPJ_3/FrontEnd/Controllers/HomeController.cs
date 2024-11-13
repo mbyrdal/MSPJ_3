@@ -5,11 +5,11 @@ using Microsoft.Data.SqlClient;
 
 namespace FrontEnd.Controllers
 {
-    public class BaseController : Controller
+    public class HomeController : Controller
     {
         private readonly CarRepository _carRepository;
 
-        public BaseController(CarRepository carRepository)
+        public HomeController(CarRepository carRepository)
         {
             
            _carRepository = carRepository;

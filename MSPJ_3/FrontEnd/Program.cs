@@ -5,11 +5,9 @@ using FrontEnd.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllersWithViews();
-builder.Services.AddTransient<CarRepository>(); // Register 'CarRepository' for DI.
-
 // Add services to the container.
 builder.Services.AddRazorPages();
+builder.Services.AddTransient<CarRepository>(); // Register 'CarRepository' for DI.
 
 var app = builder.Build();
 

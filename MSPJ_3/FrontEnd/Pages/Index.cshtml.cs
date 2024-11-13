@@ -1,3 +1,5 @@
+using FrontEnd.Models;
+using FrontEnd.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -5,16 +7,18 @@ namespace FrontEnd.Pages
 {
     public class IndexModel : PageModel
     {
-        private readonly ILogger<IndexModel> _logger;
+        private readonly CarRepository _repository;
 
-        public IndexModel(ILogger<IndexModel> logger)
+        public IndexModel(CarRepository repository)
         {
-            _logger = logger;
+            _repository = repository;
         }
+
+        public List<Car> Cars { get; set; }
 
         public void OnGet()
         {
-
+            Cars = _repository.GetAllCars();
         }
     }
 }
