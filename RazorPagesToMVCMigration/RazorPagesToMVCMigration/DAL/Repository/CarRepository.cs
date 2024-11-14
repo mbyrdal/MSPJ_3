@@ -6,15 +6,19 @@ namespace RazorPagesToMVCMigration.DAL.Repository
     public class CarRepository : ICarRepository
     {
         // Fetch connection string from appsettings.json
-        string connectionString = ConfigurationHelper.GetDBConnectionString();
+        private string _connectionString;
+        public CarRepository()
+        {
+            _connectionString = ConfigurationHelper.GetDBConnectionString();
+        }
         public List<Car> GetAllCars()
         {
             List<Car> allCars = new List<Car>();
 
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
-                using (SqlCommand sqlQuery = new SqlCommand("SELECT * FROM Cars"))
+                using (SqlCommand sqlQuery = new SqlCommand("SELECT * FROM Car"))
                 {
                     using (SqlDataReader reader = sqlQuery.ExecuteReader())
                     {

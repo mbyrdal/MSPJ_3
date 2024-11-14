@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using RazorPagesToMVCMigration.DAL.Repository;
+using RazorPagesToMVCMigration.DAL;
 using RazorPagesToMVCMigration.Models;
 using System.Diagnostics;
 
@@ -7,13 +8,12 @@ namespace RazorPagesToMVCMigration.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        
         private readonly CarRepository _carRepository;
 
-        public HomeController(ILogger<HomeController> logger, CarRepository carRepository)
+        public HomeController()
         {
-            _logger = logger;
-            _carRepository = carRepository;
+            _carRepository = new CarRepository();
         }
 
         public IActionResult Index()
@@ -24,7 +24,7 @@ namespace RazorPagesToMVCMigration.Controllers
         public IActionResult Inventory()
         {
             List<Car> allCars = _carRepository.GetAllCars();
-            return View("~/Views/Inventory/Inventory.cshtml");
+            return View("~/Views/Inventory/Inventory.cshtml", allCars);
         }
 
         public IActionResult Privacy()

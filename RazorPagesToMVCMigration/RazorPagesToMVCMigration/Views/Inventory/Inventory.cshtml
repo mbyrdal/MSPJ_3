@@ -1,4 +1,4 @@
-﻿@model RazorPagesToMVCMigration.Models.Car
+﻿@model List<RazorPagesToMVCMigration.Models.Car>
 {
     ViewData["Title"] = "Lager";
 }
@@ -58,18 +58,18 @@
                 <thead>
                     <tr>
                         <th>VINNumber</th>
-                        <th>Manufactor</th>
+                        <th>Brand</th>
                         <th>Model</th>
                         <th>Production Year</th>
                         <th>Mileage</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var car in Model.Cars)
+                    @foreach (var car in Model)
                     {
                         <tr>
                             <td>@car.VINNumber</td>
-                            <td>@car.Manufactor</td>
+                            <td>@car.Brand</td>
                             <td>@car.Model</td>
                             <td>@car.ProductionYear</td>
                             <td>@car.Mileage</td>
