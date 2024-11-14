@@ -77,6 +77,7 @@ header {
 .search-section {
     width: 75%;
     padding: 20px;
+    position: relative; /* Allow absolute positioning for the flying image */
 }
 
     .search-section h2 {
@@ -138,4 +139,14 @@ button {
     align-items: center;
     font-size: 14px;
     margin: 8px 0;
+}
+
+#flying-image {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 400px; /* Adjust size as needed */
+    display: none; /* Initially hidden */
+    transform: translate(-50%, -50%); /* Start centered */
+    transition: transform 10s ease; /* Smooth transition for movement */
 }
