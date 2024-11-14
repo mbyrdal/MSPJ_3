@@ -3,7 +3,6 @@ using RazorPagesToMVCMigration.DAL;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//builder.Services.AddScoped<ICarRepository, CarRepository>();
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 

@@ -8,7 +8,6 @@ namespace RazorPagesToMVCMigration.Controllers
 {
     public class HomeController : Controller
     {
-        
         private readonly CarRepository _carRepository;
 
         public HomeController()
