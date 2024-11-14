@@ -18,6 +18,11 @@ namespace RazorPagesToMVCMigration.Controllers
             return View();
         }
 
+        public IActionResult Inventory()
+        {
+            return View("~/Views/Inventory/Inventory.cshtml");
+        }
+
         public IActionResult Privacy()
         {
             return View();
