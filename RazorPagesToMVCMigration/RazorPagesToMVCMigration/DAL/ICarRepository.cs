@@ -2,7 +2,7 @@
 
 namespace RazorPagesToMVCMigration.DAL
 {
-    public interface ICarRepository : IDisposable
+    public interface ICarRepository
     {
         List<Car> GetAllCars();
         Car GetCarByID(int id);
