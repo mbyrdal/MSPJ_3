@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using RazorPagesToMVCMigration.DAL;
+using RazorPagesToMVCMigration.DAL.Repository;
 using RazorPagesToMVCMigration.Models;
 using System.Diagnostics;
 

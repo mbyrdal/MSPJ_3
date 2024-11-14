@@ -1,7 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using RazorPagesToMVCMigration.Models;
 
-namespace RazorPagesToMVCMigration.DAL
+namespace RazorPagesToMVCMigration.DAL.Repository
 {
     public class CarRepository : ICarRepository
     {
@@ -11,12 +11,12 @@ namespace RazorPagesToMVCMigration.DAL
         {
             List<Car> allCars = new List<Car>();
 
-            using(SqlConnection conn = new SqlConnection(connectionString))
+            using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 conn.Open();
-                using(SqlCommand sqlQuery = new SqlCommand("SELECT * FROM Cars"))
+                using (SqlCommand sqlQuery = new SqlCommand("SELECT * FROM Cars"))
                 {
-                    using(SqlDataReader reader = sqlQuery.ExecuteReader())
+                    using (SqlDataReader reader = sqlQuery.ExecuteReader())
                     {
                         while (reader.Read())
                         {

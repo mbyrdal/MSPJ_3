@@ -1,25 +1,25 @@
 ﻿using RazorPagesToMVCMigration.Models;
 
-namespace RazorPagesToMVCMigration.DAL
+namespace RazorPagesToMVCMigration.DAL.Repository
 {
-    public class OrderRepository : IOrderRepository
+    public class GuestRepository : IGuestRepository
     {
-        public void CreateOrder(Order order)
+        public void CreateGuest(Guest guest)
         {
             throw new NotImplementedException();
         }
 
-        public void DeleteOrder(int id)
+        public void DeleteGuest(int id)
         {
             throw new NotImplementedException();
         }
 
-        public List<Order> GetAllOrders()
+        public List<Guest> GetAllGuests()
         {
             throw new NotImplementedException();
         }
 
-        public Order GetOrderById(int id)
+        public Guest GetGuestByID(int id)
         {
             throw new NotImplementedException();
         }
@@ -29,7 +29,7 @@ namespace RazorPagesToMVCMigration.DAL
             throw new NotImplementedException();
         }
 
-        public void UpdateOrder(Order order)
+        public void UpdateGuest(Guest guest)
         {
             throw new NotImplementedException();
         }
