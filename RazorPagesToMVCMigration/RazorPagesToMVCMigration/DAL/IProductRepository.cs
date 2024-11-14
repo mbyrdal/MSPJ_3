@@ -1,6 +1,7 @@
 ﻿namespace RazorPagesToMVCMigration.DAL
 {
-    public interface IProduct
+    public interface IProductRepository
     {
+
     }
 }

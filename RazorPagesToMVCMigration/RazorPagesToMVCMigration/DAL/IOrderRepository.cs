@@ -1,6 +1,6 @@
 ﻿namespace RazorPagesToMVCMigration.DAL
 {
-    public interface Interface
+    public interface IOrderRepository
     {
     }
 }

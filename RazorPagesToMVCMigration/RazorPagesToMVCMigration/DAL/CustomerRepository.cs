@@ -1,6 +1,6 @@
 ﻿namespace RazorPagesToMVCMigration.DAL
 {
-    public class CustomerRepositorys
+    public class CustomerRepository
     {
     }
 }
