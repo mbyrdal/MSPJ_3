@@ -2,24 +2,24 @@
 
 namespace RazorPagesToMVCMigration.DAL
 {
-    public class AccountRepository : IAccountRepository
+    public class GuestRepository : IGuestRepository
     {
-        public void CreateAccount(Account account)
+        public void CreateGuest(Guest guest)
         {
             throw new NotImplementedException();
         }
 
-        public void DeleteAccount(int id)
+        public void DeleteGuest(int id)
         {
             throw new NotImplementedException();
         }
 
-        public Account GetAccountsByID(int id)
+        public List<Guest> GetAllGuests()
         {
             throw new NotImplementedException();
         }
 
-        public List<Account> GetAllAccounts()
+        public Guest GetGuestByID(int id)
         {
             throw new NotImplementedException();
         }
@@ -29,7 +29,7 @@ namespace RazorPagesToMVCMigration.DAL
             throw new NotImplementedException();
         }
 
-        public void UpdateAccount(Account account)
+        public void UpdateGuest(Guest guest)
         {
             throw new NotImplementedException();
         }
