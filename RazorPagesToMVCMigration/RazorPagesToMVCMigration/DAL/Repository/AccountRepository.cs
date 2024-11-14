@@ -1,6 +1,6 @@
 ﻿using RazorPagesToMVCMigration.Models;
 
-namespace RazorPagesToMVCMigration.DAL
+namespace RazorPagesToMVCMigration.DAL.Repository
 {
     public class AccountRepository : IAccountRepository
     {
