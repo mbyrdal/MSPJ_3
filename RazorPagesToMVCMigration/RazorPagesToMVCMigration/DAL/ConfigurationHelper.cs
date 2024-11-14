@@ -2,11 +2,12 @@
 {
     public class ConfigurationHelper
     {
-        private readonly string _connectionString;
-
-        public ConfigurationHelper(string connectionString)
+        private static readonly ConfigurationBuilder _configurationBuilder = new ConfigurationBuilder();
+        public static string GetDBConnectionString()
         {
-            _connectionString = connectionString;
+            var Configuration = _configurationBuilder.AddJsonFile("appsettings.json").Build();
+            string? connectionString = Configuration.GetConnectionString("HildurConnection");
+            return connectionString;
         }
     }
 }
