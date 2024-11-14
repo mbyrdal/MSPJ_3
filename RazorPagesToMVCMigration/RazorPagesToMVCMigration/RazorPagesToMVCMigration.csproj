@@ -7,7 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\resources\images\" />
+    <Folder Include="DAL\" />
+    <Folder Include="wwwroot\resources\images\troll\" />
   </ItemGroup>
 
 </Project>
