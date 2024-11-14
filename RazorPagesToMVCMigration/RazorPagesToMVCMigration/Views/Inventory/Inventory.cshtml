@@ -1,4 +1,5 @@
-﻿@{
+﻿@model RazorPagesToMVCMigration.Models.Car
+{
     ViewData["Title"] = "Lager";
 }
 
@@ -8,7 +9,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="~/css/styles.css" />
-    <title>@ViewData["Title"]</title>
 </head>
 <body>
     <header>
@@ -52,17 +52,31 @@
             <img id="flying-image" src="~/resources/images/troll/9abmg7.jpg" alt="Flying Image" style="display: none;">
         </section>
         
-
         <section class="search-result">
             <h3>Lager</h3>
-            <form class="inventory-list">
-                <ul>
-                    <li>Item 1</li>
-                    <li>Item 2</li>
-                    <li>Item 3</li>
-                    <li>Item 4</li>
-                </ul>
-            </form>
+            <table>
+                <thead>
+                    <tr>
+                        <th>VINNumber</th>
+                        <th>Manufactor</th>
+                        <th>Model</th>
+                        <th>Production Year</th>
+                        <th>Mileage</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var car in Model.Cars)
+                    {
+                        <tr>
+                            <td>@car.VINNumber</td>
+                            <td>@car.Manufactor</td>
+                            <td>@car.Model</td>
+                            <td>@car.ProductionYear</td>
+                            <td>@car.Mileage</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </section>        
     </main>
     <script src="~/js/script.js"></script>
