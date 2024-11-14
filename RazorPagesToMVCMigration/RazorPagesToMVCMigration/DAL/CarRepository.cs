@@ -1,0 +1,9 @@
+﻿using RazorPagesToMVCMigration.Models;
+
+namespace RazorPagesToMVCMigration.DAL
+{
+    public class CarRepository : ICarRepository
+    {
+
+    }
+}
