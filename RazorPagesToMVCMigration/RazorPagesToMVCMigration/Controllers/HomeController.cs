@@ -10,9 +10,9 @@ namespace RazorPagesToMVCMigration.Controllers
     {
         private readonly CarRepository _carRepository;
 
-        public HomeController()
+        public HomeController(IConfiguration configuration)
         {
-            _carRepository = new CarRepository();
+            _carRepository = new CarRepository(configuration);
         }
 
         public IActionResult Index()
