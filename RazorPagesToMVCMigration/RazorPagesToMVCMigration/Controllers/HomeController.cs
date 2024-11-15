@@ -8,11 +8,13 @@ namespace RazorPagesToMVCMigration.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly CarRepository _carRepository;
+        private readonly CarRepository _carRepository; // For rendering Cars from dbo.Cars
+        private readonly ProductRepository _productRepository; // For rendering Products from dbo.Products
 
         public HomeController(IConfiguration configuration)
         {
             _carRepository = new CarRepository(configuration);
+            _productRepository = new ProductRepository(configuration);
         }
 
         public IActionResult Index()
@@ -22,8 +24,12 @@ namespace RazorPagesToMVCMigration.Controllers
 
         public IActionResult Inventory()
         {
+            /*
             List<Car> allCars = (List<Car>)_carRepository.GetAll();
             return View("~/Views/Inventory/Inventory.cshtml", allCars);
+            */
+            List<Product> allProducts = (List<Product>)_carRepository.GetAll();
+            return View("~/Views/Inventory/Inventory.cshtml", allProducts);
         }
 
         public IActionResult Privacy()
