@@ -41,7 +41,7 @@ namespace RazorPagesToMVCMigration.DAL.Repository
                                 OEM = reader.GetString(0), // Column 1, VINNumber ...
                                 VINNumber = reader.GetString(1),
                                 Name = reader.GetString(2),
-                                Price = reader.GetDouble(3),
+                                Price = reader.GetDecimal(3),
                                 DateAvailable = reader.GetDateTime(4),
                                 Notes = reader.GetString(5)
                             };
