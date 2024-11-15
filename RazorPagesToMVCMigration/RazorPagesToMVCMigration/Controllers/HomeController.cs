@@ -28,7 +28,7 @@ namespace RazorPagesToMVCMigration.Controllers
             List<Car> allCars = (List<Car>)_carRepository.GetAll();
             return View("~/Views/Inventory/Inventory.cshtml", allCars);
             */
-            List<Product> allProducts = (List<Product>)_carRepository.GetAll();
+            List<Product> allProducts = _productRepository.GetAll().ToList();
             return View("~/Views/Inventory/Inventory.cshtml", allProducts);
         }
 
