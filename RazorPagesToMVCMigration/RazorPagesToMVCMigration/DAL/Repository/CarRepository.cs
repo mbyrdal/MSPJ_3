@@ -4,7 +4,7 @@ using RazorPagesToMVCMigration.Models;
 
 namespace RazorPagesToMVCMigration.DAL.Repository
 {
-    public class CarRepository : ICarRepository
+    public class CarRepository : ICRUD<Car>
     {
         private string _connectionString;
         public CarRepository(IConfiguration configuration)
@@ -12,9 +12,19 @@ namespace RazorPagesToMVCMigration.DAL.Repository
             var configHelper = new ConfigurationHelper(configuration);
             _connectionString = configHelper.GetDBConnectionString();
         }
-        public List<Car> GetAllCars()
-        {
 
+        public void Create(Car entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Delete(Car entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<Car> GetAll()
+        {
             List<Car> allCars = new List<Car>();
 
             using (SqlConnection conn = new SqlConnection(_connectionString))
@@ -42,27 +52,12 @@ namespace RazorPagesToMVCMigration.DAL.Repository
             return allCars;
         }
 
-        public void CreateCar(Car car)
+        public Car GetById(int id)
         {
             throw new NotImplementedException();
         }
 
-        public void DeleteCar(string VINNumber)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Car GetCarByID(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Save()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void UpdateCar(Car car)
+        public void Update(Car entity)
         {
             throw new NotImplementedException();
         }

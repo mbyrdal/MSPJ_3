@@ -3,34 +3,29 @@ using RazorPagesToMVCMigration.Models;
 
 namespace RazorPagesToMVCMigration.DAL.Repository
 {
-    public class OrderRepository : IOrderRepository
+    public class OrderRepository : ICRUD<Order>
     {
-        public void CreateOrder(Order order)
+        public void Create(Order entity)
         {
             throw new NotImplementedException();
         }
 
-        public void DeleteOrder(int id)
+        public void Delete(Order entity)
         {
             throw new NotImplementedException();
         }
 
-        public List<Order> GetAllOrders()
+        public IEnumerable<Order> GetAll()
         {
             throw new NotImplementedException();
         }
 
-        public Order GetOrderById(int id)
+        public Order GetById(int id)
         {
             throw new NotImplementedException();
         }
 
-        public void Save()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void UpdateOrder(Order order)
+        public void Update(Order entity)
         {
             throw new NotImplementedException();
         }

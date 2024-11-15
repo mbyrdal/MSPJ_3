@@ -3,34 +3,29 @@ using RazorPagesToMVCMigration.Models;
 
 namespace RazorPagesToMVCMigration.DAL.Repository
 {
-    public class ProductRepository : IProductRepository
+    public class ProductRepository : ICRUD<Product>
     {
-        public void CreateProduct(Product product)
+        public void Create(Product entity)
         {
             throw new NotImplementedException();
         }
 
-        public void DeleteProduct(int id)
+        public void Delete(Product entity)
         {
             throw new NotImplementedException();
         }
 
-        public List<Product> GetAllProducts()
+        public IEnumerable<Product> GetAll()
         {
             throw new NotImplementedException();
         }
 
-        public Product GetProductsByID(int id)
+        public Product GetById(int id)
         {
             throw new NotImplementedException();
         }
 
-        public void Save()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void UpdateProduct(Product product)
+        public void Update(Product entity)
         {
             throw new NotImplementedException();
         }

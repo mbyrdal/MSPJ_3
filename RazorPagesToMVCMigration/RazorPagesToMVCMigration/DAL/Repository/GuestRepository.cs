@@ -3,34 +3,29 @@ using RazorPagesToMVCMigration.Models;
 
 namespace RazorPagesToMVCMigration.DAL.Repository
 {
-    public class GuestRepository : IGuestRepository
+    public class GuestRepository : ICRUD<Guest>
     {
-        public void CreateGuest(Guest guest)
+        public void Create(Guest entity)
         {
             throw new NotImplementedException();
         }
 
-        public void DeleteGuest(int id)
+        public void Delete(Guest entity)
         {
             throw new NotImplementedException();
         }
 
-        public List<Guest> GetAllGuests()
+        public IEnumerable<Guest> GetAll()
         {
             throw new NotImplementedException();
         }
 
-        public Guest GetGuestByID(int id)
+        public Guest GetById(int id)
         {
             throw new NotImplementedException();
         }
 
-        public void Save()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void UpdateGuest(Guest guest)
+        public void Update(Guest entity)
         {
             throw new NotImplementedException();
         }

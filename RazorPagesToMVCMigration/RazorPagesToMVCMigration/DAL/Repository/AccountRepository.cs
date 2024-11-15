@@ -3,34 +3,29 @@ using RazorPagesToMVCMigration.Models;
 
 namespace RazorPagesToMVCMigration.DAL.Repository
 {
-    public class AccountRepository : IAccountRepository
+    public class AccountRepository : ICRUD<Account>
     {
-        public void CreateAccount(Account account)
+        public void Create(Account entity)
         {
             throw new NotImplementedException();
         }
 
-        public void DeleteAccount(int id)
+        public void Delete(Account entity)
         {
             throw new NotImplementedException();
         }
 
-        public Account GetAccountsByID(int id)
+        public IEnumerable<Account> GetAll()
         {
             throw new NotImplementedException();
         }
 
-        public List<Account> GetAllAccounts()
+        public Account GetById(int id)
         {
             throw new NotImplementedException();
         }
 
-        public void Save()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void UpdateAccount(Account account)
+        public void Update(Account entity)
         {
             throw new NotImplementedException();
         }

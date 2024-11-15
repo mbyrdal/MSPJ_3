@@ -2,7 +2,7 @@
 {
     public interface ICRUD<T> where T : class
     {
-        IEnumerable<T> GetAllEntities();
+        IEnumerable<T> GetAll();
         T GetById(int id);
         void Create(T entity);
         void Update(T entity);

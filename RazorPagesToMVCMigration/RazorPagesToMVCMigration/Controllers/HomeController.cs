@@ -22,7 +22,7 @@ namespace RazorPagesToMVCMigration.Controllers
 
         public IActionResult Inventory()
         {
-            List<Car> allCars = _carRepository.GetAllCars();
+            List<Car> allCars = (List<Car>)_carRepository.GetAll();
             return View("~/Views/Inventory/Inventory.cshtml", allCars);
         }
 
