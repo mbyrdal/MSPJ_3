@@ -78,6 +78,10 @@ header {
     width: 75%;
     padding: 20px;
     position: relative; /* Allow absolute positioning for the flying image */
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 20px; /* Space below search box */
 }
 
     .search-section h2 {
@@ -150,3 +154,33 @@ button {
     transform: translate(-50%, -50%); /* Start centered */
     transition: transform 10s ease; /* Smooth transition for movement */
 }
+
+/* Add this for the search-result section */
+.search-result {
+    width: 75%; /* Align with search-section width */
+    padding: 20px;
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+    .search-result h3 {
+        font-size: 20px;
+        margin-top: 0;
+    }
+
+    .search-result table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+
+        .search-result table th, .search-result table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .search-result table th {
+            background-color: #f2f2f2;
+        }
