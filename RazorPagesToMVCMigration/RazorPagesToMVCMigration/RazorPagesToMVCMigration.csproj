@@ -7,6 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="BLL\" />
+    <Folder Include="Service\" />
     <Folder Include="wwwroot\resources\images\troll\" />
   </ItemGroup>
 
