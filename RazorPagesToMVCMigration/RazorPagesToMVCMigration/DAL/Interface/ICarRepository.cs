@@ -1,8 +1,8 @@
 ﻿using RazorPagesToMVCMigration.Models;
 
-namespace RazorPagesToMVCMigration.DAL
+namespace RazorPagesToMVCMigration.DAL.Interface
 {
-    public interface ICarRepository 
+    public interface ICarRepository
     {
         List<Car> GetAllCars();
         Car GetCarByID(int id);

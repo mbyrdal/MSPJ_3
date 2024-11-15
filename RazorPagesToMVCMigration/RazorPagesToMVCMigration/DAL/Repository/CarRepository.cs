@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
+using RazorPagesToMVCMigration.DAL.Interface;
 using RazorPagesToMVCMigration.Models;
 
 namespace RazorPagesToMVCMigration.DAL.Repository

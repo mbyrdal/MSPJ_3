@@ -1,4 +1,5 @@
-﻿using RazorPagesToMVCMigration.Models;
+﻿using RazorPagesToMVCMigration.DAL.Interface;
+using RazorPagesToMVCMigration.Models;
 
 namespace RazorPagesToMVCMigration.DAL.Repository
 {
