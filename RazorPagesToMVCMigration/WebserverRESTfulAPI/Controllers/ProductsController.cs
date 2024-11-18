@@ -1,96 +1,126 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ServiceAPI.BusinessLogic.Services;
+using ServiceAPI.Models;
 
 namespace ServiceAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class ProductController : Controller
+    public class ProductsController : Controller
     {
         private readonly ProductService _productService;
 
-        public ProductController(ProductService productService)
+        public ProductsController(ProductService productService)
         {
             _productService = productService;
         }
 
-
-
-
-        // GET: ProductController
+        // GET: ProductsController
         public ActionResult Index()
         {
             return View();
         }
 
-        // GET: ProductController/Details/5
-        public ActionResult Details(int id)
+        // GET: ProductsController/Products
+        [HttpGet, Route("products")]
+        public ActionResult<IEnumerable<Product>> GetProducts()
         {
-            return View();
+            var allProducts = _productService.GetAll();
+            if (allProducts == null)
+            {
+                return BadRequest("List of Products cannot be null.");
+            }
+            else if (allProducts.Count() == 0)
+            {
+                return NotFound("List of Products is empty.");
+            }
+            return Ok(allProducts);
         }
 
-        // GET: ProductController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: ProductController/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        // GET: ProductsController/Products/{OEM}
+        [HttpGet("{OEM}"), Route("products/{OEM}")]
+        public ActionResult<Product> GetProduct([FromQuery] string OEM)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                var foundProduct = _productService.GetById(OEM);
+                if (foundProduct == null)
+                {
+                    // Status code 404, not found response
+                    return NotFound();
+                }
+                // Status code 200, OK
+                return Ok(foundProduct);
             }
-            catch
+
+            // Status code 400, bad request response
+            catch (ArgumentException)
             {
-                return View();
+                return BadRequest();
             }
         }
 
-        // GET: ProductController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: ProductController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: ProductController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: ProductController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        // POST: ProductsController/CreateProduct
+        [HttpPost, Route("products")]
+        public ActionResult CreateProduct([FromBody] Product newProduct)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                if (newProduct == null)
+                {
+                    return BadRequest();
+                }
+
+                // Adds product to DB
+                var createdProd = _productService.Create(newProduct);
+
+                // Deprecated version: use return Created() ...
+                // CreatedAtAction: controller runner with the ability to return status codes
+                // Return 201 status code along with the location of the newly created Product ...
+                return CreatedAtAction(nameof(GetProduct), // Action (GetProduct) to fetch Product
+                                       new { OEM = createdProd }, // Route parameter
+                                       createdProd); // Created Product part of response body
+
             }
-            catch
+            catch (ArgumentException ex)
             {
-                return View();
+                return BadRequest(ex.Message);
             }
+        }
+
+        [HttpPut, Route("products/{OEM}")]
+        public ActionResult UpdateProduct([FromQuery] string OEM, [FromBody] Product newProduct)
+        {
+            if(OEM != newProduct.OEM)
+            {
+                return BadRequest("OEM mismatch between and supplied product for update.");
+            }
+            var existingProduct = _productService.GetById(OEM);
+            if(existingProduct == null)
+            {
+                return NotFound("Product found but missing details...");
+            }
+            existingProduct.OEM = newProduct.OEM;
+            existingProduct.VINNumber = newProduct.VINNumber;
+            existingProduct.Name = newProduct.Name;
+            existingProduct.Price = newProduct.Price;
+            existingProduct.DateAvailable = newProduct.DateAvailable;
+            existingProduct.Notes = newProduct.Notes;
+
+            return Ok(existingProduct);
+        }
+
+        [HttpDelete, Route("products/{OEM}")]
+        public ActionResult DeleteProduct(string OEM)
+        {
+            var foundProduct = _productService.GetById(OEM);
+            if(foundProduct == null)
+            {
+                return NotFound($"Product with OEM {OEM} does not exist in the database.");
+            }
+            var removedProduct = _productService.Delete(OEM);
+            return Ok(removedProduct);
         }
     }
 }
