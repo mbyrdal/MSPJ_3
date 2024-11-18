@@ -40,7 +40,7 @@ namespace ServiceAPI.Controllers
 
         // GET: ProductsController/Products/{OEM}
         [HttpGet("{OEM}"), Route("products/{OEM}")]
-        public ActionResult<Product> GetProduct([FromQuery] string OEM)
+        public ActionResult<Product> GetProduct(string OEM)
         {
             try
             {
@@ -90,7 +90,7 @@ namespace ServiceAPI.Controllers
         }
 
         [HttpPut, Route("products/{OEM}")]
-        public ActionResult UpdateProduct([FromQuery] string OEM, [FromBody] Product newProduct)
+        public ActionResult UpdateProduct(string OEM, [FromBody] Product newProduct)
         {
             if(OEM != newProduct.OEM)
             {
