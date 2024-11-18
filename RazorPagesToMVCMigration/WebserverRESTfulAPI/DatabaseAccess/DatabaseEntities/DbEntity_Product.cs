@@ -15,36 +15,85 @@ namespace ServiceAPI.DatabaseAccess.DatabaseEntities
             _connectionString = helper.GetDBConnectionString();
         }
 
-        // AddProduct(Product product)
-        public void Create(Product entity)
+        // Helper method that tests whether an entity (Product) entry exists in the database.
+        internal bool ProductExists(string OEM)
         {
+            bool prodExists = false;
+            using (SqlConnection conn = new SqlConnection( _connectionString ))
+            {
+                conn.Open();
+                string existQuery = "SELECT COUNT(1) FROM Product WHERE OEM = @OEM";
+                using (SqlCommand checkCommand = new SqlCommand(existQuery, conn))
+                {
+                    checkCommand.Parameters.AddWithValue("@OEM", OEM);
+                    prodExists = Convert.ToInt32(checkCommand.ExecuteScalar()) > 0;
+                }
+                conn.Close();
+            }
+            return prodExists;
+        }
+
+        // AddProduct(Product product)
+        public int Create(Product entity)
+        {
+            bool productExistsInDB = false;
+            int numberOfRowsInserted;
+
+            productExistsInDB = ProductExists(entity.OEM);
+            if(!productExistsInDB)
+            {
+                // INSERT
+            }
+            else
+            {
+                // UPDATE
+            }
+
             using(SqlConnection conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
-                using(SqlCommand sqlQuery = new SqlCommand(
+                using(SqlCommand createCommand = new SqlCommand(
                     "INSERT INTO Product (OEM, VINNumber, Name, Price, DateAvailable, Notes) " 
                     + "VALUES (@OEM, @VINNumber, @Name, @Price, @DateAvailable, @Notes)", conn
                     ))
                 {
                     // Mapping method input values to sql query input values
-                    sqlQuery.Parameters.AddWithValue("@OEM", entity.OEM);
-                    sqlQuery.Parameters.AddWithValue("@VINNumber", entity.VINNumber);
-                    sqlQuery.Parameters.AddWithValue("@Name", entity.Name);
-                    sqlQuery.Parameters.AddWithValue("@Price", entity.Price);
-                    sqlQuery.Parameters.AddWithValue("@DateAvailable", entity.DateAvailable);
-                    sqlQuery.Parameters.AddWithValue("@Notes", entity.Notes);
+                    createCommand.Parameters.AddWithValue("@OEM", entity.OEM);
+                    createCommand.Parameters.AddWithValue("@VINNumber", entity.VINNumber);
+                    createCommand.Parameters.AddWithValue("@Name", entity.Name);
+                    createCommand.Parameters.AddWithValue("@Price", entity.Price);
+                    createCommand.Parameters.AddWithValue("@DateAvailable", entity.DateAvailable);
+                    createCommand.Parameters.AddWithValue("@Notes", entity.Notes);
 
                     // Insert, update, delete
                     // Use non query, because we are updating/changing the DB, not querying it
-                    sqlQuery.ExecuteNonQuery();
+                    createCommand.ExecuteNonQuery();
                 }
+                conn.Close();
             }
+            return numberOfRowsInserted;
         }
 
         // DeleteProduct (string OEM)
-        public void Delete(Product entity)
+        public bool Delete(string OEM)
         {
-            throw new NotImplementedException();
+            bool wasProductDeleted = false;
+            using(SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                conn.Open();
+                using(SqlCommand deleteCommand = new SqlCommand("DELETE from Product WHERE OEM = @productOEM", conn))
+                {
+                    deleteCommand.Parameters.AddWithValue("@productOEM", OEM);
+                    
+                    // Track number of rows affected (changes made to DB)
+                    int numberOfRowsAffectedByDeletion = deleteCommand.ExecuteNonQuery();
+
+                    // Succession criteria: only one (1) row should be affected, ie one Product deleted
+                    wasProductDeleted = (numberOfRowsAffectedByDeletion == 1);
+                }
+                conn.Close();
+            }
+            return wasProductDeleted;
         }
 
         // GetAllProducts() -> outputs a list of all products in the DB/inventory.
@@ -55,9 +104,9 @@ namespace ServiceAPI.DatabaseAccess.DatabaseEntities
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
-                using (SqlCommand sqlQuery = new SqlCommand("SELECT * FROM Product", conn))
+                using (SqlCommand readAllCommand = new SqlCommand("SELECT * FROM Product", conn))
                 {
-                    using (SqlDataReader reader = sqlQuery.ExecuteReader())
+                    using (SqlDataReader reader = readAllCommand.ExecuteReader())
                     {
                         while (reader.Read())
                         {
@@ -87,12 +136,12 @@ namespace ServiceAPI.DatabaseAccess.DatabaseEntities
             using(SqlConnection conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
-                using (SqlCommand sqlQuery = new SqlCommand("SELECT OEM, VINNumber, Name, Price, DateAvailable, Notes FROM Product WHERE OEM = @OEM"))
+                using (SqlCommand readCommand = new SqlCommand("SELECT OEM, VINNumber, Name, Price, DateAvailable, Notes FROM Product WHERE OEM = @productOEM"))
                 {
                     // Bind value from string input OEM to parameter OEM from Product in DB.
-                    sqlQuery.Parameters.AddWithValue("@OEM", OEM);
+                    readCommand.Parameters.AddWithValue("@productOEM", OEM);
 
-                    using(SqlDataReader reader = sqlQuery.ExecuteReader())
+                    using(SqlDataReader reader = readCommand.ExecuteReader())
                     {
                         if(reader.Read())
                         {
@@ -116,7 +165,12 @@ namespace ServiceAPI.DatabaseAccess.DatabaseEntities
         // UpdateProduct (Product product) -> Updates an existing Product in the database.
         public void Update(Product entity)
         {
-            throw new NotImplementedException();
+            bool doesProductExistInDB = true;
+            int numberOfRowsUpdatedInDB;
+
+
+            return numberOfRowsUpdatedInDB;
+
         }
     }
 }
