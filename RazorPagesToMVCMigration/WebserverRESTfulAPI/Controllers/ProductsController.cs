@@ -16,14 +16,8 @@ namespace ServiceAPI.Controllers
             _productService = productService;
         }
 
-        // GET: ProductsController
-        public ActionResult Index()
-        {
-            return View();
-        }
-
         // GET: ProductsController/Products
-        [HttpGet, Route("products")]
+        [HttpGet("Products")]
         public ActionResult<IEnumerable<Product>> GetProducts()
         {
             var allProducts = _productService.GetAll();
