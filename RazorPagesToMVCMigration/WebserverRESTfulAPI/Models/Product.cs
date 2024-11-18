@@ -1,4 +1,4 @@
-﻿namespace ServiceAPI.DatabaseAccess.Models
+﻿namespace ServiceAPI.Models
 {
     public class Product
     {
