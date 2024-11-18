@@ -16,6 +16,7 @@ namespace ServiceAPI.DatabaseAccess.DatabaseEntities
         }
 
         // Helper method that tests whether an entity (Product) entry exists in the database.
+        // NOT IN USE YET
         internal bool ProductExists(string OEM)
         {
             bool prodExists = false;
@@ -36,24 +37,26 @@ namespace ServiceAPI.DatabaseAccess.DatabaseEntities
         // AddProduct(Product product)
         public int Create(Product entity)
         {
-            bool productExistsInDB = false;
+            // bool productExistsInDB = false;
             int numberOfRowsInserted;
 
-            productExistsInDB = ProductExists(entity.OEM);
+            // productExistsInDB = ProductExists(entity.OEM);
+            /*
             if(!productExistsInDB)
             {
-                // INSERT
+                // INSERT OK
+                
             }
             else
             {
-                // UPDATE
+                // UPDATE -> throw error indicating existing Product in DB.
             }
-
-            using(SqlConnection conn = new SqlConnection(_connectionString))
+            */
+            using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
-                using(SqlCommand createCommand = new SqlCommand(
-                    "INSERT INTO Product (OEM, VINNumber, Name, Price, DateAvailable, Notes) " 
+                using (SqlCommand createCommand = new SqlCommand(
+                    "INSERT INTO Product (OEM, VINNumber, Name, Price, DateAvailable, Notes) "
                     + "VALUES (@OEM, @VINNumber, @Name, @Price, @DateAvailable, @Notes)", conn
                     ))
                 {
@@ -67,7 +70,7 @@ namespace ServiceAPI.DatabaseAccess.DatabaseEntities
 
                     // Insert, update, delete
                     // Use non query, because we are updating/changing the DB, not querying it
-                    createCommand.ExecuteNonQuery();
+                    numberOfRowsInserted = createCommand.ExecuteNonQuery();
                 }
                 conn.Close();
             }
@@ -163,14 +166,40 @@ namespace ServiceAPI.DatabaseAccess.DatabaseEntities
         }
 
         // UpdateProduct (Product product) -> Updates an existing Product in the database.
-        public void Update(Product entity)
+        public int Update(Product entity)
         {
-            bool doesProductExistInDB = true;
-            int numberOfRowsUpdatedInDB;
+            // bool productExistInDB = true;
+            int numberOfRowsUpdated;
+            // productExistsInDB = ProductExists(entity.OEM);
+            /*
+            if(!productExistsInDB)
+            {
+                // INSERT OK
+                
+            }
+            else
+            {
+                // UPDATE -> throw error indicating existing Product in DB.
+            }
+            */
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                conn.Open();
+                using (SqlCommand updateCommand = new SqlCommand("UPDATE Product SET Name=@Name, Price=@Price, DateAvailable=@DateAvailable, Notes=@Notes", conn))
+                {
+                    // Mapping method input values to sql query input values
+                    updateCommand.Parameters.AddWithValue("@Name", entity.Name);
+                    updateCommand.Parameters.AddWithValue("@Price", entity.Price);
+                    updateCommand.Parameters.AddWithValue("@DateAvailable", entity.DateAvailable);
+                    updateCommand.Parameters.AddWithValue("@Notes", entity.Notes);
 
-
-            return numberOfRowsUpdatedInDB;
-
+                    // Insert, update, delete
+                    // Use non query, because we are updating/changing the DB, not querying it
+                    numberOfRowsUpdated = updateCommand.ExecuteNonQuery();
+                }
+                conn.Close();
+            }
+            return numberOfRowsUpdated;
         }
     }
 }
