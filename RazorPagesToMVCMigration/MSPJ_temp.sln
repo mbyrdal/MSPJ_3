@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RazorPagesToMVCMigration", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MSPJ.TestingEnvironment", "TestingEnvironment\MSPJ.TestingEnvironment.csproj", "{EBBCE2ED-F8D2-4CB9-BE5A-99349D0ED272}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebserverRESTfulAPI", "WebserverRESTfulAPI\WebserverRESTfulAPI.csproj", "{ACD8744B-2137-417F-9290-A2A773619354}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceAPI", "WebserverRESTfulAPI\ServiceAPI.csproj", "{ACD8744B-2137-417F-9290-A2A773619354}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
