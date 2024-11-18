@@ -17,7 +17,7 @@ namespace ServiceAPI.Controllers
         }
 
         // GET: ProductsController/Products
-        [HttpGet("Products")]
+        [HttpGet]
         public ActionResult<IEnumerable<Product>> GetProducts()
         {
             var allProducts = _productService.GetAll();
@@ -33,7 +33,7 @@ namespace ServiceAPI.Controllers
         }
 
         // GET: ProductsController/Products/{OEM}
-        [HttpGet("{OEM}"), Route("products/{OEM}")]
+        [HttpGet("{OEM}")]
         public ActionResult<Product> GetProduct(string OEM)
         {
             try
@@ -56,7 +56,7 @@ namespace ServiceAPI.Controllers
         }
 
         // POST: ProductsController/CreateProduct
-        [HttpPost, Route("products")]
+        [HttpPost]
         public ActionResult CreateProduct([FromBody] Product newProduct)
         {
             try
@@ -83,7 +83,7 @@ namespace ServiceAPI.Controllers
             }
         }
 
-        [HttpPut, Route("products/{OEM}")]
+        [HttpPut("{OEM}")]
         public ActionResult UpdateProduct(string OEM, [FromBody] Product newProduct)
         {
             if(OEM != newProduct.OEM)
@@ -105,7 +105,7 @@ namespace ServiceAPI.Controllers
             return Ok(existingProduct);
         }
 
-        [HttpDelete, Route("products/{OEM}")]
+        [HttpDelete("{OEM}")]
         public ActionResult DeleteProduct(string OEM)
         {
             var foundProduct = _productService.GetById(OEM);
