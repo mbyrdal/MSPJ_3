@@ -12,8 +12,6 @@
 
   <ItemGroup>
     <Folder Include="BusinessLogic\DTOs\" />
-    <Folder Include="DatabaseAccess\DatabaseEntities\" />
-    <Folder Include="DatabaseAccess\Interfaces\" />
   </ItemGroup>
 
 </Project>
