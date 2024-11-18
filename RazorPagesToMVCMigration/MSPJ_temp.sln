@@ -5,7 +5,9 @@ VisualStudioVersion = 17.11.35222.181
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RazorPagesToMVCMigration", "RazorPagesToMVCMigration\RazorPagesToMVCMigration.csproj", "{D8CB05BE-C7D6-4267-966C-44D29A0D9519}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSPJ.TestingEnvironment", "TestingEnvironment\MSPJ.TestingEnvironment.csproj", "{EBBCE2ED-F8D2-4CB9-BE5A-99349D0ED272}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MSPJ.TestingEnvironment", "TestingEnvironment\MSPJ.TestingEnvironment.csproj", "{EBBCE2ED-F8D2-4CB9-BE5A-99349D0ED272}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebserverRESTfulAPI", "WebserverRESTfulAPI\WebserverRESTfulAPI.csproj", "{ACD8744B-2137-417F-9290-A2A773619354}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{EBBCE2ED-F8D2-4CB9-BE5A-99349D0ED272}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EBBCE2ED-F8D2-4CB9-BE5A-99349D0ED272}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EBBCE2ED-F8D2-4CB9-BE5A-99349D0ED272}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ACD8744B-2137-417F-9290-A2A773619354}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ACD8744B-2137-417F-9290-A2A773619354}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ACD8744B-2137-417F-9290-A2A773619354}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ACD8744B-2137-417F-9290-A2A773619354}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
