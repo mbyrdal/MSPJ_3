@@ -1,4 +1,4 @@
-﻿namespace ServiceAPI.DataAccess.Models
+﻿namespace ServiceAPI.BusinessLogic.Interfaces
 {
     public interface ICRUD<T> where T : class
     {
