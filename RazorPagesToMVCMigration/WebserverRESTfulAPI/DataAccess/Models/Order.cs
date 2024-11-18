@@ -1,4 +1,4 @@
-﻿namespace RazorPagesToMVCMigration.Models
+﻿namespace ServiceAPI.DatabaseAccess.Models
 {
     public class Order
     {
