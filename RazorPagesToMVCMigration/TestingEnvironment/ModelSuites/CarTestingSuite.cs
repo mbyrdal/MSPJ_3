@@ -5,7 +5,7 @@ using System.Runtime.ConstrainedExecution;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MSPJ_3.TestingEnvironment
+namespace MSPJ.TestingEnvironment.ModelSuites
 {   /// <summary>
     /// 
     /// </summary>

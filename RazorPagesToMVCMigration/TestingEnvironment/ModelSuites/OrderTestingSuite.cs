@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MSPJ_3.TestingEnvironment
+namespace MSPJ.TestingEnvironment.ModelSuites
 {
     public class OrderTestingSuite
     {
