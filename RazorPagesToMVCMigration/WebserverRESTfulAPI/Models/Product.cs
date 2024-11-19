@@ -13,7 +13,7 @@
         {
             OEM = string.Empty;
             VINNumber = string.Empty;
-            Name = "ProductNameGoesHere";
+            Name = "ProductName";
             Price = 0;
             DateAvailable = DateTime.UnixEpoch;
             Notes = string.Empty;

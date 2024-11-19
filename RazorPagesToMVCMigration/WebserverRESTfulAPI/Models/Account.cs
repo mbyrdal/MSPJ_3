@@ -1,6 +1,6 @@
 ﻿namespace ServiceAPI.Models
 {
-    public class Account : Guest
+    public class Account : Customer
     {
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;

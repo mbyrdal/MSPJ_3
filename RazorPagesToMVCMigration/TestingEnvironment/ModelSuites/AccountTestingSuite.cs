@@ -57,7 +57,7 @@ namespace MSPJ.TestingEnvironment.ModelSuites
             // Assert
             Assert.IsType<Account>(myCustomUser);
             Assert.Equal(firstName, myCustomUser.FirstName); // Expected value is "Hans"
-            Assert.Equal(lastName, myCustomUser.FirstName); // Expected value is "Hansen"
+            Assert.Equal(lastName, myCustomUser.LastName); // Expected value is "Hansen"
             Assert.Equal(address, myCustomUser.Address); // Expected value is "Danmarksgade 55, 9000 Aalborg"
             Assert.Equal(phoneNum, myCustomUser.PhoneNum); // Expected value is 224466888
             Assert.Equal(email, myCustomUser.Email); // Expected value is "student1234@ucn.dk"
