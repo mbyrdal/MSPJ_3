@@ -19,7 +19,7 @@ namespace MSPJ.TestingEnvironment.ControllerSuites
     public class ProductsControllerSuite
     {
         /// <summary>
-        /// This test checks the CRUD functionality (GET REQUEST) provided by the ProductsController, which relies on the Service Provider ProductService. <br/>
+        /// This test checks the CRUD method GetAllProducts() (GET REQUEST) provided by the ProductsController, which relies on the Service Provider ProductService. <br/>
         /// ProductService applies business logic to the pipeline. ProductService uses a DbEntity_Product object from the DAL to handle database access. <br/>
         /// We solve the dependency problem of both Service and Controller using Mocks (using Moq package).
         /// </summary>
