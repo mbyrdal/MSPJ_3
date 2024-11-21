@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ServiceAPI.BusinessLogic.Interfaces;
-using ServiceAPI.BusinessLogic.Services;
 using ServiceAPI.Models;
 
 namespace ServiceAPI.Controllers
