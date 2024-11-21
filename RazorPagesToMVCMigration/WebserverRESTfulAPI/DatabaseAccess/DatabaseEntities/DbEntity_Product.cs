@@ -134,7 +134,7 @@ namespace ServiceAPI.DatabaseAccess.DatabaseEntities
         // GetProductByID(string OEM)
         public Product GetById(string OEM)
         {
-            Product product = null;
+            Product product = new Product();
 
             using(SqlConnection conn = new SqlConnection(_connectionString))
             {

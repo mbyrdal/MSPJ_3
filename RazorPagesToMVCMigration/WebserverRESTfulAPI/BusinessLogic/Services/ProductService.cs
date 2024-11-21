@@ -70,7 +70,7 @@ namespace ServiceAPI.BusinessLogic.Services
 
         public Product GetById(string OEM)
         {
-            Product foundProductPlaceholder = null;
+            Product foundProductPlaceholder = new Product();
 
             try
             {
