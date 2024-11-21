@@ -72,8 +72,6 @@ namespace ServiceAPI.BusinessLogic.Services
         {
             Product foundProductPlaceholder = new Product();
 
-
-
             try
             {
                 foundProductPlaceholder = _DbProductAccess.GetById(OEM);
