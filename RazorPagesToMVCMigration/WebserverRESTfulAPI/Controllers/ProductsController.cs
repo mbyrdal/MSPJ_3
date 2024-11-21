@@ -88,7 +88,7 @@ namespace ServiceAPI.Controllers
                 return BadRequest("OEM mismatch between URL and supplied product for update.");
             }
 
-            var existingProduct = _productService.GetByOEM(OEM);
+            var existingProduct = _productService.GetByID(OEM);
 
             if (existingProduct == null)
             {
@@ -109,7 +109,7 @@ namespace ServiceAPI.Controllers
         [HttpDelete("{OEM}")]
         public ActionResult DeleteProduct(string OEM)
         {
-            var foundProduct = _productService.GetByOEM(OEM);
+            var foundProduct = _productService.GetByID(OEM);
             if(foundProduct == null)
             {
                 return NotFound($"Product with OEM {OEM} does not exist in the database.");
