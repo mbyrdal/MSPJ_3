@@ -25,7 +25,7 @@ namespace ServiceAPI.BusinessLogic.Services
                 wasProductInserted = (numberOfRowsInserted == 1);
             }
             // TODO: implement proper exception when Product was not inserted...
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 wasProductInserted = false;
                 Debug.WriteLine(ex.Message);
@@ -72,6 +72,8 @@ namespace ServiceAPI.BusinessLogic.Services
         {
             Product foundProductPlaceholder = new Product();
 
+
+
             try
             {
                 foundProductPlaceholder = _DbProductAccess.GetById(OEM);
@@ -97,7 +99,7 @@ namespace ServiceAPI.BusinessLogic.Services
             }
             catch (Exception ex)
             {
-                wasProductUpdated =  false;
+                wasProductUpdated = false;
                 Debug.WriteLine(ex.Message);
             }
             return wasProductUpdated;

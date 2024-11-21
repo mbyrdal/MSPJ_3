@@ -138,7 +138,7 @@ namespace ServiceAPI.DatabaseAccess.DatabaseEntities
 
             using(SqlConnection conn = new SqlConnection(_connectionString))
             {
-                using (SqlCommand readCommand = new SqlCommand("SELECT OEM, VINNumber, Name, Price, DateAvailable, Notes FROM Product WHERE OEM = @OEM", conn))
+                using (SqlCommand readCommand = new SqlCommand("SELECT OEM, FK_VINNumber, Name, Price, DateAvailable, Notes FROM Product WHERE OEM = @OEM", conn))
                 {
                     // Bind value from string input OEM to parameter OEM from Product in DB.
                     readCommand.Parameters.AddWithValue("@OEM", OEM);
