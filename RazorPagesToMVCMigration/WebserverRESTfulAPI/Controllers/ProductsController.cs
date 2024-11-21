@@ -21,14 +21,17 @@ namespace ServiceAPI.Controllers
         public ActionResult<IEnumerable<Product>> GetProducts()
         {
             var allProducts = _productService.GetAll();
+
             if (allProducts == null)
             {
-                return BadRequest("List of Products cannot be null.");
+                return StatusCode(500, "Failed to fetch the product list.");
             }
-            else if (allProducts.Count() == 0)
+
+            if (!allProducts.Any())
             {
-                return NotFound("List of Products is empty.");
+                return NotFound("No products available.");
             }
+
             return Ok(allProducts);
         }
 
@@ -36,23 +39,17 @@ namespace ServiceAPI.Controllers
         [HttpGet("{OEM}")]
         public ActionResult<Product> GetProduct(string OEM)
         {
+            // Fetch product by OEM
             var foundProduct = _productService.GetById(OEM);
-            try
+
+            if (foundProduct == null)
             {
-                if (foundProduct == null)
-                {
-                    // Status code 404, not found response
-                    return NotFound($"Product with OEM {OEM} not found (NULL).");
-                }
-                // Status code 200, OK
-                return Ok(foundProduct);
+                // Return 404: Not Found
+                return NotFound($"Product with OEM '{OEM}' not found.");
             }
 
-            // Status code 400, bad request response
-            catch (ArgumentException)
-            {
-                return BadRequest();
-            }
+            // Return 200: OK with product details
+            return Ok(foundProduct);
         }
 
         // POST: ProductsController/CreateProduct
@@ -86,23 +83,27 @@ namespace ServiceAPI.Controllers
         [HttpPut("{OEM}")]
         public ActionResult UpdateProduct(string OEM, [FromBody] Product newProduct)
         {
-            if(OEM != newProduct.OEM)
+            if (OEM != newProduct.OEM)
             {
-                return BadRequest("OEM mismatch between and supplied product for update.");
+                return BadRequest("OEM mismatch between URL and supplied product for update.");
             }
-            var existingProduct = _productService.GetById(OEM);
-            if(existingProduct == null)
-            {
-                return NotFound("Product found but missing details...");
-            }
-            existingProduct.OEM = newProduct.OEM;
-            existingProduct.VINNumber = newProduct.VINNumber;
-            existingProduct.Name = newProduct.Name;
-            existingProduct.Price = newProduct.Price;
-            existingProduct.DateAvailable = newProduct.DateAvailable;
-            existingProduct.Notes = newProduct.Notes;
 
-            return Ok(existingProduct);
+            var existingProduct = _productService.GetById(OEM);
+
+            if (existingProduct == null)
+            {
+                return NotFound($"Product with OEM '{OEM}' not found.");
+            }
+
+            // Update product in the database
+            var updateResult = _productService.Update(newProduct);
+
+            if (!updateResult)
+            {
+                return StatusCode(500, "Failed to update the product.");
+            }
+
+            return Ok("Product updated successfully.");
         }
 
         [HttpDelete("{OEM}")]
