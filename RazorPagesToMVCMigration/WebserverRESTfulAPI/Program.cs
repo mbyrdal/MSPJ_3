@@ -1,9 +1,12 @@
+using ServiceAPI.BusinessLogic;
+using ServiceAPI.BusinessLogic.Interfaces;
 using ServiceAPI.BusinessLogic.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddScoped<ProductService>();
+// Allows for ProductsController to access ProductControl through DI
+builder.Services.AddScoped<IProductControl, ProductControl>(); 
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

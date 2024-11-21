@@ -21,7 +21,6 @@ namespace ServiceAPI.BusinessLogic
             }
             catch (Exception ex)
             {
-                productPlaceholder = null;
                 Debug.WriteLine(ex.Message);
             }
             return productPlaceholder;

@@ -2,7 +2,7 @@
 {
     public interface ICRUD_DB<T> where T : class
     {
-        IEnumerable<T> GetAllEntities();
+        List<T> GetAllEntities();
         T GetByIdentifier(string id);
         int CreateEntity(T entity);
         int UpdateEntity(T entity);

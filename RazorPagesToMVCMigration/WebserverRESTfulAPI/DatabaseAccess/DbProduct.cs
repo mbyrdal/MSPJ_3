@@ -10,13 +10,11 @@ namespace ServiceAPI.DatabaseAccess
     {
         // Configuration steps
         private string _connectionString;
-
         public DbProduct(IConfiguration configuration)
         {
             ConnectionHelper helper = new ConnectionHelper(configuration);
             _connectionString = helper.GetDBConnectionString();
         }
-
         public List<Product> GetAllEntities()
         {
             List<Product> products = new List<Product>();
@@ -156,34 +154,13 @@ namespace ServiceAPI.DatabaseAccess
                 using (SqlCommand checkCommand = new SqlCommand(existQuery, conn))
                 {
                     checkCommand.Parameters.AddWithValue("@OEM", OEM);
-                    // Explanation missing.
+                    // Returns the first column of the first row of the Product table in the DB.
+                    // Boolean that determines whether a given product with a specific OEM exists.
                     prodExists = Convert.ToInt32(checkCommand.ExecuteScalar()) > 0;
                 }
                 conn.Close();
             }
             return prodExists;
-        }
-
-        // DeleteProduct (string OEM)
-        public bool Delete(string OEM)
-        {
-            bool wasProductDeleted = false;
-            using (SqlConnection conn = new SqlConnection(_connectionString))
-            {
-                conn.Open();
-                using (SqlCommand deleteCommand = new SqlCommand("DELETE from Product WHERE OEM = @productOEM", conn))
-                {
-                    deleteCommand.Parameters.AddWithValue("@productOEM", OEM);
-
-                    // Track number of rows affected (changes made to DB)
-                    int numberOfRowsAffectedByDeletion = deleteCommand.ExecuteNonQuery();
-
-                    // Succession criteria: only one (1) row should be affected, ie one Product deleted
-                    wasProductDeleted = numberOfRowsAffectedByDeletion == 1;
-                }
-                conn.Close();
-            }
-            return wasProductDeleted;
         }
     }
 }

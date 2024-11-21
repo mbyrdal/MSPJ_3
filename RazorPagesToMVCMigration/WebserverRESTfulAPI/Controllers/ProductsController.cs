@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ServiceAPI.BusinessLogic.Interfaces;
 using ServiceAPI.BusinessLogic.Services;
 using ServiceAPI.Models;
 
@@ -9,113 +10,113 @@ namespace ServiceAPI.Controllers
     [Route("api/[controller]")]
     public class ProductsController : Controller
     {
-        private readonly ProductService _productService;
-
-        public ProductsController(ProductService productService)
+        private readonly IProductControl _productControl;
+        public ProductsController(IProductControl productControl)
         {
-            _productService = productService;
+            _productControl = productControl;
         }
-
         // GET: ProductsController/Products
         [HttpGet]
-        public ActionResult<IEnumerable<Product>> GetProducts()
+        public ActionResult<List<Product>> GetProducts()
         {
-            var allProducts = _productService.GetAll();
-
+            var allProducts = _productControl.GetAllProducts();
             if (allProducts == null)
             {
-                return StatusCode(500, "Failed to fetch the product list.");
+                // Return 400: Bad request response
+                return BadRequest("ERROR: List of products is null. A bad GET request was made.");
+                
             }
-
-            if (!allProducts.Any())
+            else if(allProducts.Count == 0)
             {
-                return NotFound("No products available.");
+                // Return 404: No products found
+                return NotFound("ERROR: No products found in the database.");
             }
-
-            return Ok(allProducts);
+            else
+            {
+                // Return 200: OK
+                return Ok(allProducts);
+            }
         }
-
         // GET: ProductsController/Products/{OEM}
         [HttpGet("{OEM}")]
         public ActionResult<Product> GetProduct(string OEM)
         {
-            // Fetch product by OEM
-            var foundProduct = _productService.GetByID(OEM);
-
+            var foundProduct = _productControl.GetProductByOEM(OEM);
             if (foundProduct == null)
             {
-                // Return 404: Not Found
+                // Return 404: no product found, null
                 return NotFound($"Product with OEM '{OEM}' not found.");
             }
-
-            // Return 200: OK with product details
+            // Return 200: OK
             return Ok(foundProduct);
         }
-
         // POST: ProductsController/CreateProduct
         [HttpPost]
         public ActionResult CreateProduct([FromBody] Product newProduct)
         {
-            try
+            if (newProduct == null)
             {
-                if (newProduct == null)
-                {
-                    return BadRequest();
-                }
-
-                // Adds product to DB
-                var createdProd = _productService.Create(newProduct);
-
-                // Deprecated version: use return Created() ...
-                // CreatedAtAction: controller runner with the ability to return status codes
-                // Return 201 status code along with the location of the newly created Product ...
-                return CreatedAtAction(nameof(GetProduct), // Action (GetProduct) to fetch Product
-                                       new { OEM = createdProd }, // Route parameter
-                                       createdProd); // Created Product part of response body
-
+                // Return 400: Bad request response
+                return BadRequest("ERROR: Bad Product request body.");
             }
-            catch (ArgumentException ex)
+            var wasProductCreated = _productControl.AddProduct(newProduct);
+            if(wasProductCreated)
             {
-                return BadRequest(ex.Message);
+                // Return 201: Successful creation (add) of new Product in DB
+                // Procedure below:
+                // CreatedAtAction response object is 201
+                // nameof(...) determines action method to be used
+                // new {...} determines input parameters
+                // newProduct is response object
+                return CreatedAtAction(nameof(GetProduct), new {OEM =  newProduct.OEM}, newProduct);
+            }
+            else
+            {
+                //  Return 409: Conflict by already existing OEM (Product) or insertion fail
+                return Conflict($"ERROR: Product with OEM: '{newProduct.OEM}' already exists in the Database, or insertion failed in another manner.");
             }
         }
-
         [HttpPut("{OEM}")]
-        public ActionResult UpdateProduct(string OEM, [FromBody] Product newProduct)
+        public ActionResult UpdateProduct([FromBody] Product updatedProduct)
         {
-            if (OEM != newProduct.OEM)
+            if (updatedProduct == null)
             {
-                return BadRequest("OEM mismatch between URL and supplied product for update.");
+                // Return 400: Bad request response
+                return BadRequest("ERROR: Bad Product request body.");
             }
-
-            var existingProduct = _productService.GetByID(OEM);
-
-            if (existingProduct == null)
+            var wasProductUpdated = _productControl.UpdateProduct(updatedProduct);
+            if (!wasProductUpdated)
             {
-                return NotFound($"Product with OEM '{OEM}' not found.");
+                var foundProduct = _productControl.GetProductByOEM(updatedProduct.OEM);
+                if(foundProduct == null)
+                {
+                    // Return 404: no existing product found
+                    return NotFound($"No existing Product with OEM: '{foundProduct.OEM}' found.");
+                }
+                else if(foundProduct.OEM != updatedProduct.OEM)
+                {
+                    // Return 409: OEMs of existing product and response body product do not match.
+                    return Conflict($"Found Product with OEM: '{foundProduct.OEM}' does not match OEM in request body: '{updatedProduct.OEM}'.");
+                }
             }
-
-            // Update product in the database
-            var updateResult = _productService.Update(newProduct);
-
-            if (!updateResult)
-            {
-                return StatusCode(500, "Failed to update the product.");
-            }
-
+            // Return 200: OK
             return Ok("Product updated successfully.");
         }
-
         [HttpDelete("{OEM}")]
         public ActionResult DeleteProduct(string OEM)
         {
-            var foundProduct = _productService.GetByID(OEM);
+            var foundProduct = _productControl.GetProductByOEM(OEM);
             if(foundProduct == null)
             {
-                return NotFound($"Product with OEM {OEM} does not exist in the database.");
+                // Return 404: no existing product found
+                return NotFound($"No existing Product with OEM: '{foundProduct.OEM}' found.");
             }
-            var removedProduct = _productService.Delete(OEM);
-            return Ok(removedProduct);
+            var wasProductRemoved = _productControl.DeleteProduct(OEM);
+            if(!wasProductRemoved)
+            {
+                return StatusCode(500, $"ERROR: Unable to delete Product with OEM: '{foundProduct.OEM}' from database.");
+            }
+            return Ok("Product removed successfully.");
         }
     }
 }
