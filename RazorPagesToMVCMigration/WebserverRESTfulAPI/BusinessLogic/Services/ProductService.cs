@@ -68,7 +68,7 @@ namespace ServiceAPI.BusinessLogic.Services
             return allProductsInDB;
         }
 
-        public Product GetById(string OEM)
+        public Product GetByOEM(string OEM)
         {
             Product foundProductPlaceholder = new Product();
 

@@ -40,7 +40,7 @@ namespace ServiceAPI.Controllers
         public ActionResult<Product> GetProduct(string OEM)
         {
             // Fetch product by OEM
-            var foundProduct = _productService.GetById(OEM);
+            var foundProduct = _productService.GetByOEM(OEM);
 
             if (foundProduct == null)
             {
@@ -88,7 +88,7 @@ namespace ServiceAPI.Controllers
                 return BadRequest("OEM mismatch between URL and supplied product for update.");
             }
 
-            var existingProduct = _productService.GetById(OEM);
+            var existingProduct = _productService.GetByOEM(OEM);
 
             if (existingProduct == null)
             {
@@ -109,7 +109,7 @@ namespace ServiceAPI.Controllers
         [HttpDelete("{OEM}")]
         public ActionResult DeleteProduct(string OEM)
         {
-            var foundProduct = _productService.GetById(OEM);
+            var foundProduct = _productService.GetByOEM(OEM);
             if(foundProduct == null)
             {
                 return NotFound($"Product with OEM {OEM} does not exist in the database.");
