@@ -40,7 +40,7 @@ namespace ServiceAPI.Controllers
         public ActionResult<Product> GetProduct(string OEM)
         {
             // Fetch product by OEM
-            var foundProduct = _productService.GetByOEM(OEM);
+            var foundProduct = _productService.GetByID(OEM);
 
             if (foundProduct == null)
             {
