@@ -42,7 +42,7 @@ namespace ServiceAPI.Controllers
                 if (foundProduct == null)
                 {
                     // Status code 404, not found response
-                    return NotFound();
+                    return NotFound($"Product with OEM {OEM} not found (NULL).");
                 }
                 // Status code 200, OK
                 return Ok(foundProduct);
