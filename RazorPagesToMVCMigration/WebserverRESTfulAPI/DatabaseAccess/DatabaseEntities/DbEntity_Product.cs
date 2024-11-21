@@ -138,13 +138,13 @@ namespace ServiceAPI.DatabaseAccess.DatabaseEntities
 
             using(SqlConnection conn = new SqlConnection(_connectionString))
             {
-                conn.Open();
                 using (SqlCommand readCommand = new SqlCommand("SELECT OEM, VINNumber, Name, Price, DateAvailable, Notes FROM Product WHERE OEM = @OEM", conn))
                 {
                     // Bind value from string input OEM to parameter OEM from Product in DB.
                     readCommand.Parameters.AddWithValue("@OEM", OEM);
-                    
-                    using(SqlDataReader reader = readCommand.ExecuteReader())
+
+                    conn.Open();
+                    using (SqlDataReader reader = readCommand.ExecuteReader())
                     {
                         if(reader.Read())
                         {
@@ -160,7 +160,7 @@ namespace ServiceAPI.DatabaseAccess.DatabaseEntities
                         }
                     }
                 }
-                conn.Close();
+                
             }
             return product;
         }

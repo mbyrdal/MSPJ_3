@@ -36,7 +36,7 @@ namespace ServiceAPI.Controllers
         }
 
         // GET: ProductsController/Products/{OEM}
-        [HttpGet("{OEM}")]
+        [HttpGet("{OEM:string}")]
         public ActionResult<Product> GetProduct(string OEM)
         {
             // Fetch product by OEM
