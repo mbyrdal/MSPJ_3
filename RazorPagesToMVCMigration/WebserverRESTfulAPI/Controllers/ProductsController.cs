@@ -33,7 +33,7 @@ namespace ServiceAPI.Controllers
         }
 
         // GET: ProductsController/Products/{OEM}
-        [HttpGet("{OEM:string}")]
+        [HttpGet("{OEM}")]
         public ActionResult<Product> GetProduct(string OEM)
         {
             var foundProduct = _productService.GetById(OEM);
