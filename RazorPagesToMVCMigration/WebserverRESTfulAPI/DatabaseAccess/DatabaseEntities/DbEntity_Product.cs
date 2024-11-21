@@ -134,16 +134,16 @@ namespace ServiceAPI.DatabaseAccess.DatabaseEntities
         // GetProductByID(string OEM)
         public Product GetById(string OEM)
         {
-            Product product = new Product();
+            Product product = null;
 
             using(SqlConnection conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
-                using (SqlCommand readCommand = new SqlCommand("SELECT OEM, VINNumber, Name, Price, DateAvailable, Notes FROM Product WHERE OEM = @productOEM"))
+                using (SqlCommand readCommand = new SqlCommand("SELECT OEM, VINNumber, Name, Price, DateAvailable, Notes FROM Product WHERE OEM = @OEM", conn))
                 {
                     // Bind value from string input OEM to parameter OEM from Product in DB.
-                    readCommand.Parameters.AddWithValue("@productOEM", OEM);
-
+                    readCommand.Parameters.AddWithValue("@OEM", OEM);
+                    
                     using(SqlDataReader reader = readCommand.ExecuteReader())
                     {
                         if(reader.Read())
