@@ -36,7 +36,7 @@ namespace ServiceAPI.Controllers
                 return Ok(allProducts);
             }
         }
-        // GET: ProductsController/Products/{OEM}
+        // GET: https://localhost:7134/api/Products/OEM
         [HttpGet("{OEM}")]
         public ActionResult<Product> GetProduct(string OEM)
         {
@@ -49,7 +49,7 @@ namespace ServiceAPI.Controllers
             // Return 200: OK
             return Ok(foundProduct);
         }
-        // POST: ProductsController/CreateProduct
+        // POST: https://localhost:7134/api/Products/
         [HttpPost]
         public ActionResult CreateProduct([FromBody] Product newProduct)
         {
@@ -59,7 +59,7 @@ namespace ServiceAPI.Controllers
                 return BadRequest("ERROR: Bad Product request body.");
             }
             var wasProductCreated = _productControl.AddProduct(newProduct);
-            if(wasProductCreated)
+            if (wasProductCreated)
             {
                 // Return 201: Successful creation (add) of new Product in DB
                 // Procedure below:
@@ -67,7 +67,7 @@ namespace ServiceAPI.Controllers
                 // nameof(...) determines action method to be used
                 // new {...} determines input parameters
                 // newProduct is response object
-                return CreatedAtAction(nameof(GetProduct), new {OEM =  newProduct.OEM}, newProduct);
+                return CreatedAtAction(nameof(GetProduct), new { OEM = newProduct.OEM }, newProduct);
             }
             else
             {
@@ -75,6 +75,7 @@ namespace ServiceAPI.Controllers
                 return Conflict($"ERROR: Product with OEM: '{newProduct.OEM}' already exists in the Database, or insertion failed in another manner.");
             }
         }
+        // PUT: https://localhost:7134/api/Products/OEM
         [HttpPut("{OEM}")]
         public ActionResult UpdateProduct(string OEM, [FromBody] Product updatedProduct)
         {
@@ -103,6 +104,7 @@ namespace ServiceAPI.Controllers
             // Return 200: OK
             return Ok("Product updated successfully.");
         }
+        // DELETE: https://localhost:7134/api/Products/OEM
         [HttpDelete("{OEM}")]
         public ActionResult DeleteProduct(string OEM)
         {

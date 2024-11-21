@@ -1,6 +1,5 @@
 using ServiceAPI.BusinessLogic;
 using ServiceAPI.BusinessLogic.Interfaces;
-using ServiceAPI.BusinessLogic.Services;
 using ServiceAPI.DatabaseAccess;
 using ServiceAPI.DatabaseAccess.Interfaces;
 using ServiceAPI.Models;
