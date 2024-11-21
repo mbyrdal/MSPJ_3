@@ -77,27 +77,29 @@ namespace ServiceAPI.Controllers
             }
         }
         [HttpPut("{OEM}")]
-        public ActionResult UpdateProduct([FromBody] Product updatedProduct)
+        public ActionResult UpdateProduct(string OEM, [FromBody] Product updatedProduct)
         {
             if (updatedProduct == null)
             {
                 // Return 400: Bad request response
                 return BadRequest("ERROR: Bad Product request body.");
             }
-            var wasProductUpdated = _productControl.UpdateProduct(updatedProduct);
-            if (!wasProductUpdated)
+            var existingProduct = _productControl.GetProductByOEM(OEM);
+            if(existingProduct == null)
             {
-                var foundProduct = _productControl.GetProductByOEM(updatedProduct.OEM);
-                if(foundProduct == null)
-                {
-                    // Return 404: no existing product found
-                    return NotFound($"No existing Product with OEM: '{foundProduct.OEM}' found.");
-                }
-                else if(foundProduct.OEM != updatedProduct.OEM)
-                {
-                    // Return 409: OEMs of existing product and response body product do not match.
-                    return Conflict($"Found Product with OEM: '{foundProduct.OEM}' does not match OEM in request body: '{updatedProduct.OEM}'.");
-                }
+                // Return 404: no existing product found
+                return NotFound($"No existing Product with OEM: '{existingProduct.OEM}' found.");
+            }
+            if(existingProduct.OEM != updatedProduct.OEM)
+            {
+                // Return 409: OEMs of existing product and response body product do not match.
+                return Conflict($"Found Product with OEM: '{existingProduct.OEM}' does not match OEM in request body: '{updatedProduct.OEM}'.");
+            }
+            var wasProductUpdated = _productControl.UpdateProduct(updatedProduct);
+            if(!wasProductUpdated)
+            {
+                // Return 500: Internal Server Error if the update fails
+                return StatusCode(500, $"ERROR: Unable to update Product with OEM: '{OEM}' in the database.");
             }
             // Return 200: OK
             return Ok("Product updated successfully.");

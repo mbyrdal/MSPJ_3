@@ -102,25 +102,36 @@ namespace ServiceAPI.DatabaseAccess
         }
         public int UpdateEntity(Product updateProduct)
         {
-            int numberOfRowsUpdated;
+            int numberOfRowsUpdated = 0;
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
-                conn.Open();
-                using (SqlCommand updateCommand = new SqlCommand("UPDATE Product SET OEM=@OEM, Name=@Name, Price=@Price, DateAvailable=@DateAvailable, Notes=@Notes", conn))
+                try
                 {
-                    // Mapping method input values to sql query input values
-                    updateCommand.Parameters.AddWithValue("@OEM", updateProduct.OEM);
-                    updateCommand.Parameters.AddWithValue("@Name", updateProduct.Name);
-                    updateCommand.Parameters.AddWithValue("@Price", updateProduct.Price);
-                    updateCommand.Parameters.AddWithValue("@DateAvailable", updateProduct.DateAvailable);
-                    updateCommand.Parameters.AddWithValue("@Notes", updateProduct.Notes);
+                    conn.Open();
+                    using (SqlCommand updateCommand = new SqlCommand("UPDATE Product " +
+                                                                     "SET Name=@Name, Price=@Price, DateAvailable=@DateAvailable, Notes=@Notes " +
+                                                                     "WHERE OEM = @OEM AND FK_VINNumber = @FK_VINNumber", conn))
+                    {
+                        // Mapping method input values to sql query input values
+                        updateCommand.Parameters.AddWithValue("@OEM", updateProduct.OEM);
+                        updateCommand.Parameters.AddWithValue("@FK_VINNumber", updateProduct.VINNumber);
+                        updateCommand.Parameters.AddWithValue("@Name", updateProduct.Name);
+                        updateCommand.Parameters.AddWithValue("@Price", updateProduct.Price);
+                        updateCommand.Parameters.AddWithValue("@DateAvailable", updateProduct.DateAvailable);
+                        updateCommand.Parameters.AddWithValue("@Notes", updateProduct.Notes);
 
-                    // Use non query because we are updating/changing the DB, not querying it
-                    numberOfRowsUpdated = updateCommand.ExecuteNonQuery();
+                        // Use non query because we are updating/changing the DB, not querying it
+                        numberOfRowsUpdated = updateCommand.ExecuteNonQuery();
+                    }
+                    conn.Close();
                 }
-                conn.Close();
+                catch (SqlException ex)
+                {
+                    // Log or handle the exception (logging to console for now)
+                    Console.WriteLine($"SQL error occurred: {ex.Message}");
+                }
+                return numberOfRowsUpdated;
             }
-            return numberOfRowsUpdated;
         }
         public bool DeleteEntity(string OEM)
         {

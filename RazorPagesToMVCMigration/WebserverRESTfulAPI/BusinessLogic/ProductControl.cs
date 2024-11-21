@@ -74,9 +74,8 @@ namespace ServiceAPI.BusinessLogic
                     wasProductUpdated = (numberOfRowsUpdated == 1);
                 }
             }
-            catch( Exception ex)
+            catch(Exception ex)
             {
-                product = null;
                 Debug.WriteLine(ex.Message);
             }
             return wasProductUpdated;
