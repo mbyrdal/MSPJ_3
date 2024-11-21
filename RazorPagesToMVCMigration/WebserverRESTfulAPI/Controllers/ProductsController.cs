@@ -15,7 +15,7 @@ namespace ServiceAPI.Controllers
         {
             _productControl = productControl;
         }
-        // GET: ProductsController/Products
+        // GET: https://localhost:7134/api/Products
         [HttpGet]
         public ActionResult<List<Product>> GetProducts()
         {

@@ -8,9 +8,9 @@ namespace ServiceAPI.BusinessLogic
     public class ProductControl : IProductControl
     {
         private readonly DbProduct _dbProductAccess;
-        public ProductControl(IConfiguration configuration)
+        public ProductControl(DbProduct dbProductAccess)
         {
-            _dbProductAccess = new DbProduct(configuration);
+            _dbProductAccess = dbProductAccess;
         }
         public Product GetProductByOEM(string OEM)
         {

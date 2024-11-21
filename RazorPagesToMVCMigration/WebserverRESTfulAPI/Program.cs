@@ -1,11 +1,19 @@
 using ServiceAPI.BusinessLogic;
 using ServiceAPI.BusinessLogic.Interfaces;
 using ServiceAPI.BusinessLogic.Services;
+using ServiceAPI.DatabaseAccess;
+using ServiceAPI.DatabaseAccess.Interfaces;
+using ServiceAPI.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-// Allows for ProductsController to access ProductControl through DI
+
+// Allows for ProductControl to access DbProduct through DI Container
+// builder.Services.AddScoped<ICRUD_DB<Product>, DbProduct>();
+builder.Services.AddScoped<DbProduct>();
+
+// Allows for ProductsController to access ProductControl through DI Container
 builder.Services.AddScoped<IProductControl, ProductControl>(); 
 
 builder.Services.AddControllers();

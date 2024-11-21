@@ -30,7 +30,7 @@ namespace ServiceAPI.DatabaseAccess
                             Product productInTable = new Product
                             {
                                 OEM = reader.GetString(reader.GetOrdinal("OEM")), // Column 1, Primary key OEM.
-                                VINNumber = reader.GetString(reader.GetOrdinal("VINNumber")),
+                                VINNumber = reader.GetString(reader.GetOrdinal("FK_VINNumber")),
                                 Name = reader.GetString(reader.GetOrdinal("Name")),
                                 Price = reader.GetDecimal(reader.GetOrdinal("Price")),
                                 DateAvailable = reader.GetDateTime(reader.GetOrdinal("DateAvailable")),
@@ -61,7 +61,7 @@ namespace ServiceAPI.DatabaseAccess
                             product = new Product
                             {
                                 OEM = reader.GetString(reader.GetOrdinal("OEM")), // Column 1, Primary key OEM.
-                                VINNumber = reader.GetString(reader.GetOrdinal("VINNumber")),
+                                VINNumber = reader.GetString(reader.GetOrdinal("FK_VINNumber")),
                                 Name = reader.GetString(reader.GetOrdinal("Name")),
                                 Price = reader.GetDecimal(reader.GetOrdinal("Price")),
                                 DateAvailable = reader.GetDateTime(reader.GetOrdinal("DateAvailable")),
@@ -81,20 +81,19 @@ namespace ServiceAPI.DatabaseAccess
             {
                 conn.Open();
                 using (SqlCommand createCommand = new SqlCommand(
-                    "INSERT INTO Product (OEM, VINNumber, Name, Price, DateAvailable, Notes) "
-                    + "VALUES (@OEM, @VINNumber, @Name, @Price, @DateAvailable, @Notes)", conn
+                    "INSERT INTO Product (OEM, FK_VINNumber, Name, Price, DateAvailable, Notes) "
+                    + "VALUES (@OEM, @FK_VINNumber, @Name, @Price, @DateAvailable, @Notes)", conn
                     ))
                 {
                     // Mapping method input values to sql query input values
                     createCommand.Parameters.AddWithValue("@OEM", newProduct.OEM);
-                    createCommand.Parameters.AddWithValue("@VINNumber", newProduct.VINNumber);
+                    createCommand.Parameters.AddWithValue("@FK_VINNumber", newProduct.VINNumber);
                     createCommand.Parameters.AddWithValue("@Name", newProduct.Name);
                     createCommand.Parameters.AddWithValue("@Price", newProduct.Price);
                     createCommand.Parameters.AddWithValue("@DateAvailable", newProduct.DateAvailable);
                     createCommand.Parameters.AddWithValue("@Notes", newProduct.Notes);
 
-                    // Insert, update, delete
-                    // Use non query, because we are updating/changing the DB, not querying it
+                    // Use non query because we are updating/changing the DB, not querying it
                     numberOfRowsInserted = createCommand.ExecuteNonQuery();
                 }
                 conn.Close();
