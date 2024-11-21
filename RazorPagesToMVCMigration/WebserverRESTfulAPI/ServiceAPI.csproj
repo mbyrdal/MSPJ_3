@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="BusinessLogic\DTOs\" />
+    <Folder Include="DTOs\" />
   </ItemGroup>
 
 </Project>

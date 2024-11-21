@@ -30,8 +30,8 @@ namespace MSPJ.TestingEnvironment.ControllerSuites
             var mockConfiguration = new Mock<IConfiguration>();
             mockConfiguration.Setup(config => config.GetSection("ConnectionStrings")["DefaultConnection"])
                              .Returns("Server=hildur.ucn.dk;Database=DMA-CSD-S235_10503098;User Id=DMA-CSD-S235_10503098;Password=Password1!;TrustServerCertificate=true");
-            var dbHelper = new DbHelper(mockConfiguration.Object);
-            var dbEntityProduct = new DbEntity_Product(mockConfiguration.Object);
+            var dbHelper = new ConnectionHelper(mockConfiguration.Object);
+            var dbEntityProduct = new DbProduct(mockConfiguration.Object);
             var mockProductService = new Mock<ProductService>(mockConfiguration.Object);
             var productController = new ProductsController(mockProductService.Object);
 

@@ -1,11 +1,11 @@
-﻿namespace ServiceAPI.DatabaseAccess
+﻿namespace ServiceAPI.DatabaseAccess.Utilities
 {
-    public class DbHelper
+    public class ConnectionHelper
     {
         private string? _connectionString;
         private readonly IConfiguration _configuration;
 
-        public DbHelper(IConfiguration configuration)
+        public ConnectionHelper(IConfiguration configuration)
         {
             _configuration = configuration;
 
