@@ -36,9 +36,9 @@ namespace ServiceAPI.Controllers
         [HttpGet("{OEM}")]
         public ActionResult<Product> GetProduct(string OEM)
         {
+            var foundProduct = _productService.GetById(OEM);
             try
             {
-                var foundProduct = _productService.GetById(OEM);
                 if (foundProduct == null)
                 {
                     // Status code 404, not found response
