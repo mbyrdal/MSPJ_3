@@ -21,6 +21,7 @@ namespace ServiceAPI.Controllers
         public ActionResult<List<Account>> GetAccounts()
         {
             var allAccounts = _accountControl.GetAllAccounts();
+
             if(allAccounts == null)
             {
                 // Return 400: Bad request response
@@ -68,6 +69,7 @@ namespace ServiceAPI.Controllers
 
             if(wasAccountCreated)
             {
+                // Return 201: Created Account.
                 return CreatedAtAction(
                     nameof(GetAccount),
                     new { email = newAccount.Email},

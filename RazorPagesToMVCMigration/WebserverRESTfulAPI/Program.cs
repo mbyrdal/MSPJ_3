@@ -12,10 +12,12 @@ var builder = WebApplication.CreateBuilder(args);
 // builder.Services.AddScoped<ICRUD_DB<Product>, DbProduct>(); ??
 builder.Services.AddScoped<DbProduct>();
 builder.Services.AddScoped<DbAccount>();
+builder.Services.AddScoped<DbGuest>();
 
 // Allows for Controllers to access CF objects through DI Container
 builder.Services.AddScoped<IProductControl, ProductControl>();
 builder.Services.AddScoped<IAccountControl, AccountControl>();
+builder.Services.AddScoped<IGuestControl, GuestControl>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
