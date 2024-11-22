@@ -16,25 +16,25 @@ namespace MSPJ.TestingEnvironment.ModelSuites
         public void Account_DefaultConstructor_CreatesUserUsingDefaultConstructor()
         {
             // Arrange
-            // TODO: implement ID string defaultID = "default@email.com";
             string defaultFirstName = string.Empty;
             string defaultLastName = string.Empty;
             string defaultAddress = "InTheMiddleOfNowhere Street 50";
             string defaultPhoneNum = "12345678";
             string defaultEmail = "default@email.com";
-            string defaultPassword = "123456abcdef!@#¤%_XYZ";
+            string defaultPlaintextPassword = "123456abcdef!@#¤%_XYZ";
 
             // Act
-            Account myDefaultUser = new Account(); // Supposedly applies default values
+            Account myDefaultAccount = new Account(); // Supposedly applies default values
+            bool resultPassword = myDefaultAccount.VerifyAccountPassword(defaultPlaintextPassword);
 
             // Assert
-            Assert.IsType<Account>(myDefaultUser); // Expected type is User. User inherits ID from Customer
-            Assert.Equal(defaultFirstName, myDefaultUser.FirstName); // Expected value is string.Empty ("")
-            Assert.Equal(defaultLastName, myDefaultUser.FirstName); // Expected value is string.Empty ("")
-            Assert.Equal(defaultAddress, myDefaultUser.Address); // Expected value is "InTheMiddleOfNowhere Street 50"
-            Assert.Equal(defaultPhoneNum, myDefaultUser.PhoneNum); // Expected value is 12345678
-            Assert.Equal(defaultEmail, myDefaultUser.Email); // Expected value is "default@gmail.com"
-            Assert.Equal(defaultPassword, myDefaultUser.Password); // Expected value is "123456abcdef!@#¤%_XYZ"
+            Assert.IsType<Account>(myDefaultAccount); // Expected type is User. User inherits ID from Customer
+            Assert.Equal(defaultFirstName, myDefaultAccount.FirstName); // Expected value is string.Empty ("")
+            Assert.Equal(defaultLastName, myDefaultAccount.FirstName); // Expected value is string.Empty ("")
+            Assert.Equal(defaultAddress, myDefaultAccount.Address); // Expected value is "InTheMiddleOfNowhere Street 50"
+            Assert.Equal(defaultPhoneNum, myDefaultAccount.PhoneNum); // Expected value is 12345678
+            Assert.Equal(defaultEmail, myDefaultAccount.Email); // Expected value is "default@gmail.com"
+            Assert.True(resultPassword); // Expected value is True for "123456abcdef!@#¤%_XYZ"
         }
 
         /// <summary>

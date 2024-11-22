@@ -1,17 +1,17 @@
 ﻿namespace ServiceAPI.Models
 {
-    public class Customer
+    public class Guest
     {
         public string Email { get; set; } = string.Empty;
         public int ListID { get; set; }
 
-        public Customer()
+        public Guest()
         {
             Email = "default@email.com";
             ListID = 0;
         }
 
-        public Customer(string email, int listID)
+        public Guest(string email, int listID)
         {
             Email = email;
             ListID = listID;
