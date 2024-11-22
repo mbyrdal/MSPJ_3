@@ -18,12 +18,21 @@ namespace ServiceAPI.Models
         [Required]
         public string PhoneNum { get; set; }
         
-        [Required]
         [JsonIgnore]
-        public string HashPassword { get; set; } // For internal use only.
+        public string? HashPassword { get; set; } // For internal use only.
 
         // TODO: implement collection of orders for an account (1-to-Many relationship)
         // public ICollection<Order> Orders { get; set; }
+
+        [JsonConstructor]
+        public Account(string guestEmail, string fName, string lName, string address, string pnum/*, List<Order> orderList */) : base(guestEmail)
+        {
+            FirstName = fName;
+            LastName = lName;
+            Address = address;
+            PhoneNum = pnum;
+            // Orders = orderList;
+        }
 
         public Account(string guestEmail, string fName, string lName, string address, string pnum, string pw/*, List<Order> orderList */) : base(guestEmail)
         {
