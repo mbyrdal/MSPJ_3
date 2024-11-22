@@ -52,16 +52,17 @@ namespace MSPJ.TestingEnvironment.ModelSuites
             string password = "09JD08djuq980JUD80qdjk+980D";
 
             // Act
-            Account myCustomUser = new Account(firstName, lastName, address, phoneNum, email, password);
+            Account myCustomAccount = new Account(firstName, lastName, address, phoneNum, email, password);
+            bool resultPassword = myCustomAccount.VerifyAccountPassword(password);
 
             // Assert
-            Assert.IsType<Account>(myCustomUser);
-            Assert.Equal(firstName, myCustomUser.FirstName); // Expected value is "Hans"
-            Assert.Equal(lastName, myCustomUser.LastName); // Expected value is "Hansen"
-            Assert.Equal(address, myCustomUser.Address); // Expected value is "Danmarksgade 55, 9000 Aalborg"
-            Assert.Equal(phoneNum, myCustomUser.PhoneNum); // Expected value is 224466888
-            Assert.Equal(email, myCustomUser.Email); // Expected value is "student1234@ucn.dk"
-            Assert.Equal(password, myCustomUser.Password); // Expected value is "09JD08djuq980JUD80qdjk+980D"
+            Assert.IsType<Account>(myCustomAccount);
+            Assert.Equal(firstName, myCustomAccount.FirstName); // Expected value is "Hans"
+            Assert.Equal(lastName, myCustomAccount.LastName); // Expected value is "Hansen"
+            Assert.Equal(address, myCustomAccount.Address); // Expected value is "Danmarksgade 55, 9000 Aalborg"
+            Assert.Equal(phoneNum, myCustomAccount.PhoneNum); // Expected value is 224466888
+            Assert.Equal(email, myCustomAccount.Email); // Expected value is "student1234@ucn.dk"
+            Assert.True(resultPassword); // Expected value is True for "09JD08djuq980JUD80qdjk+980D"
 
         }
     }
