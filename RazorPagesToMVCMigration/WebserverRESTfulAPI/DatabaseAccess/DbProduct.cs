@@ -166,7 +166,7 @@ namespace ServiceAPI.DatabaseAccess
                     checkCommand.Parameters.AddWithValue("@OEM", OEM);
                     // Returns the first column of the first row of the Product table in the DB.
                     // Boolean that determines whether a given product with a specific OEM exists.
-                    prodExists = Convert.ToInt32(checkCommand.ExecuteScalar()) > 0;
+                    prodExists = Convert.ToInt32(checkCommand.ExecuteScalar()) == 1;
                 }
                 conn.Close();
             }

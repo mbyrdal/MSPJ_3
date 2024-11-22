@@ -8,10 +8,12 @@ namespace ServiceAPI.BusinessLogic
     public class ProductControl : IProductControl
     {
         private readonly DbProduct _dbProductAccess;
+
         public ProductControl(DbProduct dbProductAccess)
         {
             _dbProductAccess = dbProductAccess;
         }
+
         public Product GetProductByOEM(string OEM)
         {
             Product productPlaceholder = null;
@@ -25,6 +27,7 @@ namespace ServiceAPI.BusinessLogic
             }
             return productPlaceholder;
         }
+
         public List<Product> GetAllProducts()
         {
             List<Product> allProducts = new List<Product>();
@@ -60,6 +63,7 @@ namespace ServiceAPI.BusinessLogic
             }
             return wasProductInserted;
         }
+
         public bool UpdateProduct(Product product)
         {
             bool productExists = false;
@@ -80,6 +84,7 @@ namespace ServiceAPI.BusinessLogic
             }
             return wasProductUpdated;
         }
+
         public bool DeleteProduct(string OEM)
         {
             bool productExists;

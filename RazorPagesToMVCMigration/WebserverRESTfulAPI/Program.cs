@@ -8,12 +8,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-// Allows for ProductControl to access DbProduct through DI Container
-// builder.Services.AddScoped<ICRUD_DB<Product>, DbProduct>();
+// Allows for CF objects to access DbAccess objects through DI Container
+// builder.Services.AddScoped<ICRUD_DB<Product>, DbProduct>(); ??
 builder.Services.AddScoped<DbProduct>();
+builder.Services.AddScoped<DbAccount>();
 
-// Allows for ProductsController to access ProductControl through DI Container
-builder.Services.AddScoped<IProductControl, ProductControl>(); 
+// Allows for Controllers to access CF objects through DI Container
+builder.Services.AddScoped<IProductControl, ProductControl>();
+builder.Services.AddScoped<IAccountControl, AccountControl>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

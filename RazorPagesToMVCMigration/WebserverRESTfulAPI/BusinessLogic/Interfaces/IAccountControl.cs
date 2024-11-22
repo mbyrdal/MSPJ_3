@@ -7,6 +7,6 @@ namespace ServiceAPI.BusinessLogic.Interfaces
         List<Account> GetAllAccounts();
         bool AddAccount(Account account);
         bool UpdateAccount(Account account);
-        bool DeleteAccount(Account account);
+        bool DeleteAccount(string email);
     }
 }

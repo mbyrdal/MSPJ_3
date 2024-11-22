@@ -10,45 +10,51 @@ namespace ServiceAPI.Controllers
     public class ProductsController : Controller
     {
         private readonly IProductControl _productControl;
+
         public ProductsController(IProductControl productControl)
         {
             _productControl = productControl;
         }
+
         // GET: https://localhost:7134/api/Products
         [HttpGet]
         public ActionResult<List<Product>> GetProducts()
         {
             var allProducts = _productControl.GetAllProducts();
+
             if (allProducts == null)
             {
                 // Return 400: Bad request response
                 return BadRequest("ERROR: List of products is null. A bad GET request was made.");
                 
             }
-            else if(allProducts.Count == 0)
+
+            if(allProducts.Count == 0)
             {
                 // Return 404: No products found
                 return NotFound("ERROR: No products found in the database.");
             }
-            else
-            {
-                // Return 200: OK
-                return Ok(allProducts);
-            }
+
+            // Return 200: OK
+            return Ok(allProducts);
         }
+
         // GET: https://localhost:7134/api/Products/OEM
         [HttpGet("{OEM}")]
         public ActionResult<Product> GetProduct(string OEM)
         {
             var foundProduct = _productControl.GetProductByOEM(OEM);
+
             if (foundProduct == null)
             {
-                // Return 404: no product found, null
+                // Return 404: No product found, null
                 return NotFound($"Product with OEM '{OEM}' not found.");
             }
+
             // Return 200: OK
             return Ok(foundProduct);
         }
+
         // POST: https://localhost:7134/api/Products/
         [HttpPost]
         public ActionResult CreateProduct([FromBody] Product newProduct)
@@ -58,7 +64,9 @@ namespace ServiceAPI.Controllers
                 // Return 400: Bad request response
                 return BadRequest("ERROR: Bad Product request body.");
             }
+
             var wasProductCreated = _productControl.AddProduct(newProduct);
+
             if (wasProductCreated)
             {
                 // Return 201: Successful creation (add) of new Product in DB
@@ -69,58 +77,70 @@ namespace ServiceAPI.Controllers
                 // newProduct is response object
                 return CreatedAtAction(nameof(GetProduct), new { OEM = newProduct.OEM }, newProduct);
             }
-            else
-            {
-                // Return 409: Conflict by already existing OEM (Product) or insertion fail
-                // Multiple, identical products may have the OEM number inherited from Car.
-                return Conflict($"ERROR: Product with OEM: '{newProduct.OEM}' already exists in the Database, or insertion failed in another manner.");
-            }
+
+            // Return 409: Conflict by already existing OEM (Product) or insertion fail
+            // Multiple, identical products may have the OEM number inherited from Car.
+            return Conflict($"ERROR: Product with OEM: '{newProduct.OEM}' already exists in the database, or insertion failed in another manner.");
         }
+
+        // TODO: trim and remove existingProduct logic since _productControl.UpdateProduct handles existing product issue already.
         // PUT: https://localhost:7134/api/Products/OEM
         [HttpPut("{OEM}")]
-        public ActionResult UpdateProduct(string OEM, [FromBody] Product updatedProduct)
+        public IActionResult UpdateProduct(string OEM, [FromBody] Product updatedProduct)
         {
             if (updatedProduct == null)
             {
                 // Return 400: Bad request response
                 return BadRequest("ERROR: Bad Product request body.");
             }
+
             var existingProduct = _productControl.GetProductByOEM(OEM);
+
             if(existingProduct == null)
             {
                 // Return 404: no existing product found
                 return NotFound($"No existing Product with OEM: '{existingProduct.OEM}' found.");
             }
+
             if(existingProduct.OEM != updatedProduct.OEM)
             {
                 // Return 409: OEMs of existing product and response body product do not match.
-                return Conflict($"Found Product with OEM: '{existingProduct.OEM}' does not match OEM in request body: '{updatedProduct.OEM}'.");
+                return Conflict($"Found Product with OEM '{existingProduct.OEM}' does not match OEM in request body '{updatedProduct.OEM}'.");
             }
+
             var wasProductUpdated = _productControl.UpdateProduct(updatedProduct);
+
             if(!wasProductUpdated)
             {
                 // Return 500: Internal Server Error if the update fails
                 return StatusCode(500, $"ERROR: Unable to update Product with OEM: '{OEM}' in the database.");
             }
-            // Return 200: OK
-            return Ok("Product updated successfully.");
+
+            // Return 204: No Content (Successful update)
+            return NoContent();
         }
+
         // DELETE: https://localhost:7134/api/Products/OEM
         [HttpDelete("{OEM}")]
-        public ActionResult DeleteProduct(string OEM)
+        public IActionResult DeleteProduct(string OEM)
         {
             var foundProduct = _productControl.GetProductByOEM(OEM);
+
             if(foundProduct == null)
             {
                 // Return 404: no existing product found
                 return NotFound($"No existing Product with OEM: '{foundProduct.OEM}' found.");
             }
+
             var wasProductRemoved = _productControl.DeleteProduct(OEM);
+
             if(!wasProductRemoved)
             {
                 return StatusCode(500, $"ERROR: Unable to delete Product with OEM: '{foundProduct.OEM}' from database.");
             }
-            return Ok("Product removed successfully.");
+
+            // Return 204: No Content (Successful deletion)
+            return NoContent();
         }
     }
 }

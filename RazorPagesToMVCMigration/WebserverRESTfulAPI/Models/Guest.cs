@@ -1,8 +1,11 @@
-﻿namespace ServiceAPI.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace ServiceAPI.Models
 {
     public class Guest
     {
-        public string Email { get; set; } = string.Empty;
+        [Required]
+        public string Email { get; set; } 
         public Guest()
         {
             Email = "default@email.com";

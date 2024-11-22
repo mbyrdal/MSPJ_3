@@ -79,16 +79,16 @@ namespace ServiceAPI.DatabaseAccess
             {
                 conn.Open();
                 using (SqlCommand createCommand = new SqlCommand(
-                    "INSERT INTO Account (FK_GuestEmail, FirstName, LastName, Address, PhoneNum) "
-                    + "VALUES (@email, @firstname, @lastname, @address, @phonenum)", conn
+                    "INSERT INTO Account (FK_GuestEmail, FirstName, LastName, Address, PhoneNum, HashPassword) "
+                    + "VALUES (@email, @firstname, @lastname, @address, @phonenum, @hashpw)", conn
                     ))
                 {
-                    createCommand.Parameters.AddWithValue("@email", newAccount);
-                    createCommand.Parameters.AddWithValue("@firstname", newAccount);
-                    createCommand.Parameters.AddWithValue("@lastname", newAccount);
-                    createCommand.Parameters.AddWithValue("@address", newAccount);
-                    createCommand.Parameters.AddWithValue("@phonenum", newAccount);
-
+                    createCommand.Parameters.AddWithValue("@email", newAccount.Email);
+                    createCommand.Parameters.AddWithValue("@firstname", newAccount.FirstName);
+                    createCommand.Parameters.AddWithValue("@lastname", newAccount.LastName);
+                    createCommand.Parameters.AddWithValue("@address", newAccount.Address);
+                    createCommand.Parameters.AddWithValue("@phonenum", newAccount.PhoneNum);
+                    createCommand.Parameters.AddWithValue("@hashpw", newAccount.HashPassword);
                     numberOfRowsInserted = createCommand.ExecuteNonQuery();
                 }
                 conn.Close();
@@ -150,7 +150,7 @@ namespace ServiceAPI.DatabaseAccess
                 using (SqlCommand checkCommand = new SqlCommand(existQuery, conn))
                 {
                     checkCommand.Parameters.AddWithValue("@email", OEM);
-                    accExists = Convert.ToInt32(checkCommand.ExecuteScalar()) > 0;
+                    accExists = Convert.ToInt32(checkCommand.ExecuteScalar()) == 1;
                 }
                 conn.Close();
             }
