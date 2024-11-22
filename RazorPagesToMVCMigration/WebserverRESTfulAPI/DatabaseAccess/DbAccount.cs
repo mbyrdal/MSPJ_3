@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.Data.SqlClient;
 using ServiceAPI.BusinessLogic.Interfaces;
 using ServiceAPI.DatabaseAccess.Interfaces;
 using ServiceAPI.DatabaseAccess.Utilities;
@@ -17,7 +18,7 @@ namespace ServiceAPI.DatabaseAccess
         }
         public List<Account> GetAllEntities()
         {
-            List<Product> accounts = new List<Product>();
+            List<Account> accounts = new List<Account>();
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
@@ -27,14 +28,13 @@ namespace ServiceAPI.DatabaseAccess
                     {
                         while (reader.Read())
                         {
-                            Product accountInTable = new Account
+                            Account accountInTable = new Account
                             {
-                                OEM = reader.GetString(reader.GetOrdinal("OEM")), // Column 1, Primary key OEM.
-                                VINNumber = reader.GetString(reader.GetOrdinal("FK_VINNumber")),
-                                Name = reader.GetString(reader.GetOrdinal("Name")),
-                                Price = reader.GetDecimal(reader.GetOrdinal("Price")),
-                                DateAvailable = reader.GetDateTime(reader.GetOrdinal("DateAvailable")),
-                                Notes = reader.GetString(reader.GetOrdinal("Notes"))
+                                Email = reader.GetString(reader.GetOrdinal("FK_GuestEmail")),
+                                FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
+                                LastName = reader.GetString(reader.GetOrdinal("LastName")),
+                                Address = reader.GetString(reader.GetOrdinal("Address")),
+                                PhoneNum = reader.GetString(reader.GetOrdinal("PhoneNum"))
                             };
                             accounts.Add(accountInTable);
                         }
@@ -42,65 +42,60 @@ namespace ServiceAPI.DatabaseAccess
                 }
                 conn.Close();
             }
-            return products;
+            return accounts;
         }
-        public Account GetByIdentifier(string OEM)
+        public Account GetByIdentifier(string email)
         {
-            Product product = new Product();
+            Account account = new Account();
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
-                using (SqlCommand readCommand = new SqlCommand("SELECT OEM, FK_VINNumber, Name, Price, DateAvailable, Notes FROM Product WHERE OEM = @OEM", conn))
+                using (SqlCommand readCommand = new SqlCommand("SELECT FK_GuestEmail, FirstName, LastName, Address, PhoneNum FROM Account WHERE FK_GuestEmail = @email", conn))
                 {
-                    // Bind value from string input OEM to parameter OEM from Product in DB.
-                    readCommand.Parameters.AddWithValue("@OEM", OEM);
+                    readCommand.Parameters.AddWithValue("@email", email);
                     using (SqlDataReader reader = readCommand.ExecuteReader())
                     {
                         if (reader.Read())
                         {
-                            product = new Product
+                            account = new Account
                             {
-                                OEM = reader.GetString(reader.GetOrdinal("OEM")), // Column 1, Primary key OEM.
-                                VINNumber = reader.GetString(reader.GetOrdinal("FK_VINNumber")),
-                                Name = reader.GetString(reader.GetOrdinal("Name")),
-                                Price = reader.GetDecimal(reader.GetOrdinal("Price")),
-                                DateAvailable = reader.GetDateTime(reader.GetOrdinal("DateAvailable")),
-                                Notes = reader.GetString(reader.GetOrdinal("Notes"))
+                                Email = reader.GetString(reader.GetOrdinal("FK_GuestEmail")),
+                                FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
+                                LastName = reader.GetString(reader.GetOrdinal("LastName")),
+                                Address = reader.GetString(reader.GetOrdinal("Address")),
+                                PhoneNum = reader.GetString(reader.GetOrdinal("PhoneNum"))
                             };
                         }
                     }
                 }
                 conn.Close();
             }
-            return product;
+            return account;
         }
-        public int CreateEntity(Product newProduct)
+        public int CreateEntity(Account newAccount)
         {
             int numberOfRowsInserted;
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
                 using (SqlCommand createCommand = new SqlCommand(
-                    "INSERT INTO Product (OEM, FK_VINNumber, Name, Price, DateAvailable, Notes) "
-                    + "VALUES (@OEM, @FK_VINNumber, @Name, @Price, @DateAvailable, @Notes)", conn
+                    "INSERT INTO Account (FK_GuestEmail, FirstName, LastName, Address, PhoneNum) "
+                    + "VALUES (@email, @firstname, @lastname, @address, @phonenum)", conn
                     ))
                 {
-                    // Mapping method input values to sql query input values
-                    createCommand.Parameters.AddWithValue("@OEM", newProduct.OEM);
-                    createCommand.Parameters.AddWithValue("@FK_VINNumber", newProduct.VINNumber);
-                    createCommand.Parameters.AddWithValue("@Name", newProduct.Name);
-                    createCommand.Parameters.AddWithValue("@Price", newProduct.Price);
-                    createCommand.Parameters.AddWithValue("@DateAvailable", newProduct.DateAvailable);
-                    createCommand.Parameters.AddWithValue("@Notes", newProduct.Notes);
+                    createCommand.Parameters.AddWithValue("@email", newAccount);
+                    createCommand.Parameters.AddWithValue("@firstname", newAccount);
+                    createCommand.Parameters.AddWithValue("@lastname", newAccount);
+                    createCommand.Parameters.AddWithValue("@address", newAccount);
+                    createCommand.Parameters.AddWithValue("@phonenum", newAccount);
 
-                    // Use non query because we are updating/changing the DB, not querying it
                     numberOfRowsInserted = createCommand.ExecuteNonQuery();
                 }
                 conn.Close();
             }
             return numberOfRowsInserted;
         }
-        public int UpdateEntity(Product updateProduct)
+        public int UpdateEntity(Account updateAccount)
         {
             int numberOfRowsUpdated = 0;
             using (SqlConnection conn = new SqlConnection(_connectionString))
@@ -108,69 +103,58 @@ namespace ServiceAPI.DatabaseAccess
                 try
                 {
                     conn.Open();
-                    using (SqlCommand updateCommand = new SqlCommand("UPDATE Product " +
-                                                                     "SET Name=@Name, Price=@Price, DateAvailable=@DateAvailable, Notes=@Notes " +
-                                                                     "WHERE OEM = @OEM AND FK_VINNumber = @FK_VINNumber", conn))
+                    using (SqlCommand updateCommand = new SqlCommand("UPDATE Account " +
+                                                                     "SET FK_GuestEmail=@email, FirstName=@firstname, LastName=@lastname, Address=@address, PhoneNum=@phonenum " +
+                                                                     "WHERE FK_GuestEmail = @email", conn))
                     {
-                        // Mapping method input values to sql query input values
-                        updateCommand.Parameters.AddWithValue("@OEM", updateProduct.OEM);
-                        updateCommand.Parameters.AddWithValue("@FK_VINNumber", updateProduct.VINNumber);
-                        updateCommand.Parameters.AddWithValue("@Name", updateProduct.Name);
-                        updateCommand.Parameters.AddWithValue("@Price", updateProduct.Price);
-                        updateCommand.Parameters.AddWithValue("@DateAvailable", updateProduct.DateAvailable);
-                        updateCommand.Parameters.AddWithValue("@Notes", updateProduct.Notes);
+                        updateCommand.Parameters.AddWithValue("@email", updateAccount);
+                        updateCommand.Parameters.AddWithValue("@firstname", updateAccount);
+                        updateCommand.Parameters.AddWithValue("@lastname", updateAccount);
+                        updateCommand.Parameters.AddWithValue("@address", updateAccount);
+                        updateCommand.Parameters.AddWithValue("@phonenum", updateAccount);
 
-                        // Use non query because we are updating/changing the DB, not querying it
                         numberOfRowsUpdated = updateCommand.ExecuteNonQuery();
                     }
                     conn.Close();
                 }
                 catch (SqlException ex)
                 {
-                    // Log or handle the exception (logging to console for now)
                     Console.WriteLine($"SQL error occurred: {ex.Message}");
                 }
                 return numberOfRowsUpdated;
             }
         }
-        public bool DeleteEntity(string OEM)
+        public bool DeleteEntity(string email)
         {
-            bool wasProductDeleted = false;
+            bool wasAccountDeleted = false;
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
-                using (SqlCommand deleteCommand = new SqlCommand("DELETE from Product WHERE OEM = @OEM", conn))
+                using (SqlCommand deleteCommand = new SqlCommand("DELETE from Account WHERE FK_GuestEmail = @email", conn))
                 {
-                    deleteCommand.Parameters.AddWithValue("@OEM", OEM);
-
-                    // Track number of rows affected (changes made to DB)
+                    deleteCommand.Parameters.AddWithValue("@email", email);
                     int numberOfRowsAffectedByDeletion = deleteCommand.ExecuteNonQuery();
-
-                    // Succession criteria: only one (1) row should be affected, ie one Product deleted
-                    wasProductDeleted = numberOfRowsAffectedByDeletion == 1;
+                    wasAccountDeleted = numberOfRowsAffectedByDeletion == 1;
                 }
                 conn.Close();
             }
-            return wasProductDeleted;
+            return wasAccountDeleted;
         }
-        // Helper method that tests whether an entity (Product) entry exists in the database.
-        internal bool ProductExists(string OEM)
+        internal bool AccountExists(string OEM)
         {
-            bool prodExists = false;
+            bool accExists = false;
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
-                string existQuery = "SELECT COUNT(1) FROM Product WHERE OEM = @OEM";
+                string existQuery = "SELECT COUNT(1) FROM Account WHERE FK_GuestEmail = @email";
                 using (SqlCommand checkCommand = new SqlCommand(existQuery, conn))
                 {
-                    checkCommand.Parameters.AddWithValue("@OEM", OEM);
-                    // Returns the first column of the first row of the Product table in the DB.
-                    // Boolean that determines whether a given product with a specific OEM exists.
-                    prodExists = Convert.ToInt32(checkCommand.ExecuteScalar()) > 0;
+                    checkCommand.Parameters.AddWithValue("@email", OEM);
+                    accExists = Convert.ToInt32(checkCommand.ExecuteScalar()) > 0;
                 }
                 conn.Close();
             }
-            return prodExists;
+            return accExists;
         }
     }
 }
