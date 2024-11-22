@@ -71,7 +71,8 @@ namespace ServiceAPI.Controllers
             }
             else
             {
-                //  Return 409: Conflict by already existing OEM (Product) or insertion fail
+                // Return 409: Conflict by already existing OEM (Product) or insertion fail
+                // Multiple, identical products may have the OEM number inherited from Car.
                 return Conflict($"ERROR: Product with OEM: '{newProduct.OEM}' already exists in the Database, or insertion failed in another manner.");
             }
         }
