@@ -6,11 +6,8 @@ namespace ServiceAPI.Models
     {
         [Required]
         public string Email { get; set; } 
-        public Guest()
-        {
-            Email = "default@email.com";
-        }
-        public Guest(string email, int listID)
+
+        public Guest(string email)
         {
             Email = email;
         }

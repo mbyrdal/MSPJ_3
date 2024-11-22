@@ -49,7 +49,7 @@ namespace ServiceAPI.DatabaseAccess
 
         public Product GetByIdentifier(string OEM)
         {
-            Product product = new Product();
+            Product product = null; // Set product to null initially
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 conn.Open();

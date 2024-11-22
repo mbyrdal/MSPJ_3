@@ -25,24 +25,12 @@ namespace ServiceAPI.Models
         // TODO: implement collection of orders for an account (1-to-Many relationship)
         // public ICollection<Order> Orders { get; set; }
 
-        public Account()
-        {
-            FirstName = string.Empty;
-            LastName = string.Empty;
-            Address = "InTheMiddleOfNowhere Street 50";
-            PhoneNum = "12345678";
-            Email = "default@email.com";
-            HashPassword = HashingHelper.HashAccountPassword("123456abcdef!@#¤%_XYZ");
-            // Orders = new List<Order>();
-        }
-
-        public Account(string fName, string lName, string address, string pnum, string email, string pw/*, List<Order> orderList */)
+        public Account(string guestEmail, string fName, string lName, string address, string pnum, string pw/*, List<Order> orderList */) : base(guestEmail)
         {
             FirstName = fName;
             LastName = lName;
             Address = address;
             PhoneNum = pnum;
-            Email = email;
             HashPassword = HashingHelper.HashAccountPassword(pw);
             // Orders = orderList;
         }

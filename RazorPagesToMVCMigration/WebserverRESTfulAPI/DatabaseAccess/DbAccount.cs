@@ -4,6 +4,7 @@ using ServiceAPI.BusinessLogic.Interfaces;
 using ServiceAPI.DatabaseAccess.Interfaces;
 using ServiceAPI.DatabaseAccess.Utilities;
 using ServiceAPI.Models;
+using System.Net;
 
 namespace ServiceAPI.DatabaseAccess
 {
@@ -30,14 +31,14 @@ namespace ServiceAPI.DatabaseAccess
                     {
                         while (reader.Read())
                         {
-                            Account accountInTable = new Account
-                            {
-                                Email = reader.GetString(reader.GetOrdinal("FK_GuestEmail")),
-                                FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
-                                LastName = reader.GetString(reader.GetOrdinal("LastName")),
-                                Address = reader.GetString(reader.GetOrdinal("Address")),
-                                PhoneNum = reader.GetString(reader.GetOrdinal("PhoneNum"))
-                            };
+                            Account accountInTable = new Account(
+                                reader.GetString(reader.GetOrdinal("FK_GuestEmail")),
+                                reader.GetString(reader.GetOrdinal("FirstName")),
+                                reader.GetString(reader.GetOrdinal("LastName")),
+                                reader.GetString(reader.GetOrdinal("Address")),
+                                reader.GetString(reader.GetOrdinal("PhoneNum")),
+                                reader.GetString(reader.GetOrdinal("HashPassword")));
+
                             accounts.Add(accountInTable);
                         }
                     }
@@ -49,7 +50,7 @@ namespace ServiceAPI.DatabaseAccess
 
         public Account GetByIdentifier(string email)
         {
-            Account account = new Account();
+            Account account = null;
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
@@ -60,14 +61,13 @@ namespace ServiceAPI.DatabaseAccess
                     {
                         if (reader.Read())
                         {
-                            account = new Account
-                            {
-                                Email = reader.GetString(reader.GetOrdinal("FK_GuestEmail")),
-                                FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
-                                LastName = reader.GetString(reader.GetOrdinal("LastName")),
-                                Address = reader.GetString(reader.GetOrdinal("Address")),
-                                PhoneNum = reader.GetString(reader.GetOrdinal("PhoneNum"))
-                            };
+                            account = new Account(
+                            reader.GetString(reader.GetOrdinal("FK_GuestEmail")),
+                            reader.GetString(reader.GetOrdinal("FirstName")),
+                            reader.GetString(reader.GetOrdinal("LastName")),
+                            reader.GetString(reader.GetOrdinal("Address")),
+                            reader.GetString(reader.GetOrdinal("PhoneNum")),
+                            reader.GetString(reader.GetOrdinal("HashPassword")));
                         }
                     }
                 }
