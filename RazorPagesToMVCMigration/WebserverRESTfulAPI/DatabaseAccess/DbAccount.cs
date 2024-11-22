@@ -83,9 +83,8 @@ namespace ServiceAPI.DatabaseAccess
             {
                 conn.Open();
                 using (SqlCommand createCommand = new SqlCommand(
-                    "INSERT INTO Account (FK_GuestEmail, FirstName, LastName, Address, PhoneNum, HashPassword) "
-                    + "VALUES (@email, @firstname, @lastname, @address, @phonenum, @hashpw)", conn
-                    ))
+                    "INSERT INTO Account (FK_GuestEmail, FirstName, LastName, Address, PhoneNum, HashPassword) " +
+                    "VALUES (@email, @firstname, @lastname, @address, @phonenum, @hashpw)", conn))
                 {
                     createCommand.Parameters.AddWithValue("@email", newAccount.Email);
                     createCommand.Parameters.AddWithValue("@firstname", newAccount.FirstName);
@@ -109,14 +108,15 @@ namespace ServiceAPI.DatabaseAccess
                 {
                     conn.Open();
                     using (SqlCommand updateCommand = new SqlCommand("UPDATE Account " +
-                                                                     "SET FK_GuestEmail=@email, FirstName=@firstname, LastName=@lastname, Address=@address, PhoneNum=@phonenum " +
+                                                                     "SET FK_GuestEmail=@email, FirstName=@firstname, LastName=@lastname, Address=@address, PhoneNum=@phonenum, HashPassword=@hashpw" +
                                                                      "WHERE FK_GuestEmail = @email", conn))
                     {
-                        updateCommand.Parameters.AddWithValue("@email", updateAccount);
-                        updateCommand.Parameters.AddWithValue("@firstname", updateAccount);
-                        updateCommand.Parameters.AddWithValue("@lastname", updateAccount);
-                        updateCommand.Parameters.AddWithValue("@address", updateAccount);
-                        updateCommand.Parameters.AddWithValue("@phonenum", updateAccount);
+                        updateCommand.Parameters.AddWithValue("@email", updateAccount.Email);
+                        updateCommand.Parameters.AddWithValue("@firstname", updateAccount.FirstName);
+                        updateCommand.Parameters.AddWithValue("@lastname", updateAccount.LastName);
+                        updateCommand.Parameters.AddWithValue("@address", updateAccount.Address);
+                        updateCommand.Parameters.AddWithValue("@phonenum", updateAccount.PhoneNum);
+                        updateCommand.Parameters.AddWithValue("@hashpw", updateAccount.HashPassword);
 
                         numberOfRowsUpdated = updateCommand.ExecuteNonQuery();
                     }
@@ -147,7 +147,7 @@ namespace ServiceAPI.DatabaseAccess
             return wasAccountDeleted;
         }
 
-        internal bool AccountExists(string OEM)
+        internal bool AccountExists(string email)
         {
             bool accExists = false;
             using (SqlConnection conn = new SqlConnection(_connectionString))
@@ -156,12 +156,29 @@ namespace ServiceAPI.DatabaseAccess
                 string existQuery = "SELECT COUNT(1) FROM Account WHERE FK_GuestEmail = @email";
                 using (SqlCommand checkCommand = new SqlCommand(existQuery, conn))
                 {
-                    checkCommand.Parameters.AddWithValue("@email", OEM);
+                    checkCommand.Parameters.AddWithValue("@email", email);
                     accExists = Convert.ToInt32(checkCommand.ExecuteScalar()) == 1;
                 }
                 conn.Close();
             }
             return accExists;
+        }
+
+        internal bool GuestExists(string email)
+        {
+            bool guestExists = false;
+            using(SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                conn.Open();
+                string existQuery = "SELECT COUNT(1) FROM Guest WHERE Email = @email";
+                using(SqlCommand checkCommand = new SqlCommand(existQuery, conn))
+                {
+                    checkCommand.Parameters.AddWithValue("@email", email);
+                    guestExists = Convert.ToInt32(checkCommand.ExecuteScalar()) == 1;
+                }
+                conn.Close();
+            }
+            return guestExists;
         }
     }
 }

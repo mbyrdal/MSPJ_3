@@ -45,13 +45,20 @@ namespace ServiceAPI.BusinessLogic
 
         public bool AddAccount(Account account)
         {
+            bool guestExists = false;
             bool accountExists = false;
             bool wasAccountInserted = false;
             int numberOfRowsInserted;
             try
             {
+                guestExists = _dbAccountAccess.GuestExists(account.Email);
+                if (!guestExists)
+                {
+                    throw new InvalidOperationException($"A Guest with the email '{account.Email}' does not exist in the dbo.Guest table.");
+                }
+
                 accountExists = _dbAccountAccess.AccountExists(account.Email);
-                if (!accountExists)
+                if (!accountExists) // CASE: Account does not exist in DB
                 {
                     numberOfRowsInserted = _dbAccountAccess.CreateEntity(account);
                     wasAccountInserted = (numberOfRowsInserted == 1);
@@ -67,13 +74,20 @@ namespace ServiceAPI.BusinessLogic
 
         public bool UpdateAccount(Account account)
         {
+            bool guestExists = false;
             bool accountExists = false;
             bool wasAccountUpdated = false;
             int numberOfRowsUpdated;
             try
             {
+                guestExists = _dbAccountAccess.GuestExists(account.Email);
+                if (!guestExists)
+                {
+                    throw new InvalidOperationException($"A Guest with the email '{account.Email}' does not exist in the dbo.Guest table.");
+                }
+
                 accountExists = _dbAccountAccess.AccountExists(account.Email);
-                if (accountExists) // CASE: Product does exist in DB.
+                if (accountExists) // CASE: Account does exist in DB
                 {
                     numberOfRowsUpdated = _dbAccountAccess.UpdateEntity(account);
                     wasAccountUpdated = (numberOfRowsUpdated == 1);
@@ -88,12 +102,19 @@ namespace ServiceAPI.BusinessLogic
 
         public bool DeleteAccount(string email)
         {
+            bool guestExists = false;
             bool accountExists;
             bool wasProductDeleted = false;
             try
             {
+                guestExists = _dbAccountAccess.GuestExists(email);
+                if (!guestExists)
+                {
+                    throw new InvalidOperationException($"A Guest with the email '{email}' does not exist in the dbo.Guest table.");
+                }
+
                 accountExists = _dbAccountAccess.AccountExists(email);
-                if (accountExists) // CASE: Product does exist in DB.
+                if (accountExists) // CASE: Account does exist in DB
                 {
                     wasProductDeleted = _dbAccountAccess.DeleteEntity(email);
                 }

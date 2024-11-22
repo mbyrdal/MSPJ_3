@@ -6,25 +6,21 @@ namespace ServiceAPI.Models
 {
     public class Account : Guest
     {
-        [Required]
-        public string FirstName { get; set; }
+        public string? FirstName { get; set; }
 
-        [Required]
-        public string LastName { get; set; }
+        public string? LastName { get; set; }
         
-        [Required]
-        public string Address { get; set; }
+        public string? Address { get; set; }
         
-        [Required]
-        public string PhoneNum { get; set; }
+        public string? PhoneNum { get; set; }
         
-        [JsonIgnore]
         public string? HashPassword { get; set; } // For internal use only.
 
         // TODO: implement collection of orders for an account (1-to-Many relationship)
         // public ICollection<Order> Orders { get; set; }
 
-        [JsonConstructor]
+        public Account() { }
+
         public Account(string guestEmail, string fName, string lName, string address, string pnum/*, List<Order> orderList */) : base(guestEmail)
         {
             FirstName = fName;

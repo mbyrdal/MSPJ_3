@@ -4,8 +4,9 @@ namespace ServiceAPI.Models
 {
     public class Guest
     {
-        [Required]
-        public string Email { get; set; } 
+        public string? Email { get; set; } 
+
+        public Guest() { }
 
         public Guest(string email)
         {
