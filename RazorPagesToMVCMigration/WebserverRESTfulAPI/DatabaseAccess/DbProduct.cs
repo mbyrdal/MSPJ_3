@@ -10,9 +10,11 @@ namespace ServiceAPI.DatabaseAccess
     {
         // Configuration steps
         private string _connectionString;
+        private readonly DbHelper _dbHelper;
 
         public DbProduct(IConfiguration configuration)
         {
+            _dbHelper = new DbHelper(configuration);
             ConnectionHelper helper = new ConnectionHelper(configuration);
             _connectionString = helper.GetDBConnectionString();
         }
@@ -163,21 +165,7 @@ namespace ServiceAPI.DatabaseAccess
         // Helper method that tests whether an entity (Product) entry exists in the database.
         internal bool ProductExists(string OEM)
         {
-            bool prodExists = false;
-            using (SqlConnection conn = new SqlConnection(_connectionString))
-            {
-                conn.Open();
-                string existQuery = "SELECT COUNT(1) FROM Product WHERE OEM = @OEM";
-                using (SqlCommand checkCommand = new SqlCommand(existQuery, conn))
-                {
-                    checkCommand.Parameters.AddWithValue("@OEM", OEM);
-                    // Returns the first column of the first row of the Product table in the DB.
-                    // Boolean that determines whether a given product with a specific OEM exists.
-                    prodExists = Convert.ToInt32(checkCommand.ExecuteScalar()) == 1;
-                }
-                conn.Close();
-            }
-            return prodExists;
+            return _dbHelper.EntityExists("Product", "OEM", OEM);
         }
     }
 }

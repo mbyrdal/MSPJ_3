@@ -12,9 +12,11 @@ namespace ServiceAPI.DatabaseAccess
     {
         // Configuration steps
         private string _connectionString;
+        private readonly DbHelper _dbHelper;
 
         public DbAccount(IConfiguration configuration)
         {
+            _dbHelper = new DbHelper(configuration);
             ConnectionHelper helper = new ConnectionHelper(configuration);
             _connectionString = helper.GetDBConnectionString();
         }
@@ -149,36 +151,18 @@ namespace ServiceAPI.DatabaseAccess
 
         internal bool AccountExists(string email)
         {
-            bool accExists = false;
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            bool guestExists = GuestExists(email);
+            if(!guestExists)
             {
-                conn.Open();
-                string existQuery = "SELECT COUNT(1) FROM Account WHERE FK_GuestEmail = @email";
-                using (SqlCommand checkCommand = new SqlCommand(existQuery, conn))
-                {
-                    checkCommand.Parameters.AddWithValue("@email", email);
-                    accExists = Convert.ToInt32(checkCommand.ExecuteScalar()) == 1;
-                }
-                conn.Close();
+                return false;
             }
-            return accExists;
+
+            return _dbHelper.EntityExists("Account", "FK_GuestEmail", email);
         }
 
         internal bool GuestExists(string email)
         {
-            bool guestExists = false;
-            using(SqlConnection conn = new SqlConnection(_connectionString))
-            {
-                conn.Open();
-                string existQuery = "SELECT COUNT(1) FROM Guest WHERE Email = @email";
-                using(SqlCommand checkCommand = new SqlCommand(existQuery, conn))
-                {
-                    checkCommand.Parameters.AddWithValue("@email", email);
-                    guestExists = Convert.ToInt32(checkCommand.ExecuteScalar()) == 1;
-                }
-                conn.Close();
-            }
-            return guestExists;
+            return _dbHelper.EntityExists("Guest", "Email", email);
         }
     }
 }

@@ -10,9 +10,11 @@ namespace ServiceAPI.DatabaseAccess
     {
         // Configuration steps
         private string _connectionString;
+        private readonly DbHelper _dbHelper;
 
         public DbGuest(IConfiguration configuration)
         {
+            _dbHelper = new DbHelper(configuration);
             ConnectionHelper helper = new ConnectionHelper(configuration);
             _connectionString = helper.GetDBConnectionString();
         }
@@ -122,6 +124,11 @@ namespace ServiceAPI.DatabaseAccess
                 conn.Close();
             }
             return wasGuestDeleted;
+        }
+
+        internal bool GuestExists(string email)
+        {
+            return _dbHelper.EntityExists("Guest", "Email", email);
         }
     }
 }
