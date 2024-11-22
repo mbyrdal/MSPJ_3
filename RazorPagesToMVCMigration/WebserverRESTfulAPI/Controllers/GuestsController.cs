@@ -83,21 +83,21 @@ namespace ServiceAPI.Controllers
             if(updatedGuest == null)
             {
                 // Return 400: Bad request response
-                return BadRequest("ERROR: Bad Account request body.");
+                return BadRequest("ERROR: Bad Guest request body.");
             }
 
             var existingGuest = _guestControl.GetGuestByEmail(email);
 
             if(existingGuest == null)
             {
-                // Return 404: no existing guest found
-                return NotFound($"No existing Guest with email '{existingGuest.Email}' found.");
+                // Return 404: No existing guest found
+                return NotFound($"No existing Guest with email '{email}' found.");
             }
 
-            if(existingGuest.Email != updatedGuest.Email)
+            if(existingGuest.Email == updatedGuest.Email)
             {
-                // Return 409: Emails of existing guest and response body guest do not match.
-                return Conflict($"Found Guest with email '{existingGuest.Email}' does not match email in request body '{updatedGuest.Email}'.");
+                // Return 204: No Content if no change is made
+                return NoContent();
             }
 
             var wasGuestUpdated = _guestControl.UpdateGuest(updatedGuest);

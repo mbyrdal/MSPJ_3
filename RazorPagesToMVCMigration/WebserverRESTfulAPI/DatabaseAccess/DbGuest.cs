@@ -85,7 +85,7 @@ namespace ServiceAPI.DatabaseAccess
             return numberOfRowsInserted;
         }
 
-        public int UpdateEntity(Guest updateGuest)
+        public int UpdateEntity(Guest updateGuest, string currentEmail)
         {
             int numberOfRowsUpdated = 0;
             using (SqlConnection conn = new SqlConnection(_connectionString))

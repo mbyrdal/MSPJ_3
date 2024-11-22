@@ -69,7 +69,7 @@ namespace ServiceAPI.Controllers
 
             if(wasAccountCreated)
             {
-                // Return 201: Created Account.
+                // Return 201: Created Account
                 return CreatedAtAction(
                     nameof(GetAccount),
                     new { email = newAccount.Email},

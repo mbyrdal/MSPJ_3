@@ -79,11 +79,15 @@ namespace ServiceAPI.BusinessLogic
             try
             {
                 guestExists = _dbGuestAccess.GuestExists(guest.Email);
-                if (guestExists) // CASE: Guest does exist in DB
+                if (guestExists) // No update
                 {
-                    numberOfRowsUpdated = _dbGuestAccess.UpdateEntity(guest);
-                    wasGuestUpdated = (numberOfRowsUpdated == 1);
+                    return false;
                 }
+
+                // Update
+                numberOfRowsUpdated = _dbGuestAccess.UpdateEntity(guest);
+                wasGuestUpdated = (numberOfRowsUpdated == 1);
+
             }
             catch(Exception ex)
             {
