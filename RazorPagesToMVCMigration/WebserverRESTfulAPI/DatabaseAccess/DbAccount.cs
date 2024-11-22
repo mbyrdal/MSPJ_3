@@ -54,7 +54,7 @@ namespace ServiceAPI.DatabaseAccess
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
-                using (SqlCommand readCommand = new SqlCommand("SELECT FK_GuestEmail, FirstName, LastName, Address, PhoneNum FROM Account WHERE FK_GuestEmail = @email", conn))
+                using (SqlCommand readCommand = new SqlCommand("SELECT FK_GuestEmail, FirstName, LastName, Address, PhoneNum, HashPassword FROM Account WHERE FK_GuestEmail = @email", conn))
                 {
                     readCommand.Parameters.AddWithValue("@email", email);
                     using (SqlDataReader reader = readCommand.ExecuteReader())
