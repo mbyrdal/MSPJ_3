@@ -11,11 +11,13 @@ namespace ServiceAPI.DatabaseAccess
     {
         // Configuration steps
         private string _connectionString;
+
         public DbAccount(IConfiguration configuration)
         {
             ConnectionHelper helper = new ConnectionHelper(configuration);
             _connectionString = helper.GetDBConnectionString();
         }
+
         public List<Account> GetAllEntities()
         {
             List<Account> accounts = new List<Account>();
@@ -44,6 +46,7 @@ namespace ServiceAPI.DatabaseAccess
             }
             return accounts;
         }
+
         public Account GetByIdentifier(string email)
         {
             Account account = new Account();
@@ -72,6 +75,7 @@ namespace ServiceAPI.DatabaseAccess
             }
             return account;
         }
+
         public int CreateEntity(Account newAccount)
         {
             int numberOfRowsInserted;
@@ -95,6 +99,7 @@ namespace ServiceAPI.DatabaseAccess
             }
             return numberOfRowsInserted;
         }
+
         public int UpdateEntity(Account updateAccount)
         {
             int numberOfRowsUpdated = 0;
@@ -124,6 +129,7 @@ namespace ServiceAPI.DatabaseAccess
                 return numberOfRowsUpdated;
             }
         }
+
         public bool DeleteEntity(string email)
         {
             bool wasAccountDeleted = false;
@@ -140,6 +146,7 @@ namespace ServiceAPI.DatabaseAccess
             }
             return wasAccountDeleted;
         }
+
         internal bool AccountExists(string OEM)
         {
             bool accExists = false;

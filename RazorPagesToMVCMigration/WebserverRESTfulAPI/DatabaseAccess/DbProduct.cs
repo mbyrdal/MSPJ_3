@@ -10,11 +10,13 @@ namespace ServiceAPI.DatabaseAccess
     {
         // Configuration steps
         private string _connectionString;
+
         public DbProduct(IConfiguration configuration)
         {
             ConnectionHelper helper = new ConnectionHelper(configuration);
             _connectionString = helper.GetDBConnectionString();
         }
+
         public List<Product> GetAllEntities()
         {
             List<Product> products = new List<Product>();
@@ -44,6 +46,7 @@ namespace ServiceAPI.DatabaseAccess
             }
             return products;
         }
+
         public Product GetByIdentifier(string OEM)
         {
             Product product = new Product();
@@ -74,6 +77,7 @@ namespace ServiceAPI.DatabaseAccess
             }
             return product;
         }
+
         public int CreateEntity(Product newProduct) 
         {
             int numberOfRowsInserted;
@@ -100,6 +104,7 @@ namespace ServiceAPI.DatabaseAccess
             }
             return numberOfRowsInserted;
         }
+
         public int UpdateEntity(Product updateProduct)
         {
             int numberOfRowsUpdated = 0;
@@ -133,6 +138,7 @@ namespace ServiceAPI.DatabaseAccess
                 return numberOfRowsUpdated;
             }
         }
+
         public bool DeleteEntity(string OEM)
         {
             bool wasProductDeleted = false;
@@ -153,6 +159,7 @@ namespace ServiceAPI.DatabaseAccess
             }
             return wasProductDeleted;
         }
+
         // Helper method that tests whether an entity (Product) entry exists in the database.
         internal bool ProductExists(string OEM)
         {
