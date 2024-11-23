@@ -94,13 +94,7 @@ namespace ServiceAPI.Controllers
                 return NotFound($"No existing Guest with email '{email}' found.");
             }
 
-            if(existingGuest.Email == updatedGuest.Email)
-            {
-                // Return 204: No Content if no change is made
-                return NoContent();
-            }
-
-            var wasGuestUpdated = _guestControl.UpdateGuest(updatedGuest);
+            var wasGuestUpdated = _guestControl.UpdateGuest(email, updatedGuest);
 
             if(!wasGuestUpdated)
             {
@@ -121,19 +115,18 @@ namespace ServiceAPI.Controllers
             if(foundGuest == null)
             {
                 // Return 404: no existing guest found
-                return NotFound($"No existing Guest with email '{foundGuest.Email}' found.");
+                return NotFound($"No existing Guest with email '{email}' found.");
             }
 
             var wasGuestRemoved = _guestControl.DeleteGuest(email);
 
             if(!wasGuestRemoved)
             {
-                return StatusCode(500, $"ERROR: Unable to delete Guest with email '{foundGuest.Email}' from database.");
+                return StatusCode(500, $"ERROR: Unable to delete Guest with email '{email}' from database.");
             }
 
             // Return 204: No content (Successful deletion)
             return NoContent();
         }
-
     }
 }

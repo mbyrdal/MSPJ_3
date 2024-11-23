@@ -7,7 +7,7 @@ namespace ServiceAPI.BusinessLogic.Interfaces
         Guest GetGuestByEmail(string email);
         List<Guest> GetAllGuests();
         bool AddGuest(Guest guest);
-        bool UpdateGuest(Guest guest);
+        bool UpdateGuest(string email, Guest guest);
         bool DeleteGuest(string email);
     }
 }

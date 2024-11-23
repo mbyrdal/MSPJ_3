@@ -2,11 +2,12 @@
 using ServiceAPI.DatabaseAccess.Interfaces;
 using ServiceAPI.DatabaseAccess.Utilities;
 using ServiceAPI.Models;
+using System.Diagnostics;
 using System.Security.Principal;
 
 namespace ServiceAPI.DatabaseAccess
 {
-    public class DbGuest : ICRUD_DB<Guest>
+    public class DbGuest : ICRUD_DB_Guest
     {
         // Configuration steps
         private string _connectionString;
@@ -85,7 +86,7 @@ namespace ServiceAPI.DatabaseAccess
             return numberOfRowsInserted;
         }
 
-        public int UpdateEntity(Guest updateGuest, string currentEmail)
+        public int UpdateEntity(Guest updateGuest)
         {
             int numberOfRowsUpdated = 0;
             using (SqlConnection conn = new SqlConnection(_connectionString))
@@ -104,6 +105,30 @@ namespace ServiceAPI.DatabaseAccess
                 catch (SqlException ex)
                 {
                     Console.WriteLine($"SQL error occurred: {ex.Message}");
+                }
+                return numberOfRowsUpdated;
+            }
+        }
+
+        public int UpdateEntityWithParameters(string email, Guest updateGuest)
+        {
+            int numberOfRowsUpdated = 0;
+            using(SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                try
+                {
+                    conn.Open();
+                    using (SqlCommand updateCommand = new SqlCommand("UPDATE Guest SET Email = @NewEmail WHERE Email = @CurrentEmail", conn))
+                    {
+                        updateCommand.Parameters.AddWithValue("@NewEmail", updateGuest.Email);
+                        updateCommand.Parameters.AddWithValue("@CurrentEmail", email);
+
+                        numberOfRowsUpdated = updateCommand.ExecuteNonQuery();
+                    }
+                }
+                catch(SqlException ex)
+                {
+                    Debug.WriteLine(ex.Message);
                 }
                 return numberOfRowsUpdated;
             }

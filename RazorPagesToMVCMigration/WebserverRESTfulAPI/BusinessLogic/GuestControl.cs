@@ -70,7 +70,7 @@ namespace ServiceAPI.BusinessLogic
             return wasGuestInserted;
         }
 
-        public bool UpdateGuest(Guest guest)
+        public bool UpdateGuest(string email, Guest guest)
         {
             bool guestExists = false;
             bool wasGuestUpdated = false;
@@ -78,14 +78,14 @@ namespace ServiceAPI.BusinessLogic
 
             try
             {
-                guestExists = _dbGuestAccess.GuestExists(guest.Email);
-                if (guestExists) // No update
+                guestExists = _dbGuestAccess.GuestExists(email);
+                if (!guestExists) // No update
                 {
                     return false;
                 }
 
                 // Update
-                numberOfRowsUpdated = _dbGuestAccess.UpdateEntity(guest);
+                numberOfRowsUpdated = _dbGuestAccess.UpdateEntityWithParameters(email, guest);
                 wasGuestUpdated = (numberOfRowsUpdated == 1);
 
             }
