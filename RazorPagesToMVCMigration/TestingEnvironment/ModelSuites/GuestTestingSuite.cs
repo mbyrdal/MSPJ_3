@@ -18,10 +18,10 @@
         public void Customer_Id_ShouldBeSetCorrectly()
         {
             // Arrange
-            // var customer = new Customer { Id = 1 };
+            // var customer = new Customer { ID = 1 };
 
             // Act
-            // int result = customer.Id;
+            // int result = customer.ID;
 
             // Assert
             // Assert.Equal(1, result);
@@ -68,7 +68,7 @@
         public void Test_Customer_AppendIdToCustomer()
         {
             // Arrange
-            // var customer = new Customer { Id = 100 };
+            // var customer = new Customer { ID = 100 };
 
             // Act
             // string result = customer.AppendId("1");

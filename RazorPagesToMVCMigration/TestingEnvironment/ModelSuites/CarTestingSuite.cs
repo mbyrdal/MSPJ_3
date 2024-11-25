@@ -19,7 +19,7 @@ namespace MSPJ.TestingEnvironment.ModelSuites
         public void Car_ShouldInitializeWithCorrectProperties()
         {
             // Arrange & Act
-            // var car = new Car
+            // var car = new CarModel
             //  { 
             // vinNumber = "ABCDE12345F123456",
             // manufacturer = "Honda",
@@ -44,7 +44,7 @@ namespace MSPJ.TestingEnvironment.ModelSuites
         public void Car_VinNumber_ShouldBe17Characters()
         {
             // Arrange
-            // var car = new Car { vinNumber = "1HGCM82633A123456" };
+            // var car = new CarModel { vinNumber = "1HGCM82633A123456" };
 
             // Act
             // int vinLength = car.vinNumber.Length;
@@ -61,7 +61,7 @@ namespace MSPJ.TestingEnvironment.ModelSuites
         public void Car_ProductionYearShouldBeValid()
         {
             // Arrange
-            // var car = new Car { productionYear = 2022 };
+            // var car = new CarModel { productionYear = 2022 };
 
             // Act & Assert
             // Assert.InRange(car.productionYear, 1886, DateTime.Now.Year);
@@ -71,7 +71,7 @@ namespace MSPJ.TestingEnvironment.ModelSuites
         public void Car_MilageHasToBePositive()
         {
             // Arrange
-            // var car = new Car { mileage = 10000 };
+            // var car = new CarModel { mileage = 10000 };
 
             // Act & Assert
             // Assert.True(car.mileage >= 0, "Mileage should be positives.");

@@ -8,32 +8,32 @@ using System.Net;
 
 namespace ServiceAPI.DatabaseAccess
 {
-    public class DbAccount : ICRUD_DB<Account>
+    public class DbCustomer : ICRUD_DB<Customer>
     {
         // Configuration steps
         private string _connectionString;
         private readonly DbHelper _dbHelper;
 
-        public DbAccount(IConfiguration configuration)
+        public DbCustomer(IConfiguration configuration)
         {
             _dbHelper = new DbHelper(configuration);
             ConnectionHelper helper = new ConnectionHelper(configuration);
             _connectionString = helper.GetDBConnectionString();
         }
 
-        public List<Account> GetAllEntities()
+        public List<Customer> GetAllEntities()
         {
-            List<Account> accounts = new List<Account>();
+            List<Customer> accounts = new List<Customer>();
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
-                using (SqlCommand readAllCommand = new SqlCommand("SELECT * FROM Account", conn))
+                using (SqlCommand readAllCommand = new SqlCommand("SELECT * FROM Customer", conn))
                 {
                     using (SqlDataReader reader = readAllCommand.ExecuteReader())
                     {
                         while (reader.Read())
                         {
-                            Account accountInTable = new Account(
+                            Customer accountInTable = new Customer(
                                 reader.GetString(reader.GetOrdinal("FK_GuestEmail")),
                                 reader.GetString(reader.GetOrdinal("FirstName")),
                                 reader.GetString(reader.GetOrdinal("LastName")),
@@ -50,20 +50,20 @@ namespace ServiceAPI.DatabaseAccess
             return accounts;
         }
 
-        public Account GetByIdentifier(string email)
+        public Customer GetByIdentifier(string email)
         {
-            Account account = null;
+            Customer account = null;
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
-                using (SqlCommand readCommand = new SqlCommand("SELECT FK_GuestEmail, FirstName, LastName, Address, PhoneNum, HashPassword FROM Account WHERE FK_GuestEmail = @email", conn))
+                using (SqlCommand readCommand = new SqlCommand("SELECT FK_GuestEmail, FirstName, LastName, Address, PhoneNum, HashPassword FROM Customer WHERE FK_GuestEmail = @email", conn))
                 {
                     readCommand.Parameters.AddWithValue("@email", email);
                     using (SqlDataReader reader = readCommand.ExecuteReader())
                     {
                         if (reader.Read())
                         {
-                            account = new Account(
+                            account = new Customer(
                             reader.GetString(reader.GetOrdinal("FK_GuestEmail")),
                             reader.GetString(reader.GetOrdinal("FirstName")),
                             reader.GetString(reader.GetOrdinal("LastName")),
@@ -78,14 +78,14 @@ namespace ServiceAPI.DatabaseAccess
             return account;
         }
 
-        public int CreateEntity(Account newAccount)
+        public int CreateEntity(Customer newAccount)
         {
             int numberOfRowsInserted;
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
                 using (SqlCommand createCommand = new SqlCommand(
-                    "INSERT INTO Account (FK_GuestEmail, FirstName, LastName, Address, PhoneNum, HashPassword) " +
+                    "INSERT INTO Customer (FK_GuestEmail, FirstName, LastName, Address, PhoneNum, HashPassword) " +
                     "VALUES (@email, @firstname, @lastname, @address, @phonenum, @hashpw)", conn))
                 {
                     createCommand.Parameters.AddWithValue("@email", newAccount.Email);
@@ -101,7 +101,7 @@ namespace ServiceAPI.DatabaseAccess
             return numberOfRowsInserted;
         }
 
-        public int UpdateEntity(Account updateAccount)
+        public int UpdateEntity(Customer updateAccount)
         {
             int numberOfRowsUpdated = 0;
             using (SqlConnection conn = new SqlConnection(_connectionString))
@@ -109,7 +109,7 @@ namespace ServiceAPI.DatabaseAccess
                 try
                 {
                     conn.Open();
-                    using (SqlCommand updateCommand = new SqlCommand("UPDATE Account " +
+                    using (SqlCommand updateCommand = new SqlCommand("UPDATE Customer " +
                                                                      "SET FK_GuestEmail=@email, FirstName=@firstname, LastName=@lastname, Address=@address, PhoneNum=@phonenum, HashPassword=@hashpw" +
                                                                      "WHERE FK_GuestEmail = @email", conn))
                     {
@@ -138,7 +138,7 @@ namespace ServiceAPI.DatabaseAccess
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
-                using (SqlCommand deleteCommand = new SqlCommand("DELETE from Account WHERE FK_GuestEmail = @email", conn))
+                using (SqlCommand deleteCommand = new SqlCommand("DELETE from Customer WHERE FK_GuestEmail = @email", conn))
                 {
                     deleteCommand.Parameters.AddWithValue("@email", email);
                     int numberOfRowsAffectedByDeletion = deleteCommand.ExecuteNonQuery();
@@ -157,7 +157,7 @@ namespace ServiceAPI.DatabaseAccess
                 return false;
             }
 
-            return _dbHelper.EntityExists("Account", "FK_GuestEmail", email);
+            return _dbHelper.EntityExists("Customer", "FK_GuestEmail", email);
         }
 
         internal bool GuestExists(string email)

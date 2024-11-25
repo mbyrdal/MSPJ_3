@@ -1,32 +1,34 @@
-﻿namespace ServiceAPI.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace ServiceAPI.Models
 {
     public class Product
     {
-        public string? OEM { get; set; }
-        public string? VINNumber { get; set; }
-        public string? Name { get; set; }
+        [Key]
+        public int ID { get; set; }
+
+        [Required]
+        public int CarPartId { get; set; }
+
+        [Required]
+        public int SaleId { get; set; }
+
+        [Required]
+        [StringLength(40)]
+        public string OEM { get; set; } = string.Empty;
+
+        [Required]
         public decimal Price { get; set; }
+
+        [Required]
         public DateTime DateAvailable { get; set; }
-        public string? Notes { get; set; }
 
-        public Product()
-        {
-            OEM = string.Empty;
-            VINNumber = string.Empty;
-            Name = "ProductName";
-            Price = 0;
-            DateAvailable = DateTime.UnixEpoch;
-            Notes = string.Empty;
-        }
+        [Required]
+        [StringLength(500)]
+        public string Condition { get; set; } = string.Empty;
 
-        public Product(string oem, string vin, string name, decimal price, DateTime dt, string notes)
-        {
-            OEM = oem;
-            VINNumber = vin;
-            Name = name;
-            Price = price;
-            DateAvailable = dt;
-            Notes = notes;
-        }
+        public string ItemDescription { get; set; }
+
+        public Product() { }
     }
 }

@@ -11,7 +11,7 @@ namespace MSPJ.TestingEnvironment.ModelSuites
     public class AccountTestingSuite
     {
         /// <summary>
-        /// This test checks the validity of an Account object created using a signature constructor.
+        /// This test checks the validity of an Customer object created using a signature constructor.
         /// </summary>
         [Fact]
         public void Account_CustomConstructor_CreatesUserUsingCustomConstructor()
@@ -25,11 +25,11 @@ namespace MSPJ.TestingEnvironment.ModelSuites
             string plainTextPassword = "09JD08djuq980JUD80qdjk+980D";
 
             // Act
-            Account myCustomAccount = new Account(email, firstName, lastName, address, phoneNum, plainTextPassword);
+            Customer myCustomAccount = new Customer(email, firstName, lastName, address, phoneNum, plainTextPassword);
             bool doPasswordsMatch = HashingHelper.VerifyAccountPassword(plainTextPassword, myCustomAccount.HashPassword);
 
             // Assert
-            Assert.IsType<Account>(myCustomAccount);
+            Assert.IsType<Customer>(myCustomAccount);
             Assert.Equal(email, myCustomAccount.Email); // Expected value is "student1234@ucn.dk"
             Assert.Equal(firstName, myCustomAccount.FirstName); // Expected value is "Hans"
             Assert.Equal(lastName, myCustomAccount.LastName); // Expected value is "Hansen"

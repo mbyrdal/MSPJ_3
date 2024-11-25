@@ -10,14 +10,14 @@ namespace MSPJ.TestingEnvironment.ModelSuites
     {
         /// <summary>
         /// The purpose of this test is to evaluate the performance and functionality of the ListOfProducts method associated with an order.<br/>
-        /// ListOfProducts returns a list of Product objects appended to the Order in question.<br/>
+        /// ListOfProducts returns a list of Product objects appended to the Sale in question.<br/>
         /// In this scenario, both lists should be empty.
         /// </summary>
         [Fact]
         public void Test_Order_ReturnListOfProductsEmpty_Method()
         {
             // Arrange
-            // var myOrder =  new Order();
+            // var myOrder =  new Sale();
             // var myProductList = new List<Product>();
 
             // Act
@@ -31,13 +31,13 @@ namespace MSPJ.TestingEnvironment.ModelSuites
         }
         /// <summary>
         /// The purpose of this test is to evaluate the performance and functionality of the ListOfProducts method associated with an order.<br/>
-        /// ListOfProducts returns a list of Product objects appended to the Order in question.<br/>
+        /// ListOfProducts returns a list of Product objects appended to the Sale in question.<br/>
         /// </summary>
         [Fact]
         public void Test_Order_ReturnListOfProductsNotEmpty_Method()
         {
             // Arrange
-            // var myOrder =  new Order();
+            // var myOrder =  new Sale();
             // var myProductList = new List<Product>() { productOne, productTwo, productThree };
 
             // Act

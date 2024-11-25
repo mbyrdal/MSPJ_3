@@ -7,18 +7,18 @@ namespace ServiceAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AccountsController : ControllerBase
+    public class CustomersController : ControllerBase
     {
-        private readonly IAccountControl _accountControl;
+        private readonly ICustomerControl _accountControl;
 
-        public AccountsController(IAccountControl accountControl)
+        public CustomersController(ICustomerControl accountControl)
         {
             _accountControl = accountControl;
         }
 
         // GET https://localhost:7134/api/Accounts
         [HttpGet]
-        public ActionResult<List<Account>> GetAccounts()
+        public ActionResult<List<Customer>> GetAccounts()
         {
             var allAccounts = _accountControl.GetAllAccounts();
 
@@ -41,14 +41,14 @@ namespace ServiceAPI.Controllers
 
         // GET https://localhost:7134/api/Accounts/email
         [HttpGet("{email}")]
-        public ActionResult<Account> GetAccount(string email)
+        public ActionResult<Customer> GetAccount(string email)
         {
             var foundAccount = _accountControl.GetAccountByEmail(email);
             
             if(foundAccount == null)
             {
                 // Return 404: No account found, null
-                return NotFound($"Account with email '{email}' not found.");
+                return NotFound($"Customer with email '{email}' not found.");
             }
 
             // Return 200: OK
@@ -57,19 +57,19 @@ namespace ServiceAPI.Controllers
 
         // POST https://localhost:7134/api/Accounts
         [HttpPost]
-        public ActionResult<Account> CreateAccount([FromBody] Account newAccount)
+        public ActionResult<Customer> CreateAccount([FromBody] Customer newAccount)
         {
             if(newAccount == null)
             {
                 // Return 400: Bad request response
-                return BadRequest("ERROR: Bad Account request body.");
+                return BadRequest("ERROR: Bad Customer request body.");
             }
 
             var wasAccountCreated = _accountControl.AddAccount(newAccount);
 
             if(wasAccountCreated)
             {
-                // Return 201: Created Account
+                // Return 201: Created Customer
                 return CreatedAtAction(
                     nameof(GetAccount),
                     new { email = newAccount.Email},
@@ -77,17 +77,17 @@ namespace ServiceAPI.Controllers
             }
 
             // Return 409: Conflict if failure when creating account (e.g., duplicate email)
-            return Conflict($"ERROR: Account with email '{newAccount.Email}' already exists in the database, or insertion failed in another manner.");
+            return Conflict($"ERROR: Customer with email '{newAccount.Email}' already exists in the database, or insertion failed in another manner.");
         }
 
         // PUT https://localhost:7134/api/Accounts/email
         [HttpPut("{email}")]
-        public IActionResult UpdateAccount(string email, [FromBody] Account updatedAccount)
+        public IActionResult UpdateAccount(string email, [FromBody] Customer updatedAccount)
         {
             if(updatedAccount == null)
             {
                 // Return 400: Bad request response
-                return BadRequest("ERROR: Bad Account request body.");
+                return BadRequest("ERROR: Bad Customer request body.");
             }
 
             var existingAccount = _accountControl.GetAccountByEmail(email);
@@ -95,13 +95,13 @@ namespace ServiceAPI.Controllers
             if(existingAccount == null)
             {
                 // Return 404: no existing account found
-                return NotFound($"No existing Account with email '{existingAccount.Email}' found.");
+                return NotFound($"No existing Customer with email '{existingAccount.Email}' found.");
             }
 
             if(existingAccount.Email != updatedAccount.Email)
             {
                 // Return 409: Emails of existing account and response body account do not match.
-                return Conflict($"Found Account with email '{existingAccount.Email}' does not match email in request body '{updatedAccount.Email}'.");
+                return Conflict($"Found Customer with email '{existingAccount.Email}' does not match email in request body '{updatedAccount.Email}'.");
             }
 
             var wasAccountUpdated = _accountControl.UpdateAccount(updatedAccount);
@@ -109,7 +109,7 @@ namespace ServiceAPI.Controllers
             if(!wasAccountUpdated)
             {
                 // Return 500: Internal Server Error if the update fails
-                return StatusCode(500, $"ERROR: Unable to update Account with email '{email}' in the database.");
+                return StatusCode(500, $"ERROR: Unable to update Customer with email '{email}' in the database.");
             }
 
             // Return 204: No Content (Successful deletion)
@@ -125,14 +125,14 @@ namespace ServiceAPI.Controllers
             if(foundAccount == null)
             {
                 // Return 404: no existing account found
-                return NotFound($"No existing Account with email '{foundAccount.Email}' found.");
+                return NotFound($"No existing Customer with email '{foundAccount.Email}' found.");
             }
 
             var wasAccountRemoved = _accountControl.DeleteAccount(email);
 
             if(!wasAccountRemoved)
             {
-                return StatusCode(500, $"ERROR: Unable to delete Account with email '{foundAccount.Email}' from database.");
+                return StatusCode(500, $"ERROR: Unable to delete Customer with email '{foundAccount.Email}' from database.");
             }
 
             // Return 204: No content (Successful deletion)
