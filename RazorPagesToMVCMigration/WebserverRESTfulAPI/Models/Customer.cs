@@ -11,10 +11,6 @@ namespace ServiceAPI.Models
 
         [Required]
         [StringLength(40)]
-        public string Email { get; set; } = string.Empty;
-
-        [Required]
-        [StringLength(40)]
         public string FirstName { get; set; } = string.Empty;
 
         [Required]
@@ -28,6 +24,10 @@ namespace ServiceAPI.Models
         [Required]
         [StringLength(20)]
         public string PhoneNum { get; set; } = string.Empty;
+
+        [Required]
+        [StringLength(40)]
+        public string Email { get; set; } = string.Empty;
 
         public Customer() { }
 
