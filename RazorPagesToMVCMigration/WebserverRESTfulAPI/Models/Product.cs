@@ -27,8 +27,20 @@ namespace ServiceAPI.Models
         [StringLength(500)]
         public string Condition { get; set; } = string.Empty;
 
-        public string ItemDescription { get; set; }
+        public string ItemDescription { get; set; } = string.Empty;
 
         public Product() { }
+
+        public Product(int ID, int cartPartID, int saleID, string oem, decimal price, DateTime dt, string cond, string itemDesc)
+        {
+            this.ID = ID;
+            CarPartId = cartPartID;
+            SaleId = saleID;
+            OEM = oem;
+            Price = price;
+            DateAvailable = dt;
+            Condition = cond;
+            ItemDescription = itemDesc;
+        }
     }
 }

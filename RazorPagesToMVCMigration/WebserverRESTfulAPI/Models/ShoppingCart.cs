@@ -8,13 +8,14 @@ namespace ServiceAPI.Models
         public int ID { get; set; }
 
         [Required]
-        public List<Product>? Items { get; set; }
+        public List<Product> Items { get; set; }
 
         [Required]
         public decimal TotalPrice { get; set; }
 
         public ShoppingCart()
         {
+            Items = new List<Product>();
             TotalPrice = 0;
         }
 

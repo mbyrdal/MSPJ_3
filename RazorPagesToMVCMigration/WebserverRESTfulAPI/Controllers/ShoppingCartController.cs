@@ -33,7 +33,7 @@ namespace ServiceAPI.Controllers
             // Update the total Sale price
             cart.TotalPrice = cart.Items.Sum(i => i.Price);
 
-            // Store the updated cart to the current session
+            // Store the updated cart to the current session (using SessionHelper utility method)
             HttpContext.Session.SetObjectAsJSON(CartSessionKey, cart);
 
             // Status 302: Redirects to Index()
@@ -54,6 +54,7 @@ namespace ServiceAPI.Controllers
 
                     cart.TotalPrice = cart.Items.Sum(i => i.Price);
 
+                    // Using SessionHelper utility method
                     HttpContext.Session.SetObjectAsJSON(CartSessionKey, cart);
                 }
             }

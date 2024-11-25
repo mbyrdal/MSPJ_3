@@ -31,9 +31,9 @@ namespace ServiceAPI.Models
 
         public Customer() { }
 
-        public Customer(int iD, string email, string firstName, string lastName, string address, string phoneNum)
+        public Customer(int ID, string email, string firstName, string lastName, string address, string phoneNum)
         {
-            ID = iD;
+           this.ID = ID;
             Email = email;
             FirstName = firstName;
             LastName = lastName;

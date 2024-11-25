@@ -12,13 +12,23 @@ namespace ServiceAPI.Models
 
         [Required]
         [StringLength(30)]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         [Required]
-        public string Notes { get; set; }
+        public string Notes { get; set; } = string.Empty;
 
         // Navigation Property for CarModel
         // [ForeignKey("CarModelID")]
         // public CarModel CarModel { get; set; }
+
+        public CartPart() { }
+
+        public CartPart(int ID, int carModelID, string name, string notes)
+        {
+            this.ID = ID;
+            CarModelID = carModelID;
+            Name = name;
+            Notes = notes;
+        }
     }
 }
