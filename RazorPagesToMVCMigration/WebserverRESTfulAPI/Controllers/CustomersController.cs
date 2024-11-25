@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ServiceAPI.BusinessLogic.Interfaces;
+using ServiceAPI.DTOs;
 using ServiceAPI.Models;
 
 namespace ServiceAPI.Controllers
@@ -80,6 +81,32 @@ namespace ServiceAPI.Controllers
             return Conflict($"ERROR: Customer with ID '{newCustomer.ID}' already exists in the database, or insertion failed in another manner.");
         }
 
+        // DTO VERSION
+        // POST https://localhost:7134/api/Customers
+        [HttpPost("dto")]
+        public ActionResult<Customer> CreateCustomerDTO([FromBody] CustomerViewModel customerDTO)
+        {
+            if (customerDTO == null)
+            {
+                // Return 400: Bad request response
+                return BadRequest("ERROR: Bad Customer request body.");
+            }
+
+            var wasCustomerCreated = _customerControl.AddCustomerDTO(customerDTO);
+
+            if (wasCustomerCreated)
+            {
+                // Return 201: Created Customer
+                return CreatedAtAction(
+                    nameof(GetCustomer),
+                    new { ID = customerDTO.ID },
+                    customerDTO);
+            }
+
+            // Return 409: Conflict if failure when creating account (e.g., duplicate email)
+            return Conflict($"ERROR: Customer with email '{customerDTO.Email}' already exists in the database, or insertion failed in another manner.");
+        }
+
         // PUT https://localhost:7134/api/Customers/ID
         [HttpPut("{ID:int}")]
         public IActionResult UpdateCustomer(int ID, [FromBody] Customer updatedCustomer)
@@ -107,6 +134,43 @@ namespace ServiceAPI.Controllers
             var wasCustomerUpdated = _customerControl.UpdateCustomer(updatedCustomer);
 
             if(!wasCustomerUpdated)
+            {
+                // Return 500: Internal Server Error if the update fails
+                return StatusCode(500, $"ERROR: Unable to update Customer with ID '{ID}' in the database.");
+            }
+
+            // Return 204: No Content (Successful deletion)
+            return NoContent();
+        }
+
+        // DTO VERSION
+        // PUT https://localhost:7134/api/Customers/ID
+        [HttpPut("dto/{ID:int}")]
+        public IActionResult UpdateCustomerDTO(int ID, [FromBody] CustomerViewModel updatedCustomerDTO)
+        {
+            if (updatedCustomerDTO == null)
+            {
+                // Return 400: Bad request response
+                return BadRequest("ERROR: Bad Customer request body.");
+            }
+
+            var existingCustomer = _customerControl.GetCustomerByID(ID);
+
+            if (existingCustomer == null)
+            {
+                // Return 404: no existing customer found
+                return NotFound($"No existing Customer with ID '{existingCustomer.ID}' found.");
+            }
+
+            if (existingCustomer.ID != updatedCustomerDTO.ID)
+            {
+                // Return 409: Emails of existing customer and response body customer do not match.
+                return Conflict($"Found Customer with ID '{existingCustomer.ID}' does not match ID in request body '{updatedCustomerDTO.ID}'.");
+            }
+
+            var wasCustomerUpdated = _customerControl.UpdateCustomerDTO(updatedCustomerDTO);
+
+            if (!wasCustomerUpdated)
             {
                 // Return 500: Internal Server Error if the update fails
                 return StatusCode(500, $"ERROR: Unable to update Customer with ID '{ID}' in the database.");

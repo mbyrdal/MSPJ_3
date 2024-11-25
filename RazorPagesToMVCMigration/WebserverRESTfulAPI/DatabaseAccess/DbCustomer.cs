@@ -2,6 +2,7 @@
 using Microsoft.Data.SqlClient;
 using ServiceAPI.BusinessLogic.Interfaces;
 using ServiceAPI.DatabaseAccess.Interfaces;
+using ServiceAPI.DTOs;
 using ServiceAPI.Models;
 using ServiceAPI.Utilities;
 using System.Net;
@@ -85,15 +86,37 @@ namespace ServiceAPI.DatabaseAccess
             {
                 conn.Open();
                 using (SqlCommand createCommand = new SqlCommand(
-                    "INSERT INTO Customer (ID, FirstName, LastName, Address, PhoneNum, Email) " +
-                    "VALUES (@ID, @FirstName, @LastName, @Address, @PhoneNum, @Email)", conn))
+                    "INSERT INTO Customer (FirstName, LastName, Address, PhoneNum, Email) " +
+                    "VALUES (@FirstName, @LastName, @Address, @PhoneNum, @Email)", conn))
                 {
-                    createCommand.Parameters.AddWithValue("@ID", newCustomer.ID);
-                    createCommand.Parameters.AddWithValue("@Firstname", newCustomer.FirstName);
-                    createCommand.Parameters.AddWithValue("@Lastname", newCustomer.LastName);
+                    createCommand.Parameters.AddWithValue("@FirstName", newCustomer.FirstName);
+                    createCommand.Parameters.AddWithValue("@LastName", newCustomer.LastName);
                     createCommand.Parameters.AddWithValue("@Address", newCustomer.Address);
-                    createCommand.Parameters.AddWithValue("@Phonenum", newCustomer.PhoneNum);
+                    createCommand.Parameters.AddWithValue("@PhoneNum", newCustomer.PhoneNum);
                     createCommand.Parameters.AddWithValue("@Email", newCustomer.Email);
+                    numberOfRowsInserted = createCommand.ExecuteNonQuery();
+                }
+                conn.Close();
+            }
+            return numberOfRowsInserted;
+        }
+
+        // DTO VERSION
+        public int CreateEntityDTO(CustomerViewModel newCustomerDTO)
+        {
+            int numberOfRowsInserted;
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                conn.Open();
+                using (SqlCommand createCommand = new SqlCommand(
+                    "INSERT INTO Customer (FirstName, LastName, Address, PhoneNum, Email) " +
+                    "VALUES (@FirstName, @LastName, @Address, @PhoneNum, @Email)", conn))
+                {
+                    createCommand.Parameters.AddWithValue("@FirstName", newCustomerDTO.FirstName);
+                    createCommand.Parameters.AddWithValue("@LastName", newCustomerDTO.LastName);
+                    createCommand.Parameters.AddWithValue("@Address", newCustomerDTO.Address);
+                    createCommand.Parameters.AddWithValue("@PhoneNum", newCustomerDTO.PhoneNum);
+                    createCommand.Parameters.AddWithValue("@Email", newCustomerDTO.Email);
                     numberOfRowsInserted = createCommand.ExecuteNonQuery();
                 }
                 conn.Close();
@@ -110,15 +133,45 @@ namespace ServiceAPI.DatabaseAccess
                 {
                     conn.Open();
                     using (SqlCommand updateCommand = new SqlCommand("UPDATE Customer " +
-                                                                     "SET ID=@ID, FirstName=@FirstName, LastName=@LastName, Address=@Address, PhoneNum=@PhoneNum, Email=@Email " +
+                                                                     "SET FirstName=@FirstName, LastName=@LastName, Address=@Address, PhoneNum=@PhoneNum, Email=@Email " +
                                                                      "WHERE ID = @ID AND Email = @Email", conn))
                     {
-                        updateCommand.Parameters.AddWithValue("@ID", updateCustomer.ID);
                         updateCommand.Parameters.AddWithValue("@Firstname", updateCustomer.FirstName);
                         updateCommand.Parameters.AddWithValue("@Lastname", updateCustomer.LastName);
                         updateCommand.Parameters.AddWithValue("@Address", updateCustomer.Address);
                         updateCommand.Parameters.AddWithValue("@Phonenum", updateCustomer.PhoneNum);
                         updateCommand.Parameters.AddWithValue("@Email", updateCustomer.Email);
+
+                        numberOfRowsUpdated = updateCommand.ExecuteNonQuery();
+                    }
+                    conn.Close();
+                }
+                catch (SqlException ex)
+                {
+                    Console.WriteLine($"SQL error occurred: {ex.Message}");
+                }
+                return numberOfRowsUpdated;
+            }
+        }
+
+        // DTO VERSION
+        public int UpdateEntityDTO(CustomerViewModel updateCustomerDTO)
+        {
+            int numberOfRowsUpdated = 0;
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                try
+                {
+                    conn.Open();
+                    using (SqlCommand updateCommand = new SqlCommand("UPDATE Customer " +
+                                                                     "SET FirstName=@FirstName, LastName=@LastName, Address=@Address, PhoneNum=@PhoneNum, Email=@Email " +
+                                                                     "WHERE ID = @ID AND Email = @Email", conn))
+                    {
+                        updateCommand.Parameters.AddWithValue("@Firstname", updateCustomerDTO.FirstName);
+                        updateCommand.Parameters.AddWithValue("@Lastname", updateCustomerDTO.LastName);
+                        updateCommand.Parameters.AddWithValue("@Address", updateCustomerDTO.Address);
+                        updateCommand.Parameters.AddWithValue("@Phonenum", updateCustomerDTO.PhoneNum);
+                        updateCommand.Parameters.AddWithValue("@Email", updateCustomerDTO.Email);
 
                         numberOfRowsUpdated = updateCommand.ExecuteNonQuery();
                     }
