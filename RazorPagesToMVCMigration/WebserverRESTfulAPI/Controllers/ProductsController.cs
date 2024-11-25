@@ -39,16 +39,16 @@ namespace ServiceAPI.Controllers
             return Ok(allProducts);
         }
 
-        // GET: https://localhost:7134/api/Products/OEM
-        [HttpGet("{OEM}")]
-        public ActionResult<Product> GetProduct(string OEM)
+        // GET: https://localhost:7134/api/Products/ID
+        [HttpGet("{ID:int}")]
+        public ActionResult<Product> GetProduct(int ID)
         {
-            var foundProduct = _productControl.GetProductByOEM(OEM);
+            var foundProduct = _productControl.GetProductByID(ID);
 
             if (foundProduct == null)
             {
                 // Return 404: No product found, null
-                return NotFound($"Product with OEM '{OEM}' not found.");
+                return NotFound($"Product with ID '{ID}' not found.");
             }
 
             // Return 200: OK
@@ -75,18 +75,18 @@ namespace ServiceAPI.Controllers
                 // nameof(...) determines action method to be used
                 // new {...} determines input parameters
                 // newProduct is response object
-                return CreatedAtAction(nameof(GetProduct), new { OEM = newProduct.OEM }, newProduct);
+                return CreatedAtAction(nameof(GetProduct), new { ID = newProduct.ID }, newProduct);
             }
 
-            // Return 409: Conflict by already existing OEM (Product) or insertion fail
-            // Multiple, identical products may have the OEM number inherited from CarModel.
-            return Conflict($"ERROR: Product with OEM: '{newProduct.OEM}' already exists in the database, or insertion failed in another manner.");
+            // Return 409: Conflict by already existing ID (Product) or insertion fail
+            // Multiple, identical products may have the OEM number inherited from CarModel. TODO: DETERMINE IS THIS TRUE ???
+            return Conflict($"ERROR: Product with ID '{newProduct.ID}' already exists in the database, or insertion failed in another manner.");
         }
 
         // TODO: trim and remove existingProduct logic since _productControl.UpdateProduct handles existing product issue already.
-        // PUT: https://localhost:7134/api/Products/OEM
-        [HttpPut("{OEM}")]
-        public IActionResult UpdateProduct(string OEM, [FromBody] Product updatedProduct)
+        // PUT: https://localhost:7134/api/Products/ID
+        [HttpPut("{ID:int}")]
+        public IActionResult UpdateProduct(int ID, [FromBody] Product updatedProduct)
         {
             if (updatedProduct == null)
             {
@@ -94,18 +94,18 @@ namespace ServiceAPI.Controllers
                 return BadRequest("ERROR: Bad Product request body.");
             }
 
-            var existingProduct = _productControl.GetProductByOEM(OEM);
+            var existingProduct = _productControl.GetProductByID(ID);
 
             if(existingProduct == null)
             {
                 // Return 404: no existing product found
-                return NotFound($"No existing Product with OEM: '{existingProduct.OEM}' found.");
+                return NotFound($"No existing Product with ID '{existingProduct.ID}' found.");
             }
 
-            if(existingProduct.OEM != updatedProduct.OEM)
+            if(existingProduct.ID != updatedProduct.ID)
             {
                 // Return 409: OEMs of existing product and response body product do not match.
-                return Conflict($"Found Product with OEM '{existingProduct.OEM}' does not match OEM in request body '{updatedProduct.OEM}'.");
+                return Conflict($"Found Product with ID '{existingProduct.ID}' does not match ID in request body '{updatedProduct.ID}'.");
             }
 
             var wasProductUpdated = _productControl.UpdateProduct(updatedProduct);
@@ -113,30 +113,30 @@ namespace ServiceAPI.Controllers
             if(!wasProductUpdated)
             {
                 // Return 500: Internal Server Error if the update fails
-                return StatusCode(500, $"ERROR: Unable to update Product with OEM: '{OEM}' in the database.");
+                return StatusCode(500, $"ERROR: Unable to update Product with ID '{ID}' in the database.");
             }
 
             // Return 204: No Content (Successful update)
             return NoContent();
         }
 
-        // DELETE: https://localhost:7134/api/Products/OEM
-        [HttpDelete("{OEM}")]
-        public IActionResult DeleteProduct(string OEM)
+        // DELETE: https://localhost:7134/api/Products/ID
+        [HttpDelete("{ID:int}")]
+        public IActionResult DeleteProduct(int ID)
         {
-            var foundProduct = _productControl.GetProductByOEM(OEM);
+            var foundProduct = _productControl.GetProductByID(ID);
 
             if(foundProduct == null)
             {
                 // Return 404: no existing product found
-                return NotFound($"No existing Product with OEM: '{foundProduct.OEM}' found.");
+                return NotFound($"No existing Product with ID '{foundProduct.ID}' found.");
             }
 
-            var wasProductRemoved = _productControl.DeleteProduct(OEM);
+            var wasProductRemoved = _productControl.DeleteProduct(ID);
 
             if(!wasProductRemoved)
             {
-                return StatusCode(500, $"ERROR: Unable to delete Product with OEM: '{foundProduct.OEM}' from database.");
+                return StatusCode(500, $"ERROR: Unable to delete Product with ID '{foundProduct.ID}' from database.");
             }
 
             // Return 204: No Content (Successful deletion)

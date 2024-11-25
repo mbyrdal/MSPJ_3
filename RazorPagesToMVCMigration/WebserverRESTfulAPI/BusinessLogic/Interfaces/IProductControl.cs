@@ -3,10 +3,10 @@ namespace ServiceAPI.BusinessLogic.Interfaces
 {
     public interface IProductControl
     {
-        Product GetProductByOEM(string OEM);
+        Product GetProductByID(int ID);
         List<Product> GetAllProducts();
         bool AddProduct(Product product);
         bool UpdateProduct(Product product);
-        bool DeleteProduct(string OEM);
+        bool DeleteProduct(int ID);
     }
 }

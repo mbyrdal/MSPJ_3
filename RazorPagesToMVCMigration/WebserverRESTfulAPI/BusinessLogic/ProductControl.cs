@@ -14,12 +14,12 @@ namespace ServiceAPI.BusinessLogic
             _dbProductAccess = dbProductAccess;
         }
 
-        public Product GetProductByOEM(string OEM)
+        public Product GetProductByID(int ID)
         {
             Product productPlaceholder = null;
             try
             {
-                productPlaceholder = _dbProductAccess.GetByIdentifier(OEM);
+                productPlaceholder = _dbProductAccess.GetByIdentifier(ID);
             }
             catch (Exception ex)
             {
@@ -49,7 +49,7 @@ namespace ServiceAPI.BusinessLogic
             int numberOfRowsInserted;
             try
             {
-                productExists = _dbProductAccess.ProductExists(product.OEM); // Product exists based on whether its OEM number can be found in the Product table.
+                productExists = _dbProductAccess.ProductExists(product.ID); // Product exists based on whether its ID number can be found in the Product table.
                 if(!productExists) // CASE: Product does not exist in DB.
                 {
                     numberOfRowsInserted = _dbProductAccess.CreateEntity(product);
@@ -71,7 +71,7 @@ namespace ServiceAPI.BusinessLogic
             int numberOfRowsUpdated;
             try
             {
-                productExists = _dbProductAccess.ProductExists(product.OEM);
+                productExists = _dbProductAccess.ProductExists(product.ID);
                 if(productExists) // CASE: Product does exist in DB.
                 {
                     numberOfRowsUpdated = _dbProductAccess.UpdateEntity(product);
@@ -85,16 +85,16 @@ namespace ServiceAPI.BusinessLogic
             return wasProductUpdated;
         }
 
-        public bool DeleteProduct(string OEM)
+        public bool DeleteProduct(int ID)
         {
             bool productExists;
             bool wasProductDeleted = false;
             try
             {
-                productExists = _dbProductAccess.ProductExists(OEM);
+                productExists = _dbProductAccess.ProductExists(ID);
                 if(productExists) // CASE: Product does exist in DB.
                 {
-                    wasProductDeleted = _dbProductAccess.DeleteEntity(OEM);
+                    wasProductDeleted = _dbProductAccess.DeleteEntity(ID);
                 }
             }
             catch (Exception ex)

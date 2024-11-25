@@ -3,10 +3,10 @@ namespace ServiceAPI.BusinessLogic.Interfaces
 {
     public interface ICustomerControl
     {
-        Customer GetAccountByEmail(string email);
-        List<Customer> GetAllAccounts();
-        bool AddAccount(Customer account);
-        bool UpdateAccount(Customer account);
-        bool DeleteAccount(string email);
+        Customer GetCustomerByID(int ID);
+        List<Customer> GetAllCustomers();
+        bool AddCustomer(Customer account);
+        bool UpdateCustomer(Customer account);
+        bool DeleteCustomer(int ID);
     }
 }

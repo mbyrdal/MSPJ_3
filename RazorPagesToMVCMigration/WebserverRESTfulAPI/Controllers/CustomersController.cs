@@ -20,7 +20,7 @@ namespace ServiceAPI.Controllers
         [HttpGet]
         public ActionResult<List<Customer>> GetAccounts()
         {
-            var allAccounts = _accountControl.GetAllAccounts();
+            var allAccounts = _accountControl.GetAllCustomers();
 
             if(allAccounts == null)
             {
@@ -43,7 +43,7 @@ namespace ServiceAPI.Controllers
         [HttpGet("{email}")]
         public ActionResult<Customer> GetAccount(string email)
         {
-            var foundAccount = _accountControl.GetAccountByEmail(email);
+            var foundAccount = _accountControl.GetCustomerByID(email);
             
             if(foundAccount == null)
             {
@@ -65,7 +65,7 @@ namespace ServiceAPI.Controllers
                 return BadRequest("ERROR: Bad Customer request body.");
             }
 
-            var wasAccountCreated = _accountControl.AddAccount(newAccount);
+            var wasAccountCreated = _accountControl.AddCustomer(newAccount);
 
             if(wasAccountCreated)
             {
@@ -90,7 +90,7 @@ namespace ServiceAPI.Controllers
                 return BadRequest("ERROR: Bad Customer request body.");
             }
 
-            var existingAccount = _accountControl.GetAccountByEmail(email);
+            var existingAccount = _accountControl.GetCustomerByID(email);
 
             if(existingAccount == null)
             {
@@ -104,7 +104,7 @@ namespace ServiceAPI.Controllers
                 return Conflict($"Found Customer with email '{existingAccount.Email}' does not match email in request body '{updatedAccount.Email}'.");
             }
 
-            var wasAccountUpdated = _accountControl.UpdateAccount(updatedAccount);
+            var wasAccountUpdated = _accountControl.UpdateCustomer(updatedAccount);
 
             if(!wasAccountUpdated)
             {
@@ -120,7 +120,7 @@ namespace ServiceAPI.Controllers
         [HttpDelete("{email}")]
         public IActionResult DeleteAccount(string email)
         {
-            var foundAccount = _accountControl.GetAccountByEmail(email);
+            var foundAccount = _accountControl.GetCustomerByID(email);
 
             if(foundAccount == null)
             {
@@ -128,7 +128,7 @@ namespace ServiceAPI.Controllers
                 return NotFound($"No existing Customer with email '{foundAccount.Email}' found.");
             }
 
-            var wasAccountRemoved = _accountControl.DeleteAccount(email);
+            var wasAccountRemoved = _accountControl.DeleteCustomer(email);
 
             if(!wasAccountRemoved)
             {

@@ -23,7 +23,7 @@ namespace ServiceAPI.DatabaseAccess
 
         public List<Customer> GetAllEntities()
         {
-            List<Customer> accounts = new List<Customer>();
+            List<Customer> customers = new List<Customer>();
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
@@ -34,66 +34,66 @@ namespace ServiceAPI.DatabaseAccess
                         while (reader.Read())
                         {
                             Customer accountInTable = new Customer(
-                                reader.GetString(reader.GetOrdinal("FK_GuestEmail")),
+                                reader.GetInt32(reader.GetOrdinal("ID")),
+                                reader.GetString(reader.GetOrdinal("Email")),
                                 reader.GetString(reader.GetOrdinal("FirstName")),
                                 reader.GetString(reader.GetOrdinal("LastName")),
                                 reader.GetString(reader.GetOrdinal("Address")),
-                                reader.GetString(reader.GetOrdinal("PhoneNum")),
-                                reader.GetString(reader.GetOrdinal("HashPassword")));
+                                reader.GetString(reader.GetOrdinal("PhoneNum")));
 
-                            accounts.Add(accountInTable);
+                            customers.Add(accountInTable);
                         }
                     }
                 }
                 conn.Close();
             }
-            return accounts;
+            return customers;
         }
 
-        public Customer GetByIdentifier(string email)
+        public Customer GetByIdentifier(int ID)
         {
-            Customer account = null;
+            Customer customer = null;
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
-                using (SqlCommand readCommand = new SqlCommand("SELECT FK_GuestEmail, FirstName, LastName, Address, PhoneNum, HashPassword FROM Customer WHERE FK_GuestEmail = @email", conn))
+                using (SqlCommand readCommand = new SqlCommand("SELECT ID, Email, FirstName, LastName, Address, PhoneNum FROM Customer WHERE ID = @ID", conn))
                 {
-                    readCommand.Parameters.AddWithValue("@email", email);
+                    readCommand.Parameters.AddWithValue("@ID", ID);
                     using (SqlDataReader reader = readCommand.ExecuteReader())
                     {
                         if (reader.Read())
                         {
-                            account = new Customer(
-                            reader.GetString(reader.GetOrdinal("FK_GuestEmail")),
+                            customer = new Customer(
+                            reader.GetInt32(reader.GetOrdinal("ID")),
+                            reader.GetString(reader.GetOrdinal("Email")),
                             reader.GetString(reader.GetOrdinal("FirstName")),
                             reader.GetString(reader.GetOrdinal("LastName")),
                             reader.GetString(reader.GetOrdinal("Address")),
-                            reader.GetString(reader.GetOrdinal("PhoneNum")),
-                            reader.GetString(reader.GetOrdinal("HashPassword")));
-                        }
+                            reader.GetString(reader.GetOrdinal("PhoneNum")));
+                        };
                     }
                 }
                 conn.Close();
             }
-            return account;
+            return customer;
         }
 
-        public int CreateEntity(Customer newAccount)
+        public int CreateEntity(Customer newCustomer)
         {
             int numberOfRowsInserted;
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
                 using (SqlCommand createCommand = new SqlCommand(
-                    "INSERT INTO Customer (FK_GuestEmail, FirstName, LastName, Address, PhoneNum, HashPassword) " +
-                    "VALUES (@email, @firstname, @lastname, @address, @phonenum, @hashpw)", conn))
+                    "INSERT INTO Customer (ID, Email, FirstName, LastName, Address, PhoneNum) " +
+                    "VALUES (@ID, @Email, @FirstName, @LastName, @Address, @PhoneNum)", conn))
                 {
-                    createCommand.Parameters.AddWithValue("@email", newAccount.Email);
-                    createCommand.Parameters.AddWithValue("@firstname", newAccount.FirstName);
-                    createCommand.Parameters.AddWithValue("@lastname", newAccount.LastName);
-                    createCommand.Parameters.AddWithValue("@address", newAccount.Address);
-                    createCommand.Parameters.AddWithValue("@phonenum", newAccount.PhoneNum);
-                    createCommand.Parameters.AddWithValue("@hashpw", newAccount.HashPassword);
+                    createCommand.Parameters.AddWithValue("@ID", newCustomer.ID);
+                    createCommand.Parameters.AddWithValue("@Email", newCustomer.Email);
+                    createCommand.Parameters.AddWithValue("@Firstname", newCustomer.FirstName);
+                    createCommand.Parameters.AddWithValue("@Lastname", newCustomer.LastName);
+                    createCommand.Parameters.AddWithValue("@Address", newCustomer.Address);
+                    createCommand.Parameters.AddWithValue("@Phonenum", newCustomer.PhoneNum);
                     numberOfRowsInserted = createCommand.ExecuteNonQuery();
                 }
                 conn.Close();
@@ -101,7 +101,7 @@ namespace ServiceAPI.DatabaseAccess
             return numberOfRowsInserted;
         }
 
-        public int UpdateEntity(Customer updateAccount)
+        public int UpdateEntity(Customer updateCustomer)
         {
             int numberOfRowsUpdated = 0;
             using (SqlConnection conn = new SqlConnection(_connectionString))
@@ -110,15 +110,15 @@ namespace ServiceAPI.DatabaseAccess
                 {
                     conn.Open();
                     using (SqlCommand updateCommand = new SqlCommand("UPDATE Customer " +
-                                                                     "SET FK_GuestEmail=@email, FirstName=@firstname, LastName=@lastname, Address=@address, PhoneNum=@phonenum, HashPassword=@hashpw" +
-                                                                     "WHERE FK_GuestEmail = @email", conn))
+                                                                     "SET ID=@ID, Email=@Email, FirstName=@FirstName, LastName=@LastName, Address=@Address, PhoneNum=@PhoneNum" +
+                                                                     "WHERE ID = @ID AND Email = @Email", conn))
                     {
-                        updateCommand.Parameters.AddWithValue("@email", updateAccount.Email);
-                        updateCommand.Parameters.AddWithValue("@firstname", updateAccount.FirstName);
-                        updateCommand.Parameters.AddWithValue("@lastname", updateAccount.LastName);
-                        updateCommand.Parameters.AddWithValue("@address", updateAccount.Address);
-                        updateCommand.Parameters.AddWithValue("@phonenum", updateAccount.PhoneNum);
-                        updateCommand.Parameters.AddWithValue("@hashpw", updateAccount.HashPassword);
+                        updateCommand.Parameters.AddWithValue("@ID", updateCustomer.ID);
+                        updateCommand.Parameters.AddWithValue("@Email", updateCustomer.Email);
+                        updateCommand.Parameters.AddWithValue("@Firstname", updateCustomer.FirstName);
+                        updateCommand.Parameters.AddWithValue("@Lastname", updateCustomer.LastName);
+                        updateCommand.Parameters.AddWithValue("@Address", updateCustomer.Address);
+                        updateCommand.Parameters.AddWithValue("@Phonenum", updateCustomer.PhoneNum);
 
                         numberOfRowsUpdated = updateCommand.ExecuteNonQuery();
                     }
@@ -132,37 +132,36 @@ namespace ServiceAPI.DatabaseAccess
             }
         }
 
-        public bool DeleteEntity(string email)
+        public bool DeleteEntity(int ID)
         {
-            bool wasAccountDeleted = false;
+            bool wasCustomerDeleted = false;
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
-                using (SqlCommand deleteCommand = new SqlCommand("DELETE from Customer WHERE FK_GuestEmail = @email", conn))
+                using (SqlCommand deleteCommand = new SqlCommand("DELETE from Customer WHERE ID = @ID", conn))
                 {
-                    deleteCommand.Parameters.AddWithValue("@email", email);
+                    deleteCommand.Parameters.AddWithValue("@ID", ID);
                     int numberOfRowsAffectedByDeletion = deleteCommand.ExecuteNonQuery();
-                    wasAccountDeleted = numberOfRowsAffectedByDeletion == 1;
+                    wasCustomerDeleted = numberOfRowsAffectedByDeletion == 1;
                 }
                 conn.Close();
             }
-            return wasAccountDeleted;
+            return wasCustomerDeleted;
         }
 
-        internal bool AccountExists(string email)
+        internal bool CustomerExists(int ID, string email)
         {
-            bool guestExists = GuestExists(email);
-            if(!guestExists)
+            bool customerIdentifierExists = _dbHelper.EntityExists("Customer", "ID", ID.ToString());
+            bool customerEmailExists = _dbHelper.EntityExists("Customer", "Email", email);
+
+            bool customerExists = customerIdentifierExists && customerEmailExists;
+
+            if (!customerExists)
             {
                 return false;
             }
 
-            return _dbHelper.EntityExists("Customer", "FK_GuestEmail", email);
-        }
-
-        internal bool GuestExists(string email)
-        {
-            return _dbHelper.EntityExists("Guest", "Email", email);
+            return customerExists;
         }
     }
 }

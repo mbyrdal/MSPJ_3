@@ -51,7 +51,7 @@ namespace ServiceAPI.DatabaseAccess
             return products;
         }
 
-        public Product GetByIdentifier(string ID)
+        public Product GetByIdentifier(int ID)
         {
             Product product = null; // Set product to null initially
             using (SqlConnection conn = new SqlConnection(_connectionString))
@@ -146,7 +146,7 @@ namespace ServiceAPI.DatabaseAccess
             }
         }
 
-        public bool DeleteEntity(string ID)
+        public bool DeleteEntity(int ID)
         {
             bool wasProductDeleted = false;
             using (SqlConnection conn = new SqlConnection(_connectionString))
@@ -168,9 +168,9 @@ namespace ServiceAPI.DatabaseAccess
         }
 
         // Helper method that tests whether an entity (Product) entry exists in the database.
-        internal bool ProductExists(string ID)
+        internal bool ProductExists(int ID)
         {
-            return _dbHelper.EntityExists("Product", "ID", ID);
+            return _dbHelper.EntityExists("Product", "ID", ID.ToString());
         }
     }
 }

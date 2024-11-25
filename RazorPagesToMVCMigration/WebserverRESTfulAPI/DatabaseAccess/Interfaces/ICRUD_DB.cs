@@ -3,9 +3,9 @@
     public interface ICRUD_DB<T> where T : class
     {
         List<T> GetAllEntities();
-        T GetByIdentifier(string id);
+        T GetByIdentifier(int id);
         int CreateEntity(T entity);
         int UpdateEntity(T entity);
-        bool DeleteEntity(string id);
+        bool DeleteEntity(int id);
     }
 }

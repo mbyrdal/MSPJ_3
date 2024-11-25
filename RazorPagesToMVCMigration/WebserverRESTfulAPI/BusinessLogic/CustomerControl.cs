@@ -7,124 +7,113 @@ namespace ServiceAPI.BusinessLogic
 {
     public class CustomerControl : ICustomerControl
     {
-        private readonly DbCustomer _dbAccountAccess;
+        private readonly DbCustomer _dbCustomerAccess;
 
-        public CustomerControl(DbCustomer dbAccountAccess)
+        public CustomerControl(DbCustomer dbCustomerAccess)
         {
-            _dbAccountAccess = dbAccountAccess;
+            _dbCustomerAccess = dbCustomerAccess;
         }
 
-        public Customer GetAccountByEmail(string email)
+        public Customer GetCustomerByID(int ID)
         {
-            Customer accountPlaceholder = null;
+            Customer customerPlaceholder = null;
             try
             {
-                accountPlaceholder = _dbAccountAccess.GetByIdentifier(email);
+                customerPlaceholder = _dbCustomerAccess.GetByIdentifier(ID);
             }
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.Message);
             }
-            return accountPlaceholder;
+            return customerPlaceholder;
         }
 
-        public List<Customer> GetAllAccounts()
+        public List<Customer> GetAllCustomers()
         {
-            List<Customer> allAccounts = new List<Customer>();
+            List<Customer> allCustomers = new List<Customer>();
             try
             {
-                allAccounts = _dbAccountAccess.GetAllEntities();
+                allCustomers = _dbCustomerAccess.GetAllEntities();
             }
             catch (Exception ex)
             {
-                allAccounts = null;
+                allCustomers = null;
                 Debug.WriteLine(ex.Message);
             }
-            return allAccounts;
+            return allCustomers;
         }
 
-        public bool AddAccount(Customer account)
+        public bool AddCustomer(Customer customer)
         {
-            bool guestExists = false;
-            bool accountExists = false;
+            bool customerExists = false;
             bool wasAccountInserted = false;
             int numberOfRowsInserted;
             try
             {
-                guestExists = _dbAccountAccess.GuestExists(account.Email);
-                if (!guestExists)
+                customerExists = _dbCustomerAccess.CustomerExists(customer.ID, customer.Email);
+                if (customerExists) // CASE: Customer does exist in DB --> Cannot be created
                 {
-                    throw new InvalidOperationException($"A Guest with the email '{account.Email}' does not exist in the dbo.Guest table.");
+                    throw new InvalidOperationException($"A Customer with the ID '{customer.ID}' and Email '{customer.Email}' already exists in the Customer table.");
                 }
 
-                accountExists = _dbAccountAccess.AccountExists(account.Email);
-                if (!accountExists) // CASE: Customer does not exist in DB
-                {
-                    numberOfRowsInserted = _dbAccountAccess.CreateEntity(account);
-                    wasAccountInserted = (numberOfRowsInserted == 1);
-                }
+                // Customer does not exist
+                numberOfRowsInserted = _dbCustomerAccess.CreateEntity(customer);
+                wasAccountInserted = (numberOfRowsInserted == 1);
             }
             catch (Exception ex)
             {
-                account = null;
+                customer = null;
                 Debug.WriteLine(ex.Message);
             }
             return wasAccountInserted;
         }
 
-        public bool UpdateAccount(Customer account)
+        public bool UpdateCustomer(Customer customer)
         {
-            bool guestExists = false;
-            bool accountExists = false;
-            bool wasAccountUpdated = false;
+            bool customerExists = false;
+            bool wasCustomerUpdated = false;
             int numberOfRowsUpdated;
             try
             {
-                guestExists = _dbAccountAccess.GuestExists(account.Email);
-                if (!guestExists)
+                customerExists = _dbCustomerAccess.CustomerExists(customer.ID, customer.Email);
+                if (!customerExists) // CASE: Customer does not exist in DB --> Cannot be updated
                 {
-                    throw new InvalidOperationException($"A Guest with the email '{account.Email}' does not exist in the dbo.Guest table.");
+                    throw new InvalidOperationException($"A Customer with the ID '{customer.ID}' and Email '{customer.Email}' does not exist in the Customer table.");
                 }
 
-                accountExists = _dbAccountAccess.AccountExists(account.Email);
-                if (accountExists) // CASE: Customer does exist in DB
-                {
-                    numberOfRowsUpdated = _dbAccountAccess.UpdateEntity(account);
-                    wasAccountUpdated = (numberOfRowsUpdated == 1);
-                }
+                // Customer does exist
+                numberOfRowsUpdated = _dbCustomerAccess.UpdateEntity(customer);
+                wasCustomerUpdated = (numberOfRowsUpdated == 1);
             }
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.Message);
             }
-            return wasAccountUpdated;
+            return wasCustomerUpdated;
         }
 
-        public bool DeleteAccount(string email)
+        public bool DeleteCustomer(int ID)
         {
-            bool guestExists = false;
-            bool accountExists;
-            bool wasProductDeleted = false;
+            bool customerExists;
+            bool wasCustomerDeleted = false;
             try
             {
-                guestExists = _dbAccountAccess.GuestExists(email);
-                if (!guestExists)
+                string customerEmail = GetCustomerByID(ID).Email;
+                customerExists = _dbCustomerAccess.CustomerExists(ID, customerEmail);
+                if (!customerExists)
                 {
-                    throw new InvalidOperationException($"A Guest with the email '{email}' does not exist in the dbo.Guest table.");
+                    throw new InvalidOperationException($"A Customer with the ID '{ID}' and Email '{customerEmail}' does not exist in the Customer table.");
                 }
 
-                accountExists = _dbAccountAccess.AccountExists(email);
-                if (accountExists) // CASE: Customer does exist in DB
-                {
-                    wasProductDeleted = _dbAccountAccess.DeleteEntity(email);
-                }
+                // CASE: Customer does exist in DB
+                wasCustomerDeleted = _dbCustomerAccess.DeleteEntity(ID);
             }
             catch (Exception ex)
             {
-                wasProductDeleted = false;
+                wasCustomerDeleted = false;
                 Debug.WriteLine(ex.Message);
             }
-            return wasProductDeleted;
+            return wasCustomerDeleted;
         }
     }
 }

@@ -3,9 +3,9 @@
     public interface ICRUD<T> where T : class
     {
         IEnumerable<T> GetAll();
-        T GetByID(string OEM);
+        T GetByID(int ID);
         bool Create(T entity);
         bool Update(T entity);
-        bool Delete(string OEM);
+        bool Delete(int ID);
     }
 }
