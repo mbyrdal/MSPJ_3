@@ -1,6 +1,7 @@
 ﻿namespace ServiceAPI.DatabaseAccess
 {
-    public class DbCar
+    public class DbCarModel
     {
+
     }
 }

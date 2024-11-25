@@ -33,12 +33,14 @@ namespace ServiceAPI.DatabaseAccess
                         {
                             Product productInTable = new Product
                             {
-                                OEM = reader.GetString(reader.GetOrdinal("OEM")), // Column 1, Primary key OEM.
-                                VINNumber = reader.GetString(reader.GetOrdinal("FK_VINNumber")),
-                                Name = reader.GetString(reader.GetOrdinal("Name")),
+                                ID = reader.GetInt32(reader.GetOrdinal("ID")),
+                                CarPartID = reader.GetInt32(reader.GetOrdinal("CarPartID")),
+                                SaleID = reader.GetInt32(reader.GetOrdinal("SaleID")),
+                                OEM = reader.GetString(reader.GetOrdinal("OEM")),
                                 Price = reader.GetDecimal(reader.GetOrdinal("Price")),
                                 DateAvailable = reader.GetDateTime(reader.GetOrdinal("DateAvailable")),
-                                Notes = reader.GetString(reader.GetOrdinal("Notes"))
+                                Condition = reader.GetString(reader.GetOrdinal("Condition")),
+                                ItemDescription = reader.GetString(reader.GetOrdinal("ItemDescription"))
                             };
                             products.Add(productInTable);
                         }
@@ -49,28 +51,30 @@ namespace ServiceAPI.DatabaseAccess
             return products;
         }
 
-        public Product GetByIdentifier(string OEM)
+        public Product GetByIdentifier(string ID)
         {
             Product product = null; // Set product to null initially
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
-                using (SqlCommand readCommand = new SqlCommand("SELECT OEM, FK_VINNumber, Name, Price, DateAvailable, Notes FROM Product WHERE OEM = @OEM", conn))
+                using (SqlCommand readCommand = new SqlCommand("SELECT ID, CartPartID, SaleID, OEM, Price, DateAvailable, Condition, ItemDescription FROM Product WHERE ID = @ID", conn))
                 {
                     // Bind value from string input OEM to parameter OEM from Product in DB.
-                    readCommand.Parameters.AddWithValue("@OEM", OEM);
+                    readCommand.Parameters.AddWithValue("@ID", ID);
                     using (SqlDataReader reader = readCommand.ExecuteReader())
                     {
                         if (reader.Read())
                         {
                             product = new Product
                             {
-                                OEM = reader.GetString(reader.GetOrdinal("OEM")), // Column 1, Primary key OEM.
-                                VINNumber = reader.GetString(reader.GetOrdinal("FK_VINNumber")),
-                                Name = reader.GetString(reader.GetOrdinal("Name")),
+                                ID = reader.GetInt32(reader.GetOrdinal("ID")),
+                                CarPartID = reader.GetInt32(reader.GetOrdinal("CarPartID")),
+                                SaleID = reader.GetInt32(reader.GetOrdinal("SaleID")),
+                                OEM = reader.GetString(reader.GetOrdinal("OEM")),
                                 Price = reader.GetDecimal(reader.GetOrdinal("Price")),
                                 DateAvailable = reader.GetDateTime(reader.GetOrdinal("DateAvailable")),
-                                Notes = reader.GetString(reader.GetOrdinal("Notes"))
+                                Condition = reader.GetString(reader.GetOrdinal("Condition")),
+                                ItemDescription = reader.GetString(reader.GetOrdinal("ItemDescription"))
                             };
                         }
                     }
@@ -87,17 +91,19 @@ namespace ServiceAPI.DatabaseAccess
             {
                 conn.Open();
                 using (SqlCommand createCommand = new SqlCommand(
-                    "INSERT INTO Product (OEM, FK_VINNumber, Name, Price, DateAvailable, Notes) "
-                    + "VALUES (@OEM, @FK_VINNumber, @Name, @Price, @DateAvailable, @Notes)", conn
+                    "INSERT INTO Product (ID, CartPartID, SaleID, OEM, Price, DateAvailable, Condition, ItemDescription) "
+                    + "VALUES (@ID, @CartPartID, @SaleID, @OEM, @Price, @DateAvailable, @Condition, @ItemDescription)", conn
                     ))
                 {
                     // Mapping method input values to sql query input values
+                    createCommand.Parameters.AddWithValue("@ID", newProduct.ID);
+                    createCommand.Parameters.AddWithValue("@CartPartID", newProduct.CarPartID);
+                    createCommand.Parameters.AddWithValue("@SaleID", newProduct.SaleID);
                     createCommand.Parameters.AddWithValue("@OEM", newProduct.OEM);
-                    createCommand.Parameters.AddWithValue("@FK_VINNumber", newProduct.VINNumber);
-                    createCommand.Parameters.AddWithValue("@Name", newProduct.Name);
                     createCommand.Parameters.AddWithValue("@Price", newProduct.Price);
                     createCommand.Parameters.AddWithValue("@DateAvailable", newProduct.DateAvailable);
-                    createCommand.Parameters.AddWithValue("@Notes", newProduct.Notes);
+                    createCommand.Parameters.AddWithValue("@Condition", newProduct.Condition);
+                    createCommand.Parameters.AddWithValue("@ItemDescription", newProduct.ItemDescription);
 
                     // Use non query because we are updating/changing the DB, not querying it
                     numberOfRowsInserted = createCommand.ExecuteNonQuery();
@@ -116,16 +122,15 @@ namespace ServiceAPI.DatabaseAccess
                 {
                     conn.Open();
                     using (SqlCommand updateCommand = new SqlCommand("UPDATE Product " +
-                                                                     "SET Name=@Name, Price=@Price, DateAvailable=@DateAvailable, Notes=@Notes " +
-                                                                     "WHERE OEM = @OEM AND FK_VINNumber = @FK_VINNumber", conn))
+                                                                     "SET ID=@ID, CarPartID=@CarPartID, SaleID=@SaleID, OEM=@OEM, " +
+                                                                     "Price=@Price, DateAvailable=@DateAvailable, Condition=@Condition, ItemDescription=@ItemDescription" +
+                                                                     "WHERE ID = @ID AND CarPartID = @CarPartID AND SaleID = @SaleID AND OEM = @OEM", conn))
                     {
                         // Mapping method input values to sql query input values
-                        updateCommand.Parameters.AddWithValue("@OEM", updateProduct.OEM);
-                        updateCommand.Parameters.AddWithValue("@FK_VINNumber", updateProduct.VINNumber);
-                        updateCommand.Parameters.AddWithValue("@Name", updateProduct.Name);
                         updateCommand.Parameters.AddWithValue("@Price", updateProduct.Price);
                         updateCommand.Parameters.AddWithValue("@DateAvailable", updateProduct.DateAvailable);
-                        updateCommand.Parameters.AddWithValue("@Notes", updateProduct.Notes);
+                        updateCommand.Parameters.AddWithValue("@Condition", updateProduct.Condition);
+                        updateCommand.Parameters.AddWithValue("@ItemDescription", updateProduct.ItemDescription);
 
                         // Use non query because we are updating/changing the DB, not querying it
                         numberOfRowsUpdated = updateCommand.ExecuteNonQuery();
@@ -141,15 +146,15 @@ namespace ServiceAPI.DatabaseAccess
             }
         }
 
-        public bool DeleteEntity(string OEM)
+        public bool DeleteEntity(string ID)
         {
             bool wasProductDeleted = false;
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
-                using (SqlCommand deleteCommand = new SqlCommand("DELETE from Product WHERE OEM = @OEM", conn))
+                using (SqlCommand deleteCommand = new SqlCommand("DELETE from Product WHERE ID = @ID", conn))
                 {
-                    deleteCommand.Parameters.AddWithValue("@OEM", OEM);
+                    deleteCommand.Parameters.AddWithValue("@ID", ID);
 
                     // Track number of rows affected (changes made to DB)
                     int numberOfRowsAffectedByDeletion = deleteCommand.ExecuteNonQuery();
@@ -163,9 +168,9 @@ namespace ServiceAPI.DatabaseAccess
         }
 
         // Helper method that tests whether an entity (Product) entry exists in the database.
-        internal bool ProductExists(string OEM)
+        internal bool ProductExists(string ID)
         {
-            return _dbHelper.EntityExists("Product", "OEM", OEM);
+            return _dbHelper.EntityExists("Product", "ID", ID);
         }
     }
 }
