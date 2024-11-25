@@ -5,34 +5,40 @@ namespace BrowserWebPage.Controllers
 {
     public class AccountController : Controller
     {
-        // Mock data (replace with database logic later)
-        private static Account _account = new Account
+        // Default account data (used as mock data for demonstration purposes)
+        private static Account DefaultAccount = new Account
         {
             FirstName = "Mads",
             LastName = "Nielsen",
             Address = "Hovedvej 123, 2800 Kongens Lyngby",
             PhoneNum = "12345678",
-            Email = "mads@example.com"
+            Email = "mads@example.com",
+            ListOfOrders = new List<string> { "Order1", "Order2", "Order3" }
         };
 
+        // GET: /Account/Details
         [HttpGet]
         public IActionResult Details()
         {
-            return View("Views\\Account\\Details.cshtml");
+            // Always return the default account
+            return View(DefaultAccount);
         }
 
+        // POST: /Account/Update
         [HttpPost]
         public IActionResult Update(Account account)
         {
             if (ModelState.IsValid)
             {
-                // Save updated data logic (e.g., save to database)
-                _account = account;
+                // Simulate saving updated data (in real scenario, save to database)
+                DefaultAccount = account;
 
+                // Display a success message
                 TempData["Message"] = "Dine konto oplysninger er blevet opdateret!";
                 return RedirectToAction("Details");
             }
 
+            // If validation fails, return the view with the current data
             return View("Details", account);
         }
     }
