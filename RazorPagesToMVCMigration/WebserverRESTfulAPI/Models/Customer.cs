@@ -31,14 +31,14 @@ namespace ServiceAPI.Models
 
         public Customer() { }
 
-        public Customer(int ID, string email, string firstName, string lastName, string address, string phoneNum)
+        public Customer(int ID, string firstName, string lastName, string address, string phoneNum, string email)
         {
-           this.ID = ID;
-            Email = email;
+            this.ID = ID;
             FirstName = firstName;
             LastName = lastName;
             Address = address;
             PhoneNum = phoneNum;
+            Email = email;
         }
     }
 }

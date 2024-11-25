@@ -35,11 +35,11 @@ namespace ServiceAPI.DatabaseAccess
                         {
                             Customer accountInTable = new Customer(
                                 reader.GetInt32(reader.GetOrdinal("ID")),
-                                reader.GetString(reader.GetOrdinal("Email")),
                                 reader.GetString(reader.GetOrdinal("FirstName")),
                                 reader.GetString(reader.GetOrdinal("LastName")),
                                 reader.GetString(reader.GetOrdinal("Address")),
-                                reader.GetString(reader.GetOrdinal("PhoneNum")));
+                                reader.GetString(reader.GetOrdinal("PhoneNum")),
+                                reader.GetString(reader.GetOrdinal("Email")));
 
                             customers.Add(accountInTable);
                         }
@@ -56,7 +56,7 @@ namespace ServiceAPI.DatabaseAccess
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
-                using (SqlCommand readCommand = new SqlCommand("SELECT ID, Email, FirstName, LastName, Address, PhoneNum FROM Customer WHERE ID = @ID", conn))
+                using (SqlCommand readCommand = new SqlCommand("SELECT ID, FirstName, LastName, Address, PhoneNum, Email FROM Customer WHERE ID = @ID", conn))
                 {
                     readCommand.Parameters.AddWithValue("@ID", ID);
                     using (SqlDataReader reader = readCommand.ExecuteReader())
@@ -65,11 +65,11 @@ namespace ServiceAPI.DatabaseAccess
                         {
                             customer = new Customer(
                             reader.GetInt32(reader.GetOrdinal("ID")),
-                            reader.GetString(reader.GetOrdinal("Email")),
                             reader.GetString(reader.GetOrdinal("FirstName")),
                             reader.GetString(reader.GetOrdinal("LastName")),
                             reader.GetString(reader.GetOrdinal("Address")),
-                            reader.GetString(reader.GetOrdinal("PhoneNum")));
+                            reader.GetString(reader.GetOrdinal("PhoneNum")),
+                            reader.GetString(reader.GetOrdinal("Email")));
                         };
                     }
                 }
@@ -85,15 +85,15 @@ namespace ServiceAPI.DatabaseAccess
             {
                 conn.Open();
                 using (SqlCommand createCommand = new SqlCommand(
-                    "INSERT INTO Customer (ID, Email, FirstName, LastName, Address, PhoneNum) " +
-                    "VALUES (@ID, @Email, @FirstName, @LastName, @Address, @PhoneNum)", conn))
+                    "INSERT INTO Customer (ID, FirstName, LastName, Address, PhoneNum, Email) " +
+                    "VALUES (@ID, @FirstName, @LastName, @Address, @PhoneNum, @Email)", conn))
                 {
                     createCommand.Parameters.AddWithValue("@ID", newCustomer.ID);
-                    createCommand.Parameters.AddWithValue("@Email", newCustomer.Email);
                     createCommand.Parameters.AddWithValue("@Firstname", newCustomer.FirstName);
                     createCommand.Parameters.AddWithValue("@Lastname", newCustomer.LastName);
                     createCommand.Parameters.AddWithValue("@Address", newCustomer.Address);
                     createCommand.Parameters.AddWithValue("@Phonenum", newCustomer.PhoneNum);
+                    createCommand.Parameters.AddWithValue("@Email", newCustomer.Email);
                     numberOfRowsInserted = createCommand.ExecuteNonQuery();
                 }
                 conn.Close();
@@ -110,15 +110,15 @@ namespace ServiceAPI.DatabaseAccess
                 {
                     conn.Open();
                     using (SqlCommand updateCommand = new SqlCommand("UPDATE Customer " +
-                                                                     "SET ID=@ID, Email=@Email, FirstName=@FirstName, LastName=@LastName, Address=@Address, PhoneNum=@PhoneNum" +
+                                                                     "SET ID=@ID, FirstName=@FirstName, LastName=@LastName, Address=@Address, PhoneNum=@PhoneNum, Email=@Email " +
                                                                      "WHERE ID = @ID AND Email = @Email", conn))
                     {
                         updateCommand.Parameters.AddWithValue("@ID", updateCustomer.ID);
-                        updateCommand.Parameters.AddWithValue("@Email", updateCustomer.Email);
                         updateCommand.Parameters.AddWithValue("@Firstname", updateCustomer.FirstName);
                         updateCommand.Parameters.AddWithValue("@Lastname", updateCustomer.LastName);
                         updateCommand.Parameters.AddWithValue("@Address", updateCustomer.Address);
                         updateCommand.Parameters.AddWithValue("@Phonenum", updateCustomer.PhoneNum);
+                        updateCommand.Parameters.AddWithValue("@Email", updateCustomer.Email);
 
                         numberOfRowsUpdated = updateCommand.ExecuteNonQuery();
                     }
