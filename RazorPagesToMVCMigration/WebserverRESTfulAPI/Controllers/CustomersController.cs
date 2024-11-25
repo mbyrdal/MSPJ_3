@@ -9,130 +9,130 @@ namespace ServiceAPI.Controllers
     [ApiController]
     public class CustomersController : ControllerBase
     {
-        private readonly ICustomerControl _accountControl;
+        private readonly ICustomerControl _customerControl;
 
-        public CustomersController(ICustomerControl accountControl)
+        public CustomersController(ICustomerControl customerControl)
         {
-            _accountControl = accountControl;
+            _customerControl = customerControl;
         }
 
-        // GET https://localhost:7134/api/Accounts
+        // GET https://localhost:7134/api/Customers
         [HttpGet]
-        public ActionResult<List<Customer>> GetAccounts()
+        public ActionResult<List<Customer>> GetCustomers()
         {
-            var allAccounts = _accountControl.GetAllCustomers();
+            var allCustomers = _customerControl.GetAllCustomers();
 
-            if(allAccounts == null)
+            if(allCustomers == null)
             {
                 // Return 400: Bad request response
-                return BadRequest("ERROR: List of accounts is null. " +
+                return BadRequest("ERROR: List of customers is null. " +
                                   "A bad GET request was made.");
             }
 
-            if(allAccounts.Count == 0)
+            if(allCustomers.Count == 0)
             {
                 // Return 404: No accounts found
-                return NotFound("ERROR: No accounts found in the database.");
+                return NotFound("ERROR: No customers found in the database.");
             }
 
             // Return 200: OK
-            return Ok(allAccounts);
+            return Ok(allCustomers);
         }
 
-        // GET https://localhost:7134/api/Accounts/email
-        [HttpGet("{email}")]
-        public ActionResult<Customer> GetAccount(string email)
+        // GET https://localhost:7134/api/Customers/ID
+        [HttpGet("{ID:int}")]
+        public ActionResult<Customer> GetCustomer(int ID)
         {
-            var foundAccount = _accountControl.GetCustomerByID(email);
+            var foundCustomer = _customerControl.GetCustomerByID(ID);
             
-            if(foundAccount == null)
+            if(foundCustomer == null)
             {
-                // Return 404: No account found, null
-                return NotFound($"Customer with email '{email}' not found.");
+                // Return 404: No customer found, null
+                return NotFound($"Customer with ID '{ID}' not found.");
             }
 
             // Return 200: OK
-            return Ok(foundAccount);
+            return Ok(foundCustomer);
         }
 
-        // POST https://localhost:7134/api/Accounts
+        // POST https://localhost:7134/api/Customers
         [HttpPost]
-        public ActionResult<Customer> CreateAccount([FromBody] Customer newAccount)
+        public ActionResult<Customer> CreateCustomer([FromBody] Customer newCustomer)
         {
-            if(newAccount == null)
+            if(newCustomer == null)
             {
                 // Return 400: Bad request response
                 return BadRequest("ERROR: Bad Customer request body.");
             }
 
-            var wasAccountCreated = _accountControl.AddCustomer(newAccount);
+            var wasCustomerCreated = _customerControl.AddCustomer(newCustomer);
 
-            if(wasAccountCreated)
+            if(wasCustomerCreated)
             {
                 // Return 201: Created Customer
                 return CreatedAtAction(
-                    nameof(GetAccount),
-                    new { email = newAccount.Email},
-                    newAccount);
+                    nameof(GetCustomer),
+                    new { ID = newCustomer.ID },
+                    newCustomer);
             }
 
             // Return 409: Conflict if failure when creating account (e.g., duplicate email)
-            return Conflict($"ERROR: Customer with email '{newAccount.Email}' already exists in the database, or insertion failed in another manner.");
+            return Conflict($"ERROR: Customer with ID '{newCustomer.ID}' already exists in the database, or insertion failed in another manner.");
         }
 
-        // PUT https://localhost:7134/api/Accounts/email
-        [HttpPut("{email}")]
-        public IActionResult UpdateAccount(string email, [FromBody] Customer updatedAccount)
+        // PUT https://localhost:7134/api/Customers/ID
+        [HttpPut("{ID:int}")]
+        public IActionResult UpdateCustomer(int ID, [FromBody] Customer updatedCustomer)
         {
-            if(updatedAccount == null)
+            if(updatedCustomer == null)
             {
                 // Return 400: Bad request response
                 return BadRequest("ERROR: Bad Customer request body.");
             }
 
-            var existingAccount = _accountControl.GetCustomerByID(email);
+            var existingCustomer = _customerControl.GetCustomerByID(ID);
 
-            if(existingAccount == null)
+            if(existingCustomer == null)
             {
-                // Return 404: no existing account found
-                return NotFound($"No existing Customer with email '{existingAccount.Email}' found.");
+                // Return 404: no existing customer found
+                return NotFound($"No existing Customer with ID '{existingCustomer.ID}' found.");
             }
 
-            if(existingAccount.Email != updatedAccount.Email)
+            if(existingCustomer.ID != updatedCustomer.ID)
             {
-                // Return 409: Emails of existing account and response body account do not match.
-                return Conflict($"Found Customer with email '{existingAccount.Email}' does not match email in request body '{updatedAccount.Email}'.");
+                // Return 409: Emails of existing customer and response body customer do not match.
+                return Conflict($"Found Customer with ID '{existingCustomer.ID}' does not match ID in request body '{updatedCustomer.ID}'.");
             }
 
-            var wasAccountUpdated = _accountControl.UpdateCustomer(updatedAccount);
+            var wasCustomerUpdated = _customerControl.UpdateCustomer(updatedCustomer);
 
-            if(!wasAccountUpdated)
+            if(!wasCustomerUpdated)
             {
                 // Return 500: Internal Server Error if the update fails
-                return StatusCode(500, $"ERROR: Unable to update Customer with email '{email}' in the database.");
+                return StatusCode(500, $"ERROR: Unable to update Customer with ID '{ID}' in the database.");
             }
 
             // Return 204: No Content (Successful deletion)
             return NoContent();
         }
 
-        // DELETE: https://localhost:7134/api/Accounts/email
-        [HttpDelete("{email}")]
-        public IActionResult DeleteAccount(string email)
+        // DELETE: https://localhost:7134/api/Customers/ID
+        [HttpDelete("{ID:int}")]
+        public IActionResult DeleteCustomer(int ID)
         {
-            var foundAccount = _accountControl.GetCustomerByID(email);
+            var foundCustomer = _customerControl.GetCustomerByID(ID);
 
-            if(foundAccount == null)
+            if(foundCustomer == null)
             {
-                // Return 404: no existing account found
-                return NotFound($"No existing Customer with email '{foundAccount.Email}' found.");
+                // Return 404: no existing customer found
+                return NotFound($"No existing Customer with ID '{foundCustomer.ID}' found.");
             }
 
-            var wasAccountRemoved = _accountControl.DeleteCustomer(email);
+            var wasCustomerRemoved = _customerControl.DeleteCustomer(ID);
 
-            if(!wasAccountRemoved)
+            if(!wasCustomerRemoved)
             {
-                return StatusCode(500, $"ERROR: Unable to delete Customer with email '{foundAccount.Email}' from database.");
+                return StatusCode(500, $"ERROR: Unable to delete Customer with ID '{foundCustomer.ID}' from database.");
             }
 
             // Return 204: No content (Successful deletion)
