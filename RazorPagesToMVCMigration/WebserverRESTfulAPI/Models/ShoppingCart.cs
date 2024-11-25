@@ -1,8 +1,16 @@
-﻿namespace ServiceAPI.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace ServiceAPI.Models
 {
     public class ShoppingCart
     {
+        [Key]
+        public int ID { get; set; }
+
+        [Required]
         public List<Product>? Items { get; set; }
+
+        [Required]
         public decimal TotalPrice { get; set; }
 
         public ShoppingCart()
