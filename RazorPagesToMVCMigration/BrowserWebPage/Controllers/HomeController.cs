@@ -17,10 +17,18 @@ namespace BrowserWebPage.Controllers
         {
             return View();
         }
-
+        public IActionResult Inventory()
+        {
+            return View("~/Views/Inventory/Inventory.cshtml");
+        }
         public IActionResult Privacy()
         {
             return View();
+        }
+
+        public IActionResult CreateAccount()
+        {
+            return View("~/Views/Account/CreateAccount.cshtml");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
