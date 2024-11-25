@@ -21,7 +21,7 @@ namespace ServiceAPI.Controllers
             var cart = HttpContext.Session.GetObjectFromJSON<ShoppingCart>(CartSessionKey) ?? new ShoppingCart();
 
             // Check if a Product already exists in the ShoppingCart instance
-            var existingProduct = cart.Items.FirstOrDefault(i => i.ID == ID);
+            var existingProduct = cart.Items.FirstOrDefault(i => i.ID == product.ID);
 
             if(existingProduct != null)
             {
