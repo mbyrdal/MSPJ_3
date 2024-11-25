@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Data.SqlClient;
 using ServiceAPI.DatabaseAccess.Interfaces;
-using ServiceAPI.DatabaseAccess.Utilities;
 using ServiceAPI.Models;
+using ServiceAPI.Utilities;
 
 namespace ServiceAPI.DatabaseAccess
 {

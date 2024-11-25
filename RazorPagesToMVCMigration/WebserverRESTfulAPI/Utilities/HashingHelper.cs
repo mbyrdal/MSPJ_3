@@ -1,4 +1,4 @@
-﻿namespace ServiceAPI.DatabaseAccess.Utilities
+﻿namespace ServiceAPI.Utilities
 {
     public static class HashingHelper
     {
@@ -9,7 +9,7 @@
         /// <returns>The hashed password.</returns>
         public static string HashAccountPassword(string plainTextPassword)
         {
-            if(string.IsNullOrWhiteSpace(plainTextPassword))
+            if (string.IsNullOrWhiteSpace(plainTextPassword))
             {
                 throw new ArgumentException("Password cannot be either null or have whitespace.", nameof(plainTextPassword));
             }
@@ -25,12 +25,12 @@
         /// <returns>True or False, depending on whether there is a match between the password and hash.</returns>
         public static bool VerifyAccountPassword(string plainTextPassword, string hashPassword)
         {
-            if(string.IsNullOrWhiteSpace(plainTextPassword))
+            if (string.IsNullOrWhiteSpace(plainTextPassword))
             {
                 throw new ArgumentException("Password cannot be either null or have whitespace.", nameof(plainTextPassword));
             }
 
-            if(string.IsNullOrWhiteSpace(hashPassword))
+            if (string.IsNullOrWhiteSpace(hashPassword))
             {
                 throw new ArgumentException("Hashed password cannot be either null or have whitespace.", nameof(hashPassword));
             }
@@ -38,6 +38,6 @@
             // Compare the plain text password to the hash
             return BCrypt.Net.BCrypt.Verify(plainTextPassword, hashPassword);
         }
-        
+
     }
 }

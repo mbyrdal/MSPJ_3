@@ -1,4 +1,4 @@
-﻿namespace ServiceAPI.DatabaseAccess.Utilities
+﻿namespace ServiceAPI.Utilities
 {
     public class ConnectionHelper
     {

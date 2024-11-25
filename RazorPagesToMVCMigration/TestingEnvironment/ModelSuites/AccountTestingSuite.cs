@@ -1,5 +1,5 @@
-﻿using ServiceAPI.DatabaseAccess.Utilities;
-using ServiceAPI.Models;
+﻿using ServiceAPI.Models;
+using ServiceAPI.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;

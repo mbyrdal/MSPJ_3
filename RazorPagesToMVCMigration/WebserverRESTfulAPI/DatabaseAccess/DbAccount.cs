@@ -2,8 +2,8 @@
 using Microsoft.Data.SqlClient;
 using ServiceAPI.BusinessLogic.Interfaces;
 using ServiceAPI.DatabaseAccess.Interfaces;
-using ServiceAPI.DatabaseAccess.Utilities;
 using ServiceAPI.Models;
+using ServiceAPI.Utilities;
 using System.Net;
 
 namespace ServiceAPI.DatabaseAccess

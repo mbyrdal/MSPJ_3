@@ -1,6 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 
-namespace ServiceAPI.DatabaseAccess.Utilities
+namespace ServiceAPI.Utilities
 {
     public class DbHelper
     {
@@ -15,11 +15,11 @@ namespace ServiceAPI.DatabaseAccess.Utilities
         public bool EntityExists(string tableName, string columnName, string columnValue)
         {
             bool entityExists = false;
-            using(SqlConnection conn = new SqlConnection(_connectionString))
+            using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
                 string entityExistsQuery = $"SELECT COUNT(1) FROM {tableName} WHERE {columnName} = @value";
-                using(SqlCommand checkCommand = new SqlCommand(entityExistsQuery, conn))
+                using (SqlCommand checkCommand = new SqlCommand(entityExistsQuery, conn))
                 {
                     checkCommand.Parameters.AddWithValue("@value", columnValue);
                     entityExists = Convert.ToInt32(checkCommand.ExecuteScalar()) == 1;
