@@ -19,6 +19,16 @@ builder.Services.AddScoped<IProductControl, ProductControl>();
 builder.Services.AddScoped<IAccountControl, AccountControl>();
 builder.Services.AddScoped<IGuestControl, GuestControl>();
 
+// Configure Session state to store ShoppingCart (customer specific)
+builder.Services.AddDistributedMemoryCache(); // For session storage
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(5);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
+
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -36,6 +46,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseSession(); // Enable session
 
 app.MapControllers();
 
