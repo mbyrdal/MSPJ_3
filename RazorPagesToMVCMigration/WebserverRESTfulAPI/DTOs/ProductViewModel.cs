@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace ServiceAPI.DTOs
@@ -10,9 +11,11 @@ namespace ServiceAPI.DTOs
         public int ID { get; set; }
 
         [Required]
+        [JsonIgnore]
         public int CarPartID { get; set; }
 
         [Required]
+        [JsonIgnore]
         public int SaleID { get; set; }
 
         [Required]
