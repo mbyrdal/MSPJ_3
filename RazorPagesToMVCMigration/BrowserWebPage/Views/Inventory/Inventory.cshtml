@@ -1,7 +1,4 @@
 ﻿@model List<ServiceAPI.DTOs.ProductViewModel>
-{
-    ViewData["Title"] = "Lager";
-}
 
 <!DOCTYPE html>
 <html lang="da">
@@ -12,7 +9,7 @@
 </head>
 <body>
     <header>
-        <img src="~/resources/images/Remove background project.png" alt="Huggerriget Logo" class="logo"> <!-- LOGO location -->
+        <img src="~/resources/images/Remove background project.png" alt="Huggerriget Logo" class="logo">
         <h1>HUGGERRIGET</h1>
         <p>I HYGGER, Julia HUGGER</p>
         <div class="top-links">
@@ -22,8 +19,6 @@
     </header>
 
     <main class="container">
-
-        <!-- Sidebar Section -->
         <aside class="sidebar">
             <h2>Hvad kigger du efter?</h2>
             <ul>
@@ -37,56 +32,46 @@
             </ul>
         </aside>
 
-        <!-- Main Content Area with Search and Lager Sections -->
         <div class="content-area">
             <!-- Main Search Section -->
             <section class="search-section">
                 <h2>Søg reservedele</h2>
-                <form id="search-part">
+                <form id="search-part" method="get">
                     <input type="text" name="partName" placeholder="Reservedel" id="partNameSearch" />
                     <button type="submit">Søg</button>
                 </form>
-                <img id="flying-image" src="~/resources/images/troll/9abmg7.jpg" alt="Flying Image" style="display: none;">
             </section>
 
-            <!-- Lager List Section -->
+            <!-- Search Results Table -->
             <section class="search-result">
                 <h3>Lager</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            
-                            <th>CarPartID</th>
-                            <th>SaleID</th>
-                            <th>OEM</th>
-                            <th>Price</th>
-                            <th>DateAvailable</th>
-                            <th>Condition</th>
-                            <th>ItemDescription</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var product in Model)
-                        {
-                            <tr>
-                                
-                                <td>@product.CarPartID</td>
-                                <td>@product.SaleID</td>
-                                <td>@product.OEM</td>
-                                <td>@product.Price</td>
-                                <td>@product.DateAvailable</td>
-                                <td>@product.Condition</td>
-                                <td>@product.ItemDescription</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+                <div id="search-results-container">
+                    @Html.Partial("_SearchResults.cshtml", Model)
+                </div>
             </section>
         </div>
     </main>
 
     <script src="~/js/script.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            // When the search form is submitted
+            $('#search-part').on('submit', function (event) {
+                event.preventDefault();  // Prevent the form from submitting normally
+
+                var partName = $('#partNameSearch').val();  // Get the search term
+
+                $.ajax({
+                    url: '@Url.Action("SearchParts", "Home")',  // URL to send the request
+                    data: { partName: partName },  // Send the search term
+                    success: function (data) {
+                        // Update the search results container with the returned partial view
+                        $('#search-results-container').html(data);
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>
-
-
