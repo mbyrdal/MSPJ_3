@@ -9,7 +9,6 @@ namespace ServiceAPI.DTOs
         [JsonIgnore]
         public int ID { get; set; }
 
-        [Required]
         [JsonIgnore]
         public int CarTemplateID { get; set; }
 

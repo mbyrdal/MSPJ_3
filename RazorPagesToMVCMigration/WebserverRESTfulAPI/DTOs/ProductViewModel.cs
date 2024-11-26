@@ -10,11 +10,9 @@ namespace ServiceAPI.DTOs
         [JsonIgnore]
         public int ID { get; set; }
 
-        [Required]
         [JsonIgnore]
         public int CarPartID { get; set; }
 
-        [Required]
         [JsonIgnore]
         public int SaleID { get; set; }
 
