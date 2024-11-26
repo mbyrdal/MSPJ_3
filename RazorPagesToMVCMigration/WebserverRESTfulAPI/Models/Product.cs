@@ -8,10 +8,10 @@ namespace ServiceAPI.Models
         public int ID { get; set; }
 
         [Required]
-        public int CarPartID { get; set; }
+        public int? CarPartID { get; set; }
 
         [Required]
-        public int SaleID { get; set; }
+        public int? SaleID { get; set; }
 
         [Required]
         [StringLength(40)]
