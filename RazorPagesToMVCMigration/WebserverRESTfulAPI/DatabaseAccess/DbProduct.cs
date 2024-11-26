@@ -58,7 +58,7 @@ namespace ServiceAPI.DatabaseAccess
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
-                using (SqlCommand readCommand = new SqlCommand("SELECT ID, CartPartID, SaleID, OEM, Price, DateAvailable, Condition, ItemDescription FROM Product WHERE ID = @ID", conn))
+                using (SqlCommand readCommand = new SqlCommand("SELECT ID, CarPartID, SaleID, OEM, Price, DateAvailable, Condition, ItemDescription FROM Product WHERE ID = @ID", conn))
                 {
                     // Bind value from string input OEM to parameter OEM from Product in DB.
                     readCommand.Parameters.AddWithValue("@ID", ID);
@@ -92,13 +92,13 @@ namespace ServiceAPI.DatabaseAccess
             {
                 conn.Open();
                 using (SqlCommand createCommand = new SqlCommand(
-                    "INSERT INTO Product (ID, CartPartID, SaleID, OEM, Price, DateAvailable, Condition, ItemDescription) "
-                    + "VALUES (@ID, @CartPartID, @SaleID, @OEM, @Price, @DateAvailable, @Condition, @ItemDescription)", conn
+                    "INSERT INTO Product (ID, CarPartID, SaleID, OEM, Price, DateAvailable, Condition, ItemDescription) "
+                    + "VALUES (@ID, @CarPartID, @SaleID, @OEM, @Price, @DateAvailable, @Condition, @ItemDescription)", conn
                     ))
                 {
                     // Mapping method input values to sql query input values
                     createCommand.Parameters.AddWithValue("@ID", newProduct.ID);
-                    createCommand.Parameters.AddWithValue("@CartPartID", newProduct.CarPartID);
+                    createCommand.Parameters.AddWithValue("@CarPartID", newProduct.CarPartID);
                     createCommand.Parameters.AddWithValue("@SaleID", newProduct.SaleID);
                     createCommand.Parameters.AddWithValue("@OEM", newProduct.OEM);
                     createCommand.Parameters.AddWithValue("@Price", newProduct.Price);
@@ -121,12 +121,12 @@ namespace ServiceAPI.DatabaseAccess
             {
                 conn.Open();
                 using (SqlCommand createCommand = new SqlCommand(
-                    "INSERT INTO Product (CartPartID, SaleID, OEM, Price, DateAvailable, Condition, ItemDescription) "
-                    + "VALUES (@CartPartID, @SaleID, @OEM, @Price, @DateAvailable, @Condition, @ItemDescription)", conn
+                    "INSERT INTO Product (CarPartID, SaleID, OEM, Price, DateAvailable, Condition, ItemDescription) "
+                    + "VALUES (@CarPartID, @SaleID, @OEM, @Price, @DateAvailable, @Condition, @ItemDescription)", conn
                     ))
                 {
                     // Mapping method input values to sql query input values
-                    createCommand.Parameters.AddWithValue("@CartPartID", newProduct.CarPartID);
+                    createCommand.Parameters.AddWithValue("@CarPartID", newProduct.CarPartID);
                     createCommand.Parameters.AddWithValue("@SaleID", newProduct.SaleID);
                     createCommand.Parameters.AddWithValue("@OEM", newProduct.OEM);
                     createCommand.Parameters.AddWithValue("@Price", newProduct.Price);
