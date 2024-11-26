@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 using ServiceAPI.DatabaseAccess.Interfaces;
+using ServiceAPI.DTOs;
 using ServiceAPI.Models;
 using ServiceAPI.Utilities;
 
@@ -46,24 +47,167 @@ namespace ServiceAPI.DatabaseAccess
             return carModels;
         }
 
-        public CarModel GetByIdentifier(int id)
+        public CarModel GetByIdentifier(int ID)
         {
-            throw new NotImplementedException();
+            CarModel carModel = null;
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                conn.Open();
+                using(SqlCommand readCommand = new SqlCommand("SELECT ID, CarTemplateID, VINNumber, ProductionYear, Mileage FROM CarModel WHERE ID = @ID", conn))
+                {
+                    readCommand.Parameters.AddWithValue("@ID", ID);
+                    using(SqlDataReader reader = readCommand.ExecuteReader())
+                    {
+                        if(reader.Read())
+                        {
+                            carModel = new CarModel(
+                                reader.GetInt32(reader.GetOrdinal("ID")),
+                                reader.GetInt32(reader.GetOrdinal("CarTemplateID")),
+                                reader.GetString(reader.GetOrdinal("VINNumber")),
+                                reader.GetDateTime(reader.GetOrdinal("ProductionYear")),
+                                reader.GetInt32(reader.GetOrdinal("Mileage")));
+                        }
+                    }
+                }
+                conn.Close();
+            }
+            return carModel;
         }
 
-        public int CreateEntity(CarModel entity)
+        public int CreateEntity(CarModel newCarModel)
         {
-            throw new NotImplementedException();
+            int numberOfRowsInserted;
+            using(SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                conn.Open();
+                using(SqlCommand createCommand = new SqlCommand(
+                    "INSERT INTO CarModel (ID, CarTemplateID, VINNumber, ProductionYear, Mileage " +
+                    "VALUES (@ID, @CarTemplateID, @VINNumber, @ProductionYear, @Mileage)", conn))
+                {
+                    createCommand.Parameters.AddWithValue("@ID", newCarModel.ID);
+                    createCommand.Parameters.AddWithValue("@CarTemplateID", newCarModel.CarTemplateID);
+                    createCommand.Parameters.AddWithValue("@VINNumber", newCarModel.VINNumber);
+                    createCommand.Parameters.AddWithValue("@ProductionYear", newCarModel.ProductionYear);
+                    createCommand.Parameters.AddWithValue("@Mileage", newCarModel.Mileage);
+                    numberOfRowsInserted = createCommand.ExecuteNonQuery();
+                }
+                conn.Close();
+            }
+            return numberOfRowsInserted;
         }
 
-        public bool DeleteEntity(int id)
+        public int CreateEntityDTO(CarModelViewModel newCarModel)
         {
-            throw new NotImplementedException();
+            int numberOfRowsInserted;
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                conn.Open();
+                using (SqlCommand createCommand = new SqlCommand(
+                    "INSERT INTO CarModel (VINNumber, ProductionYear, Mileage " +
+                    "VALUES (@VINNumber, @ProductionYear, @Mileage)", conn))
+                {
+                    createCommand.Parameters.AddWithValue("@VINNumber", newCarModel.VINNumber);
+                    createCommand.Parameters.AddWithValue("@ProductionYear", newCarModel.ProductionYear);
+                    createCommand.Parameters.AddWithValue("@Mileage", newCarModel.Mileage);
+                    numberOfRowsInserted = createCommand.ExecuteNonQuery();
+                }
+                conn.Close();
+            }
+            return numberOfRowsInserted;
         }
 
-        public int UpdateEntity(CarModel entity)
+        public int UpdateEntity(CarModel updateCarModel)
         {
-            throw new NotImplementedException();
+            int numberOfRowsUpdated = 0;
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                try
+                {
+                    conn.Open();
+                    using (SqlCommand updateCommand = new SqlCommand("UPDATE CarModel " +
+                                                                     "SET ID=@ID, CarTemplateID=@CarTemplateID, VINNumber=@VINNumber, " +
+                                                                     "ProductionYear=@ProductionYear, Mileage=@Mileage " +
+                                                                     "WHERE ID = @ID AND CarTemplateID=@CarTemplateID AND VINNumber = @VINNumber", conn))
+                    {
+                        updateCommand.Parameters.AddWithValue("@ID", updateCarModel.ID);
+                        updateCommand.Parameters.AddWithValue("@CarTemplateID", updateCarModel.CarTemplateID);
+                        updateCommand.Parameters.AddWithValue("@VINNumber", updateCarModel.VINNumber);
+                        updateCommand.Parameters.AddWithValue("@ProductionYear", updateCarModel.ProductionYear);
+                        updateCommand.Parameters.AddWithValue("@Mileage", updateCarModel.Mileage);
+
+                        numberOfRowsUpdated = updateCommand.ExecuteNonQuery();
+                    }
+                    conn.Close();
+                }
+                catch (SqlException ex)
+                {
+                    Console.WriteLine($"SQL error occurred: {ex.Message}");
+                }
+                return numberOfRowsUpdated;
+            }
+        }
+
+        public int UpdateEntityDTO(CarModelViewModel updateCarModel)
+        {
+            int numberOfRowsUpdated = 0;
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                try
+                {
+                    conn.Open();
+                    using (SqlCommand updateCommand = new SqlCommand("UPDATE CarModel " +
+                                                                     "SET VINNumber=@VINNumber, " +
+                                                                     "ProductionYear=@ProductionYear, Mileage=@Mileage " +
+                                                                     "WHERE ID = @ID AND CarTemplateID=@CarTemplateID AND VINNumber = @VINNumber", conn))
+                    {
+                        updateCommand.Parameters.AddWithValue("@ID", updateCarModel.ID);
+                        updateCommand.Parameters.AddWithValue("@CarTemplateID", updateCarModel.CarTemplateID);
+                        updateCommand.Parameters.AddWithValue("@VINNumber", updateCarModel.VINNumber);
+                        updateCommand.Parameters.AddWithValue("@ProductionYear", updateCarModel.ProductionYear);
+                        updateCommand.Parameters.AddWithValue("@Mileage", updateCarModel.Mileage);
+
+                        numberOfRowsUpdated = updateCommand.ExecuteNonQuery();
+                    }
+                    conn.Close();
+                }
+                catch (SqlException ex)
+                {
+                    Console.WriteLine($"SQL error occurred: {ex.Message}");
+                }
+                return numberOfRowsUpdated;
+            }
+        }
+
+        public bool DeleteEntity(int ID)
+        {
+            bool wasCarModelDeleted = false;
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                conn.Open();
+                using (SqlCommand deleteCommand = new SqlCommand("DELETE from CarModel WHERE ID = @ID", conn))
+                {
+                    deleteCommand.Parameters.AddWithValue("@ID", ID);
+                    int numberOfRowsAffectedByDeletion = deleteCommand.ExecuteNonQuery();
+                    wasCarModelDeleted = numberOfRowsAffectedByDeletion == 1;
+                }
+                conn.Close();
+            }
+            return wasCarModelDeleted;
+        }
+
+        internal bool CarModelExists(int ID, string VINNumber)
+        {
+            bool carModelExistsIdentifierExists = _dbHelper.EntityExists("CarModel", "ID", ID.ToString());
+            bool carModelVinExists = _dbHelper.EntityExists("CarModel", "VINNumber", VINNumber);
+
+            bool carModelExists = carModelExistsIdentifierExists && carModelVinExists;
+
+            if (!carModelExists)
+            {
+                return false;
+            }
+
+            return carModelExists;
         }
     }
 }

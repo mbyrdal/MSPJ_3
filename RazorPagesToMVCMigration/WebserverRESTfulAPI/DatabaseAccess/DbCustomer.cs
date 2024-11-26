@@ -136,6 +136,7 @@ namespace ServiceAPI.DatabaseAccess
                                                                      "SET FirstName=@FirstName, LastName=@LastName, Address=@Address, PhoneNum=@PhoneNum, Email=@Email " +
                                                                      "WHERE ID = @ID AND Email = @Email", conn))
                     {
+                        updateCommand.Parameters.AddWithValue("@ID", updateCustomer.ID);
                         updateCommand.Parameters.AddWithValue("@Firstname", updateCustomer.FirstName);
                         updateCommand.Parameters.AddWithValue("@Lastname", updateCustomer.LastName);
                         updateCommand.Parameters.AddWithValue("@Address", updateCustomer.Address);
