@@ -152,7 +152,7 @@ namespace ServiceAPI.Controllers
 
         // TODO: trim and remove existingProduct logic since _productControl.UpdateProduct handles existing product issue already.
         // PUT: https://localhost:7134/api/Products/ID
-        [HttpPut("{ID:int}")]
+        [HttpPut("dto/{ID:int}")]
         public IActionResult UpdateProductDTO(int ID, [FromBody] ProductViewModel updatedProduct)
         {
             if (updatedProduct == null)
