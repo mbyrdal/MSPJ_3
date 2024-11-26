@@ -59,7 +59,7 @@ namespace ServiceAPI.Controllers
 
         // POST: https://localhost:7134/api/Products/
         [HttpPost]
-        public ActionResult CreateProduct([FromBody] Product newProduct)
+        public ActionResult<Product> CreateProduct([FromBody] Product newProduct)
         {
             if (newProduct == null)
             {
@@ -85,11 +85,9 @@ namespace ServiceAPI.Controllers
             return Conflict($"ERROR: Product with ID '{newProduct.ID}' already exists in the database, or insertion failed in another manner.");
         }
 
-       
-
         // POST: https://localhost:7134/api/dto/Products/
         [HttpPost("dto")]
-        public ActionResult CreateProductDTO([FromBody] ProductViewModel newProduct)
+        public ActionResult<ProductViewModel> CreateProductDTO([FromBody] ProductViewModel newProduct)
         {
             if (newProduct == null)
             {
@@ -154,7 +152,7 @@ namespace ServiceAPI.Controllers
 
         // TODO: trim and remove existingProduct logic since _productControl.UpdateProduct handles existing product issue already.
         // PUT: https://localhost:7134/api/Products/ID
-        [HttpPut("dto/{ID:int}")]
+        [HttpPut("{ID:int}")]
         public IActionResult UpdateProductDTO(int ID, [FromBody] ProductViewModel updatedProduct)
         {
             if (updatedProduct == null)
