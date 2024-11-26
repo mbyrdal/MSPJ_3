@@ -1,6 +1,8 @@
 ﻿//using Microsoft.AspNetCore.Mvc;
 //using BrowserWebPage.Models;
 
+//exits if for use later otherwise delete
+
 //namespace BrowserWebPage.Controllers
 //{
 //    public class AccountController : Controller
