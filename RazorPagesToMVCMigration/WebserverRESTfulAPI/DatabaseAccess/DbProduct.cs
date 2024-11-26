@@ -121,13 +121,13 @@ namespace ServiceAPI.DatabaseAccess
             {
                 conn.Open();
                 using (SqlCommand createCommand = new SqlCommand(
-                    "INSERT INTO Product (CarPartID, SaleID, OEM, Price, DateAvailable, Condition, ItemDescription) "
-                    + "VALUES (@CarPartID, @SaleID, @OEM, @Price, @DateAvailable, @Condition, @ItemDescription)", conn
+                    "INSERT INTO Product (OEM, Price, DateAvailable, Condition, ItemDescription) "
+                    + "VALUES (@OEM, @Price, @DateAvailable, @Condition, @ItemDescription)", conn
                     ))
                 {
                     // Mapping method input values to sql query input values
-                    createCommand.Parameters.AddWithValue("@CarPartID", newProduct.CarPartID);
-                    createCommand.Parameters.AddWithValue("@SaleID", newProduct.SaleID);
+                    //createCommand.Parameters.AddWithValue("@CarPartID", newProduct.CarPartID);
+                    //createCommand.Parameters.AddWithValue("@SaleID", newProduct.SaleID);
                     createCommand.Parameters.AddWithValue("@OEM", newProduct.OEM);
                     createCommand.Parameters.AddWithValue("@Price", newProduct.Price);
                     createCommand.Parameters.AddWithValue("@DateAvailable", newProduct.DateAvailable);
