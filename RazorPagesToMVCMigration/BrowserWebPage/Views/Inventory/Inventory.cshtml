@@ -1,4 +1,4 @@
-﻿@model List<ServiceAPI.Models.Product>
+﻿@model List<ServiceAPI.DTOs.ProductViewModel>
 {
     ViewData["Title"] = "Lager";
 }
@@ -55,7 +55,7 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>ID</th>
+                            
                             <th>CarPartID</th>
                             <th>SaleID</th>
                             <th>OEM</th>
@@ -69,7 +69,7 @@
                         @foreach (var product in Model)
                         {
                             <tr>
-                                <td>@product.ID</td>
+                                
                                 <td>@product.CarPartID</td>
                                 <td>@product.SaleID</td>
                                 <td>@product.OEM</td>

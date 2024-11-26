@@ -1,5 +1,7 @@
 using BrowserWebPage.Models;
 using Microsoft.AspNetCore.Mvc;
+using ServiceAPI.DTOs;
+using ServiceAPI.Models;
 using System.Diagnostics;
 
 namespace BrowserWebPage.Controllers
@@ -19,7 +21,10 @@ namespace BrowserWebPage.Controllers
         }
         public IActionResult Inventory()
         {
-            return View("~/Views/Inventory/Inventory.cshtml");
+            ProductViewModel productViewModel = new ProductViewModel(1, 2, 3, "4", 5, new DateTime(2001-1-1), "8", "6");
+            List<ProductViewModel> productViewModelList = new List<ProductViewModel>();
+            productViewModelList.Add(productViewModel);
+            return View("~/Views/Inventory/Inventory.cshtml", productViewModelList);
         }
         public IActionResult Privacy()
         {
@@ -34,7 +39,7 @@ namespace BrowserWebPage.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View(new ServiceAPI.Models.ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
         public IActionResult AccountDetails()
