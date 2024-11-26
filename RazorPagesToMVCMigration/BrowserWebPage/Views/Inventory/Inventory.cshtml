@@ -1,4 +1,4 @@
-﻿@model List<BrowserWebPage.Models.Product>
+﻿@model List<ServiceAPI.Models.Product>
 {
     ViewData["Title"] = "Lager";
 }
@@ -55,24 +55,28 @@
                 <table>
                     <thead>
                         <tr>
+                            <th>ID</th>
+                            <th>CarPartID</th>
+                            <th>SaleID</th>
                             <th>OEM</th>
-                            <th>VINNummer</th>
-                            <th>Name</th>
                             <th>Price</th>
                             <th>DateAvailable</th>
-                            <th>Notes</th>
+                            <th>Condition</th>
+                            <th>ItemDescription</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var product in Model)
                         {
                             <tr>
+                                <td>@product.ID</td>
+                                <td>@product.CarPartID</td>
+                                <td>@product.SaleID</td>
                                 <td>@product.OEM</td>
-                                <td>@product.VINNumber</td>
-                                <td>@product.Name</td>
                                 <td>@product.Price</td>
                                 <td>@product.DateAvailable</td>
-                                <td>@product.Notes</td>
+                                <td>@product.Condition</td>
+                                <td>@product.ItemDescription</td>
                             </tr>
                         }
                     </tbody>
