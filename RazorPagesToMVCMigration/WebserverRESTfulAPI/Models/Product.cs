@@ -29,9 +29,11 @@ namespace ServiceAPI.Models
 
         public string ItemDescription { get; set; } = string.Empty;
 
+        public int Quantity { get; set; } = 1;
+
         public Product() { }
 
-        public Product(int ID, int cartPartID, int saleID, string oem, decimal price, DateTime dt, string cond, string itemDesc)
+        public Product(int ID, int cartPartID, int saleID, string oem, decimal price, DateTime dt, string cond, string itemDesc, int quantity)
         {
             this.ID = ID;
             CarPartID = cartPartID;
@@ -41,6 +43,7 @@ namespace ServiceAPI.Models
             DateAvailable = dt;
             Condition = cond;
             ItemDescription = itemDesc;
-        }
+            Quantity = quantity;
+    }
     }
 }
