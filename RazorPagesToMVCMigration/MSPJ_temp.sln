@@ -4,14 +4,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.11.35222.181
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RazorPagesToMVCMigration", "RazorPagesToMVCMigration\RazorPagesToMVCMigration.csproj", "{D8CB05BE-C7D6-4267-966C-44D29A0D9519}"
+	ProjectSection(ProjectDependencies) = postProject
+		{ACD8744B-2137-417F-9290-A2A773619354} = {ACD8744B-2137-417F-9290-A2A773619354}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MSPJ.TestingEnvironment", "TestingEnvironment\MSPJ.TestingEnvironment.csproj", "{EBBCE2ED-F8D2-4CB9-BE5A-99349D0ED272}"
 EndProject
-<<<<<<<< HEAD:RazorPagesToMVCMigration/MSPJ_temp.sln
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceAPI", "WebserverRESTfulAPI\ServiceAPI.csproj", "{ACD8744B-2137-417F-9290-A2A773619354}"
-========
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrowserWebPage", "BrowserWebPage\BrowserWebPage.csproj", "{E3F1EB3B-53E5-4B33-9301-7C17884AE691}"
->>>>>>>> origin/Frontend-Organize:RazorPagesToMVCMigration/MSPJ_Temp.sln
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BrowserWebPage", "BrowserWebPage\BrowserWebPage.csproj", "{E3F1EB3B-53E5-4B33-9301-7C17884AE691}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,17 +28,14 @@ Global
 		{EBBCE2ED-F8D2-4CB9-BE5A-99349D0ED272}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EBBCE2ED-F8D2-4CB9-BE5A-99349D0ED272}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EBBCE2ED-F8D2-4CB9-BE5A-99349D0ED272}.Release|Any CPU.Build.0 = Release|Any CPU
-<<<<<<<< HEAD:RazorPagesToMVCMigration/MSPJ_temp.sln
 		{ACD8744B-2137-417F-9290-A2A773619354}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{ACD8744B-2137-417F-9290-A2A773619354}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ACD8744B-2137-417F-9290-A2A773619354}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ACD8744B-2137-417F-9290-A2A773619354}.Release|Any CPU.Build.0 = Release|Any CPU
-========
 		{E3F1EB3B-53E5-4B33-9301-7C17884AE691}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E3F1EB3B-53E5-4B33-9301-7C17884AE691}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E3F1EB3B-53E5-4B33-9301-7C17884AE691}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E3F1EB3B-53E5-4B33-9301-7C17884AE691}.Release|Any CPU.Build.0 = Release|Any CPU
->>>>>>>> origin/Frontend-Organize:RazorPagesToMVCMigration/MSPJ_Temp.sln
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
