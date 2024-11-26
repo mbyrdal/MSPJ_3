@@ -17,7 +17,7 @@ namespace BrowserWebPage.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            return View("~Views/Inventory/Index.cshtml");
         }
         public IActionResult Inventory()
         {
