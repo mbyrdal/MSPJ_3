@@ -12,6 +12,24 @@ public class DbHelper
         _connectionString = helper.GetDBConnectionString();
     }
 
+    public bool EntityExists(string tableName, string columnName, string columnValue)
+    {
+        bool entityExists = false;
+        using(SqlConnection conn = new SqlConnection(_connectionString))
+        {
+            conn.Open();
+            string entityExistsQuery = $"SELECT COUNT(1) FROM {tableName} WHERE {columnName} = @value";
+            using (SqlCommand checkCommand = new SqlCommand(entityExistsQuery, conn))
+            {
+                // Add parameters to the query to prevent SQL injection
+                checkCommand.Parameters.AddWithValue("@value", columnValue);
+                entityExists = Convert.ToInt32(checkCommand.ExecuteScalar()) == 1;
+            }
+            conn.Close();
+        }
+        return entityExists;
+    }
+
     // Executes a query and returns a list of ProductViewModels
     public List<ProductViewModel> ExecuteQuery(string query, params SqlParameter[] parameters)
     {
