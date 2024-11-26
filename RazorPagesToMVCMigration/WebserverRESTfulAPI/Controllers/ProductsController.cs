@@ -59,7 +59,7 @@ namespace ServiceAPI.Controllers
 
         // POST: https://localhost:7134/api/Products/
         [HttpPost]
-        public ActionResult CreateProduct([FromBody] Product newProduct)
+        public ActionResult<Product> CreateProduct([FromBody] Product newProduct)
         {
             if (newProduct == null)
             {
@@ -85,37 +85,9 @@ namespace ServiceAPI.Controllers
             return Conflict($"ERROR: Product with ID '{newProduct.ID}' already exists in the database, or insertion failed in another manner.");
         }
 
-        // POST: https://localhost:7134/api/Products/
-        [HttpPost]
-        public ActionResult CreateProductDTO([FromBody] ProductViewModel newProduct)
-        {
-            if (newProduct == null)
-            {
-                // Return 400: Bad request response
-                return BadRequest("ERROR: Bad Product request body.");
-            }
-
-            var wasProductCreated = _productControl.AddProductDTO(newProduct);
-
-            if (wasProductCreated)
-            {
-                // Return 201: Successful creation (add) of new Product in DB
-                // Procedure below:
-                // CreatedAtAction response object is 201
-                // nameof(...) determines action method to be used
-                // new {...} determines input parameters
-                // newProduct is response object
-                return CreatedAtAction(nameof(GetProduct), new { ID = newProduct.ID }, newProduct);
-            }
-
-            // Return 409: Conflict by already existing ID (Product) or insertion fail
-            // Multiple, identical products may have the OEM number inherited from CarModel. TODO: DETERMINE IS THIS TRUE ???
-            return Conflict($"ERROR: Product with ID '{newProduct.ID}' already exists in the database, or insertion failed in another manner.");
-        }
-
         // POST: https://localhost:7134/api/dto/Products/
         [HttpPost("dto")]
-        public ActionResult CreateProductDTO([FromBody] ProductViewModel newProduct)
+        public ActionResult<ProductViewModel> CreateProductDTO([FromBody] ProductViewModel newProduct)
         {
             if (newProduct == null)
             {
