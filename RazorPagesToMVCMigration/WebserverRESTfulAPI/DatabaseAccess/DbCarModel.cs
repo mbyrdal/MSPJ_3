@@ -103,9 +103,10 @@ namespace ServiceAPI.DatabaseAccess
             {
                 conn.Open();
                 using (SqlCommand createCommand = new SqlCommand(
-                    "INSERT INTO CarModel (VINNumber, ProductionYear, Mileage " +
-                    "VALUES (@VINNumber, @ProductionYear, @Mileage)", conn))
+                    "INSERT INTO CarModel (CarTemplateID, VINNumber, ProductionYear, Mileage " +
+                    "VALUES (@CarTemplateID, @VINNumber, @ProductionYear, @Mileage)", conn))
                 {
+                    createCommand.Parameters.AddWithValue("@CarTemplateID", newCarModel.CarTemplateID);
                     createCommand.Parameters.AddWithValue("@VINNumber", newCarModel.VINNumber);
                     createCommand.Parameters.AddWithValue("@ProductionYear", newCarModel.ProductionYear);
                     createCommand.Parameters.AddWithValue("@Mileage", newCarModel.Mileage);
@@ -127,7 +128,7 @@ namespace ServiceAPI.DatabaseAccess
                     using (SqlCommand updateCommand = new SqlCommand("UPDATE CarModel " +
                                                                      "SET ID=@ID, CarTemplateID=@CarTemplateID, VINNumber=@VINNumber, " +
                                                                      "ProductionYear=@ProductionYear, Mileage=@Mileage " +
-                                                                     "WHERE ID = @ID AND CarTemplateID=@CarTemplateID AND VINNumber = @VINNumber", conn))
+                                                                     "WHERE ID = @ID", conn))
                     {
                         updateCommand.Parameters.AddWithValue("@ID", updateCarModel.ID);
                         updateCommand.Parameters.AddWithValue("@CarTemplateID", updateCarModel.CarTemplateID);
@@ -158,10 +159,9 @@ namespace ServiceAPI.DatabaseAccess
                     using (SqlCommand updateCommand = new SqlCommand("UPDATE CarModel " +
                                                                      "SET VINNumber=@VINNumber, " +
                                                                      "ProductionYear=@ProductionYear, Mileage=@Mileage " +
-                                                                     "WHERE ID = @ID AND CarTemplateID=@CarTemplateID AND VINNumber = @VINNumber", conn))
+                                                                     "WHERE ID = @ID", conn))
                     {
                         updateCommand.Parameters.AddWithValue("@ID", updateCarModel.ID);
-                        updateCommand.Parameters.AddWithValue("@CarTemplateID", updateCarModel.CarTemplateID);
                         updateCommand.Parameters.AddWithValue("@VINNumber", updateCarModel.VINNumber);
                         updateCommand.Parameters.AddWithValue("@ProductionYear", updateCarModel.ProductionYear);
                         updateCommand.Parameters.AddWithValue("@Mileage", updateCarModel.Mileage);
