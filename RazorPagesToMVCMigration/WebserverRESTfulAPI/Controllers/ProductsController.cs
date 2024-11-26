@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ServiceAPI.BusinessLogic;
 using ServiceAPI.BusinessLogic.Interfaces;
+using ServiceAPI.DTOs;
 using ServiceAPI.Models;
 
 namespace ServiceAPI.Controllers
@@ -83,6 +85,62 @@ namespace ServiceAPI.Controllers
             return Conflict($"ERROR: Product with ID '{newProduct.ID}' already exists in the database, or insertion failed in another manner.");
         }
 
+        // POST: https://localhost:7134/api/Products/
+        [HttpPost]
+        public ActionResult CreateProductDTO([FromBody] ProductViewModel newProduct)
+        {
+            if (newProduct == null)
+            {
+                // Return 400: Bad request response
+                return BadRequest("ERROR: Bad Product request body.");
+            }
+
+            var wasProductCreated = _productControl.AddProductDTO(newProduct);
+
+            if (wasProductCreated)
+            {
+                // Return 201: Successful creation (add) of new Product in DB
+                // Procedure below:
+                // CreatedAtAction response object is 201
+                // nameof(...) determines action method to be used
+                // new {...} determines input parameters
+                // newProduct is response object
+                return CreatedAtAction(nameof(GetProduct), new { ID = newProduct.ID }, newProduct);
+            }
+
+            // Return 409: Conflict by already existing ID (Product) or insertion fail
+            // Multiple, identical products may have the OEM number inherited from CarModel. TODO: DETERMINE IS THIS TRUE ???
+            return Conflict($"ERROR: Product with ID '{newProduct.ID}' already exists in the database, or insertion failed in another manner.");
+        }
+
+        // POST: https://localhost:7134/api/dto/Products/
+        [HttpPost("dto")]
+        public ActionResult CreateProductDTO([FromBody] ProductViewModel newProduct)
+        {
+            if (newProduct == null)
+            {
+                // Return 400: Bad request response
+                return BadRequest("ERROR: Bad Product request body.");
+            }
+
+            var wasProductCreated = _productControl.AddProductDTO(newProduct);
+
+            if (wasProductCreated)
+            {
+                // Return 201: Successful creation (add) of new Product in DB
+                // Procedure below:
+                // CreatedAtAction response object is 201
+                // nameof(...) determines action method to be used
+                // new {...} determines input parameters
+                // newProduct is response object
+                return CreatedAtAction(nameof(GetProduct), new { ID = newProduct.ID }, newProduct);
+            }
+
+            // Return 409: Conflict by already existing OEM (ProductViewModel) or insertion fail
+            // Multiple, identical products may have the OEM number inherited from CarModel. TODO: DETERMINE IS THIS TRUE ???
+            return Conflict($"ERROR: Product with OEM '{newProduct.OEM}' already exists in the database, or insertion failed in another manner.");
+        }
+
         // TODO: trim and remove existingProduct logic since _productControl.UpdateProduct handles existing product issue already.
         // PUT: https://localhost:7134/api/Products/ID
         [HttpPut("{ID:int}")]
@@ -111,6 +169,43 @@ namespace ServiceAPI.Controllers
             var wasProductUpdated = _productControl.UpdateProduct(updatedProduct);
 
             if(!wasProductUpdated)
+            {
+                // Return 500: Internal Server Error if the update fails
+                return StatusCode(500, $"ERROR: Unable to update Product with ID '{ID}' in the database.");
+            }
+
+            // Return 204: No Content (Successful update)
+            return NoContent();
+        }
+
+        // TODO: trim and remove existingProduct logic since _productControl.UpdateProduct handles existing product issue already.
+        // PUT: https://localhost:7134/api/Products/ID
+        [HttpPut("{ID:int}")]
+        public IActionResult UpdateProductDTO(int ID, [FromBody] ProductViewModel updatedProduct)
+        {
+            if (updatedProduct == null)
+            {
+                // Return 400: Bad request response
+                return BadRequest("ERROR: Bad Product request body.");
+            }
+
+            var existingProduct = _productControl.GetProductByID(ID);
+
+            if (existingProduct == null)
+            {
+                // Return 404: no existing product found
+                return NotFound($"No existing Product with OEM '{existingProduct.OEM}' found.");
+            }
+
+            if (existingProduct.ID != updatedProduct.ID)
+            {
+                // Return 409: OEMs of existing product and response body product do not match.
+                return Conflict($"Found Product with OEM '{existingProduct.OEM}' does not match OEM in request body '{updatedProduct.OEM}'.");
+            }
+
+            var wasProductUpdated = _productControl.UpdateProductDTO(updatedProduct);
+
+            if (!wasProductUpdated)
             {
                 // Return 500: Internal Server Error if the update fails
                 return StatusCode(500, $"ERROR: Unable to update Product with ID '{ID}' in the database.");

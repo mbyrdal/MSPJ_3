@@ -1,4 +1,5 @@
-﻿using ServiceAPI.Models;
+﻿using ServiceAPI.DTOs;
+using ServiceAPI.Models;
 namespace ServiceAPI.BusinessLogic.Interfaces
 {
     public interface IProductControl
@@ -6,7 +7,9 @@ namespace ServiceAPI.BusinessLogic.Interfaces
         Product GetProductByID(int ID);
         List<Product> GetAllProducts();
         bool AddProduct(Product product);
+        bool AddProductDTO(ProductViewModel productViewModel);
         bool UpdateProduct(Product product);
+        bool UpdateProductDTO(ProductViewModel productViewModel);
         bool DeleteProduct(int ID);
     }
 }

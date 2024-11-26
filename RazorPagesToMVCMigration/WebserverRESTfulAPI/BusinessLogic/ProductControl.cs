@@ -42,6 +42,7 @@ namespace ServiceAPI.BusinessLogic
             }
             return allProducts;
         }
+
         public bool AddProduct(Product product)
         {
             bool productExists = false;
@@ -64,6 +65,28 @@ namespace ServiceAPI.BusinessLogic
             return wasProductInserted;
         }
 
+        public bool AddProductDTO(ProductViewModel product)
+        {
+            bool productExists = false;
+            bool wasProductInserted = false;
+            int numberOfRowsInserted;
+            try
+            {
+                productExists = _dbProductAccess.ProductExists(product.ID); // Product exists based on whether its ID number can be found in the Product table.
+                if (!productExists) // CASE: Product does not exist in DB.
+                {
+                    numberOfRowsInserted = _dbProductAccess.CreateEntityDTO(product);
+                    wasProductInserted = (numberOfRowsInserted == 1); // If only one row was inserted, then we can determine that the product was added correctly.
+                }
+            }
+            catch (Exception ex)
+            {
+                product = null;
+                Debug.WriteLine(ex.Message);
+            }
+            return wasProductInserted;
+        }
+
         public bool UpdateProduct(Product product)
         {
             bool productExists = false;
@@ -79,6 +102,27 @@ namespace ServiceAPI.BusinessLogic
                 }
             }
             catch(Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+            }
+            return wasProductUpdated;
+        }
+
+        public bool UpdateProductDTO(ProductViewModel product)
+        {
+            bool productExists = false;
+            bool wasProductUpdated = false;
+            int numberOfRowsUpdated;
+            try
+            {
+                productExists = _dbProductAccess.ProductExists(product.ID);
+                if (productExists) // CASE: Product does exist in DB.
+                {
+                    numberOfRowsUpdated = _dbProductAccess.UpdateEntityDTO(product);
+                    wasProductUpdated = (numberOfRowsUpdated == 1);
+                }
+            }
+            catch (Exception ex)
             {
                 Debug.WriteLine(ex.Message);
             }

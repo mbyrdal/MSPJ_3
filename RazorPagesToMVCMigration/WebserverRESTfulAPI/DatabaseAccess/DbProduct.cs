@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Data.SqlClient;
 using ServiceAPI.DatabaseAccess.Interfaces;
+using ServiceAPI.DTOs;
 using ServiceAPI.Models;
 using ServiceAPI.Utilities;
 
@@ -113,6 +114,34 @@ namespace ServiceAPI.DatabaseAccess
             return numberOfRowsInserted;
         }
 
+        public int CreateEntityDTO(ProductViewModel newProduct)
+        {
+            int numberOfRowsInserted;
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                conn.Open();
+                using (SqlCommand createCommand = new SqlCommand(
+                    "INSERT INTO Product (CartPartID, SaleID, OEM, Price, DateAvailable, Condition, ItemDescription) "
+                    + "VALUES (@CartPartID, @SaleID, @OEM, @Price, @DateAvailable, @Condition, @ItemDescription)", conn
+                    ))
+                {
+                    // Mapping method input values to sql query input values
+                    createCommand.Parameters.AddWithValue("@CartPartID", newProduct.CarPartID);
+                    createCommand.Parameters.AddWithValue("@SaleID", newProduct.SaleID);
+                    createCommand.Parameters.AddWithValue("@OEM", newProduct.OEM);
+                    createCommand.Parameters.AddWithValue("@Price", newProduct.Price);
+                    createCommand.Parameters.AddWithValue("@DateAvailable", newProduct.DateAvailable);
+                    createCommand.Parameters.AddWithValue("@Condition", newProduct.Condition);
+                    createCommand.Parameters.AddWithValue("@ItemDescription", newProduct.ItemDescription);
+
+                    // Use non query because we are updating/changing the DB, not querying it
+                    numberOfRowsInserted = createCommand.ExecuteNonQuery();
+                }
+                conn.Close();
+            }
+            return numberOfRowsInserted;
+        }
+
         public int UpdateEntity(Product updateProduct)
         {
             int numberOfRowsUpdated = 0;
@@ -123,6 +152,39 @@ namespace ServiceAPI.DatabaseAccess
                     conn.Open();
                     using (SqlCommand updateCommand = new SqlCommand("UPDATE Product " +
                                                                      "SET ID=@ID, CarPartID=@CarPartID, SaleID=@SaleID, OEM=@OEM, " +
+                                                                     "Price=@Price, DateAvailable=@DateAvailable, Condition=@Condition, ItemDescription=@ItemDescription" +
+                                                                     "WHERE ID = @ID AND CarPartID = @CarPartID AND SaleID = @SaleID AND OEM = @OEM", conn))
+                    {
+                        // Mapping method input values to sql query input values
+                        updateCommand.Parameters.AddWithValue("@Price", updateProduct.Price);
+                        updateCommand.Parameters.AddWithValue("@DateAvailable", updateProduct.DateAvailable);
+                        updateCommand.Parameters.AddWithValue("@Condition", updateProduct.Condition);
+                        updateCommand.Parameters.AddWithValue("@ItemDescription", updateProduct.ItemDescription);
+
+                        // Use non query because we are updating/changing the DB, not querying it
+                        numberOfRowsUpdated = updateCommand.ExecuteNonQuery();
+                    }
+                    conn.Close();
+                }
+                catch (SqlException ex)
+                {
+                    // Log or handle the exception (logging to console for now)
+                    Console.WriteLine($"SQL error occurred: {ex.Message}");
+                }
+                return numberOfRowsUpdated;
+            }
+        }
+
+        public int UpdateEntityDTO(ProductViewModel updateProduct)
+        {
+            int numberOfRowsUpdated = 0;
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                try
+                {
+                    conn.Open();
+                    using (SqlCommand updateCommand = new SqlCommand("UPDATE Product " +
+                                                                     "SET CarPartID=@CarPartID, SaleID=@SaleID, OEM=@OEM, " +
                                                                      "Price=@Price, DateAvailable=@DateAvailable, Condition=@Condition, ItemDescription=@ItemDescription" +
                                                                      "WHERE ID = @ID AND CarPartID = @CarPartID AND SaleID = @SaleID AND OEM = @OEM", conn))
                     {

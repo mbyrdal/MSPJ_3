@@ -82,7 +82,7 @@ namespace ServiceAPI.Controllers
         }
 
         // DTO VERSION
-        // POST https://localhost:7134/api/Customers
+        // POST https://localhost:7134/api/dto/Customers
         [HttpPost("dto")]
         public ActionResult<Customer> CreateCustomerDTO([FromBody] CustomerViewModel customerDTO)
         {
@@ -107,7 +107,7 @@ namespace ServiceAPI.Controllers
             return Conflict($"ERROR: Customer with email '{customerDTO.Email}' already exists in the database, or insertion failed in another manner.");
         }
 
-        // PUT https://localhost:7134/api/Customers/ID
+        // PUT https://localhost:7134/api/dto/Customers/ID
         [HttpPut("{ID:int}")]
         public IActionResult UpdateCustomer(int ID, [FromBody] Customer updatedCustomer)
         {
@@ -144,7 +144,7 @@ namespace ServiceAPI.Controllers
         }
 
         // DTO VERSION
-        // PUT https://localhost:7134/api/Customers/ID
+        // PUT https://localhost:7134/api/dto/Customers/ID
         [HttpPut("dto/{ID:int}")]
         public IActionResult UpdateCustomerDTO(int ID, [FromBody] CustomerViewModel updatedCustomerDTO)
         {
