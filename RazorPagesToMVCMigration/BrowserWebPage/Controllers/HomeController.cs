@@ -1,50 +1,67 @@
 using BrowserWebPage.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using ServiceAPI.DTOs;
 using ServiceAPI.Models;
-using System.Diagnostics;
+using ServiceAPI.Utilities;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BrowserWebPage.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly DbHelper _dbHelper;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, DbHelper dbHelper)
         {
             _logger = logger;
+            _dbHelper = dbHelper;
         }
 
         public IActionResult Index()
         {
             return View();
         }
+
         public IActionResult Inventory()
         {
-            ProductViewModel productViewModel = new ProductViewModel(1, 2, 3, "4", 5, new DateTime(2001-1-1), "8", "6");
-            List<ProductViewModel> productViewModelList = new List<ProductViewModel>();
-            productViewModelList.Add(productViewModel);
+            // Initial list of products to display when the page loads (optional)
+            List<ProductViewModel> productViewModelList = new List<ProductViewModel>(); // Fetch actual data here
             return View("~/Views/Inventory/Inventory.cshtml", productViewModelList);
         }
-        public IActionResult Privacy()
+
+        // This method handles the AJAX request for searching spare parts
+        [HttpGet]
+        public IActionResult SearchParts(string partName)
         {
-            return View();
+            // Get products based on the search term for both OEM and part name (ItemDescription)
+            List<ProductViewModel> searchResults = SearchProductByCriteria(partName);
+
+            // Return the updated partial view with search results
+            return PartialView("_SearchResults", searchResults);
         }
 
-        public IActionResult CreateAccount()
+        // Method to search for products by both OEM and ItemDescription
+        private List<ProductViewModel> SearchProductByCriteria(string partName)
         {
-            return View("~/Views/Account/CreateAccount.cshtml");
-        }
+            List<ProductViewModel> searchResults = new List<ProductViewModel>();
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ServiceAPI.Models.ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+            if (!string.IsNullOrEmpty(partName))
+            {
+                // You can modify this query to include searching by both OEM and ItemDescription
+                var query = @"
+            SELECT CarPartID, SaleID, OEM, Price, DateAvailable, Condition, ItemDescription
+            FROM Products
+            WHERE ItemDescription LIKE @partName OR OEM LIKE @partName";
 
-        public IActionResult AccountDetails()
-        {
-            return View("~/Views/Account/Details.cshtml");
-        }
+                // Perform a case-insensitive search for both ItemDescription and OEM
+                var result = _dbHelper.ExecuteQuery(query, new SqlParameter("@partName", $"%{partName}%"));
+                searchResults = result.ToList();
+            }
+
+            return searchResults;
+        }       
     }
 }
