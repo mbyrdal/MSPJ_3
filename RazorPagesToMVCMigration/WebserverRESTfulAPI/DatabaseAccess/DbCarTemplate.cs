@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 using ServiceAPI.DatabaseAccess.Interfaces;
+using ServiceAPI.DTOs;
 using ServiceAPI.Models;
 using ServiceAPI.Utilities;
 
@@ -71,19 +72,119 @@ namespace ServiceAPI.DatabaseAccess
             return carTemplate;
         }
 
-        public int CreateEntity(CarTemplate entity)
+        public int CreateEntity(CarTemplate newCarTemplate)
         {
-            throw new NotImplementedException();
+            int numberOfRowsInserted;
+            using(SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                conn.Open();
+                using(SqlCommand createCommand = new SqlCommand(
+                    "INSERT INTO CarTemplate (ID, Brand, Model, CarType) " +
+                    "VALUES (@ID, @Brand, @Model, @CarType)", conn))
+                {
+                    createCommand.Parameters.AddWithValue("@ID", newCarTemplate.ID);
+                    createCommand.Parameters.AddWithValue("@Brand", newCarTemplate.Brand);
+                    createCommand.Parameters.AddWithValue("@Model", newCarTemplate.Model);
+                    createCommand.Parameters.AddWithValue("@CarType", newCarTemplate.CarType);
+                    numberOfRowsInserted = createCommand.ExecuteNonQuery();
+                }
+                conn.Close();
+            }
+            return numberOfRowsInserted;
         }
 
-        public int UpdateEntity(CarTemplate entity)
+        // DTO VERSION
+        public int CreateEntityDTO(CarTemplateViewModel newCarTemplate)
         {
-            throw new NotImplementedException();
+            int numberOfRowsInserted;
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                conn.Open();
+                using (SqlCommand createCommand = new SqlCommand(
+                    "INSERT INTO CarTemplate (Brand, Model, CarType) " +
+                    "VALUES (@Brand, @Model, @CarType)", conn))
+                {
+                    createCommand.Parameters.AddWithValue("@Brand", newCarTemplate.Brand);
+                    createCommand.Parameters.AddWithValue("@Model", newCarTemplate.Model);
+                    createCommand.Parameters.AddWithValue("@CarType", newCarTemplate.CarType);
+                    numberOfRowsInserted = createCommand.ExecuteNonQuery();
+                }
+                conn.Close();
+            }
+            return numberOfRowsInserted;
         }
 
-        public bool DeleteEntity(int id)
+        public int UpdateEntity(CarTemplate updateCarTemplate)
         {
-            throw new NotImplementedException();
+            int numberOfRowsUpdated = 0;
+            using(SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                try
+                {
+                    conn.Open();
+                    using (SqlCommand updateCommand = new SqlCommand(
+                        "UPDATE CarTemplate " +
+                        "SET ID=@ID, Brand=@Brand, Model=@Model, CarType=@CarType " +
+                        "WHERE ID=@ID", conn))
+                    {
+                        updateCommand.Parameters.AddWithValue("@ID", updateCarTemplate.ID);
+                        updateCommand.Parameters.AddWithValue("@Brand", updateCarTemplate.Brand);
+                        updateCommand.Parameters.AddWithValue("@Model", updateCarTemplate.Model);
+                        updateCommand.Parameters.AddWithValue("@CarType", updateCarTemplate.CarType);
+
+                        numberOfRowsUpdated = updateCommand.ExecuteNonQuery();
+                    }
+                }
+                catch (SqlException ex)
+                {
+                    Console.WriteLine($"SQL error occurred: {ex.Message}");
+                }
+            }
+        }
+
+        // DTO VERSION
+        public int UpdateEntityDTO(CarTemplateViewModel updateCarTemplate)
+        {
+            int numberOfRowsUpdated = 0;
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                try
+                {
+                    conn.Open();
+                    using (SqlCommand updateCommand = new SqlCommand(
+                        "UPDATE CarTemplate " +
+                        "SET Brand=@Brand, Model=@Model, CarType=@CarType " +
+                        "WHERE ID=@ID", conn))
+                    {
+                        updateCommand.Parameters.AddWithValue("@Brand", updateCarTemplate.Brand);
+                        updateCommand.Parameters.AddWithValue("@Model", updateCarTemplate.Model);
+                        updateCommand.Parameters.AddWithValue("@CarType", updateCarTemplate.CarType);
+
+                        numberOfRowsUpdated = updateCommand.ExecuteNonQuery();
+                    }
+                }
+                catch (SqlException ex)
+                {
+                    Console.WriteLine($"SQL error occurred: {ex.Message}");
+                }
+            }
+        }
+
+        public bool DeleteEntity(int ID)
+        {
+            bool wasCarTemplateDeleted = false;
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                conn.Open();
+                using (SqlCommand deleteCommand = new SqlCommand("DELETE from CarTemplate WHERE ID = @ID", conn))
+                {
+                    deleteCommand.Parameters.AddWithValue("@ID", ID);
+                    int numberOfRowsAffectedByDeletion = deleteCommand.ExecuteNonQuery();
+                    wasCarTemplateDeleted = numberOfRowsAffectedByDeletion == 1;
+                }
+                conn.Close();
+            }
+            return wasCarTemplateDeleted;
         }
     }
 }
