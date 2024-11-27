@@ -40,6 +40,16 @@ namespace BrowserWebPage.Controllers
             return View("~/Views/Inventory/Inventory.cshtml", productList);
         }
 
+        public IActionResult CreateAccount()
+        {
+            return View("~/Views/Account/CreateAccount.cshtml");
+        }
+
+        public IActionResult AccountDetails()
+        {
+            return View("~/Views/Account/Details.cshtml");
+        }
+
         // This method handles the AJAX request for searching spare parts
         [HttpGet]
         public IActionResult SearchParts(string partName)
