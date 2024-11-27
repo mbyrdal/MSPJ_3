@@ -1,10 +1,8 @@
-﻿@model List<ServiceAPI.DTOs.ProductViewModel>
+﻿@model List<ServiceAPI.Models.Product>
 
 <table>
     <thead>
         <tr>
-            <th>CarPartID</th>
-            <th>SaleID</th>
             <th>OEM</th>
             <th>Price</th>
             <th>DateAvailable</th>
@@ -17,9 +15,7 @@
         {
             foreach (var product in Model)
             {
-                <tr>
-                    <td>@product.CarPartID</td>
-                    <td>@product.SaleID</td>
+                <tr>                    
                     <td>@product.OEM</td>
                     <td>@product.Price</td>
                     <td>@product.DateAvailable</td>
