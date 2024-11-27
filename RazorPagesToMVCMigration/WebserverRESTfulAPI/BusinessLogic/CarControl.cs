@@ -54,7 +54,7 @@ namespace ServiceAPI.BusinessLogic
                 carExists = _dbCarAccess.CarExists(car.ID, car.VINNumber);
                 if (carExists) // CASE: Car does exist in DB --> Cannot be created
                 {
-                    throw new InvalidOperationException($"A CarModel with the ID '{car.ID}' and VINNumber '{car.VINNumber}' already exists in the CarModel table.");
+                    throw new InvalidOperationException($"A Car with the ID '{car.ID}' and VINNumber '{car.VINNumber}' already exists in the CarModel table.");
                 }
 
                 // Customer does not exist
@@ -69,101 +69,101 @@ namespace ServiceAPI.BusinessLogic
             return wasCarInserted;
         }
 
-        public bool AddCarDTO(CarViewModel carModel)
+        public bool AddCarDTO(CarViewModel car)
         {
-            bool carModelExists = false;
-            bool wasCarModelInserted = false;
+            bool carExists = false;
+            bool wasCarInserted = false;
             int numberOfRowsInserted;
             try
             {
-                carModelExists = _dbCarAccess.CarExists(carModel.ID, carModel.VINNumber);
-                if (carModelExists) // CASE: CarModel does exist in DB --> Cannot be created
+                carExists = _dbCarAccess.CarExists(car.ID, car.VINNumber);
+                if (carExists) // CASE: Car does exist in DB --> Cannot be created
                 {
-                    throw new InvalidOperationException($"A CarModel with the ID '{carModel.ID}' and VINNumber '{carModel.VINNumber}' already exists in the CarModel table.");
+                    throw new InvalidOperationException($"A Car with the ID '{car.ID}' and VINNumber '{car.VINNumber}' already exists in the CarModel table.");
                 }
 
-                // CarModel does not exist
-                numberOfRowsInserted = _dbCarAccess.CreateEntityDTO(carModel);
-                wasCarModelInserted = (numberOfRowsInserted == 1);
+                // Car does not exist
+                numberOfRowsInserted = _dbCarAccess.CreateEntityDTO(car);
+                wasCarInserted = (numberOfRowsInserted == 1);
             }
             catch (Exception ex)
             {
-                carModel = null;
+                car = null;
                 Debug.WriteLine(ex.Message);
             }
-            return wasCarModelInserted;
+            return wasCarInserted;
         }
 
-        public bool UpdateCar(Car carModel)
+        public bool UpdateCar(Car car)
         {
-            bool carModelExists = false;
-            bool wasCustomerUpdated = false;
+            bool carExists = false;
+            bool wasCarUpdated = false;
             int numberOfRowsUpdated;
             try
             {
-                carModelExists = _dbCarAccess.CarExists(carModel.ID, carModel.VINNumber);
-                if (!carModelExists) // CASE: CarModel does not exist in DB --> Cannot be updated
+                carExists = _dbCarAccess.CarExists(car.ID, car.VINNumber);
+                if (!carExists) // CASE: Car does not exist in DB --> Cannot be updated
                 {
-                    throw new InvalidOperationException($"A CarModel with the ID '{carModel.ID}' and VINNumber '{carModel.VINNumber}' does not exist in the Customer table.");
+                    throw new InvalidOperationException($"A Car with the ID '{car.ID}' and VINNumber '{car.VINNumber}' does not exist in the Customer table.");
                 }
 
                 // CarModel does exist
-                numberOfRowsUpdated = _dbCarAccess.UpdateEntity(carModel);
-                wasCustomerUpdated = (numberOfRowsUpdated == 1);
+                numberOfRowsUpdated = _dbCarAccess.UpdateEntity(car);
+                wasCarUpdated = (numberOfRowsUpdated == 1);
             }
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.Message);
             }
-            return wasCustomerUpdated;
+            return wasCarUpdated;
         }
 
-        public bool UpdateCarDTO(CarViewModel carModel)
+        public bool UpdateCarDTO(CarViewModel car)
         {
-            bool carModelExists = false;
-            bool wasCustomerUpdated = false;
+            bool carExists = false;
+            bool wasCarUpdated = false;
             int numberOfRowsUpdated;
             try
             {
-                carModelExists = _dbCarAccess.CarExists(carModel.ID, carModel.VINNumber);
-                if (!carModelExists) // CASE: CarModel does not exist in DB --> Cannot be updated
+                carExists = _dbCarAccess.CarExists(car.ID, car.VINNumber);
+                if (!carExists) // CASE: Car does not exist in DB --> Cannot be updated
                 {
-                    throw new InvalidOperationException($"A CarModel with the ID '{carModel.ID}' and VINNumber '{carModel.VINNumber}' does not exist in the Customer table.");
+                    throw new InvalidOperationException($"A Car with the ID '{car.ID}' and VINNumber '{car.VINNumber}' does not exist in the Customer table.");
                 }
 
-                // CarModel does exist
-                numberOfRowsUpdated = _dbCarAccess.UpdateEntityDTO(carModel);
-                wasCustomerUpdated = (numberOfRowsUpdated == 1);
+                // Cardoes exist
+                numberOfRowsUpdated = _dbCarAccess.UpdateEntityDTO(car);
+                wasCarUpdated = (numberOfRowsUpdated == 1);
             }
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.Message);
             }
-            return wasCustomerUpdated;
+            return wasCarUpdated;
         }
 
         public bool DeleteCar(int ID)
         {
-            bool carModelExists;
-            bool wasCarModelDeleted = false;
+            bool carExists;
+            bool wasCarDeleted = false;
             try
             {
-                string carModelVINNumber = GetCarByID(ID).VINNumber;
-                carModelExists = _dbCarAccess.CarExists(ID, carModelVINNumber);
-                if (!carModelExists)
+                string carVinNumber = GetCarByID(ID).VINNumber;
+                carExists = _dbCarAccess.CarExists(ID, carVinNumber);
+                if (!carExists)
                 {
-                    throw new InvalidOperationException($"A CarModel with the ID '{ID}' and VINNumber '{carModelVINNumber}' does not exist in the Customer table.");
+                    throw new InvalidOperationException($"A Car with the ID '{ID}' and VINNumber '{carVinNumber}' does not exist in the Customer table.");
                 }
 
-                // CASE: Customer does exist in DB
-                wasCarModelDeleted = _dbCarAccess.DeleteEntity(ID);
+                // CASE: Car does exist in DB
+                wasCarDeleted = _dbCarAccess.DeleteEntity(ID);
             }
             catch (Exception ex)
             {
-                wasCarModelDeleted = false;
+                wasCarDeleted = false;
                 Debug.WriteLine(ex.Message);
             }
-            return wasCarModelDeleted;
+            return wasCarDeleted;
         }
     }
 }
