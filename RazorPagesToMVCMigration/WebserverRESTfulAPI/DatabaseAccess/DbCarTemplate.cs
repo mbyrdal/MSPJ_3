@@ -139,6 +139,7 @@ namespace ServiceAPI.DatabaseAccess
                 {
                     Console.WriteLine($"SQL error occurred: {ex.Message}");
                 }
+                return numberOfRowsUpdated;
             }
         }
 
@@ -167,6 +168,7 @@ namespace ServiceAPI.DatabaseAccess
                 {
                     Console.WriteLine($"SQL error occurred: {ex.Message}");
                 }
+                return numberOfRowsUpdated;
             }
         }
 
@@ -185,6 +187,18 @@ namespace ServiceAPI.DatabaseAccess
                 conn.Close();
             }
             return wasCarTemplateDeleted;
+        }
+
+        internal bool CarTemplateExists(int ID)
+        {
+            bool carTemplateIdentifierExists = _dbHelper.EntityExists("Customer", "ID", ID.ToString());
+
+            if (!carTemplateIdentifierExists)
+            {
+                return false;
+            }
+
+            return carTemplateIdentifierExists;
         }
     }
 }
