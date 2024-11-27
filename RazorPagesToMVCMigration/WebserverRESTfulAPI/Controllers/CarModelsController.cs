@@ -20,7 +20,7 @@ namespace ServiceAPI.Controllers
 
         // GET https://localhost:7134/api/carmodels
         [HttpGet]
-        public ActionResult<List<CarModel>> GetCarModels()
+        public ActionResult<List<Car>> GetCarModels()
         {
             var allCarModels = _carModelControl.GetAllCarModels();
 
@@ -43,7 +43,7 @@ namespace ServiceAPI.Controllers
 
         // GET https://localhost:7134/api/carmodels/ID
         [HttpGet("{ID:int}")]
-        public ActionResult<CarModel> GetCarModel(int ID)
+        public ActionResult<Car> GetCarModel(int ID)
         {
             var foundCarModel = _carModelControl.GetCarModelByID(ID);
 
@@ -59,7 +59,7 @@ namespace ServiceAPI.Controllers
 
         // POST https://localhost:7134/api/carmodels
         [HttpPost]
-        public ActionResult<CarModel> CreateCarModel([FromBody] CarModel newCarModel)
+        public ActionResult<Car> CreateCarModel([FromBody] Car newCarModel)
         {
             if (newCarModel == null)
             {
@@ -109,7 +109,7 @@ namespace ServiceAPI.Controllers
 
         // PUT https://localhost:7134/api/dto/carmodels/ID
         [HttpPut("{ID:int}")]
-        public IActionResult UpdateCustomer(int ID, [FromBody] CarModel updatedCarModel)
+        public IActionResult UpdateCustomer(int ID, [FromBody] Car updatedCarModel)
         {
             if (updatedCarModel == null)
             {

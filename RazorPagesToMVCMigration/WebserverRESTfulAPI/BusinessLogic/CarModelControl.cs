@@ -8,16 +8,16 @@ namespace ServiceAPI.BusinessLogic
 {
     public class CarModelControl : ICarModelControl
     {
-        private readonly DbCarModel _dbCarModelAccess;
+        private readonly DbCar _dbCarModelAccess;
 
-        public CarModelControl(DbCarModel dbCarModelAccess)
+        public CarModelControl(DbCar dbCarModelAccess)
         {
             _dbCarModelAccess = dbCarModelAccess;
         }
 
-        public CarModel GetCarModelByID(int ID)
+        public Car GetCarModelByID(int ID)
         {
-            CarModel carModelPlaceholder = null;
+            Car carModelPlaceholder = null;
             try
             {
                 carModelPlaceholder = _dbCarModelAccess.GetByIdentifier(ID);
@@ -29,9 +29,9 @@ namespace ServiceAPI.BusinessLogic
             return carModelPlaceholder;
         }
 
-        public List<CarModel> GetAllCarModels()
+        public List<Car> GetAllCarModels()
         {
-            List<CarModel> allCarModels = new List<CarModel>();
+            List<Car> allCarModels = new List<Car>();
             try
             {
                 allCarModels = _dbCarModelAccess.GetAllEntities();
@@ -44,7 +44,7 @@ namespace ServiceAPI.BusinessLogic
             return allCarModels;
         }
 
-        public bool AddCarModel(CarModel carModel)
+        public bool AddCarModel(Car carModel)
         {
             bool carModelExists = false;
             bool wasCarModelInserted = false;
@@ -94,7 +94,7 @@ namespace ServiceAPI.BusinessLogic
             return wasCarModelInserted;
         }
 
-        public bool UpdateCarModel(CarModel carModel)
+        public bool UpdateCarModel(Car carModel)
         {
             bool carModelExists = false;
             bool wasCustomerUpdated = false;

@@ -5,11 +5,11 @@ namespace ServiceAPI.BusinessLogic.Interfaces
 {
     public interface ICarModelControl
     {
-        CarModel GetCarModelByID(int ID);
-        List<CarModel> GetAllCarModels();
-        bool AddCarModel(CarModel model);
+        Car GetCarModelByID(int ID);
+        List<Car> GetAllCarModels();
+        bool AddCarModel(Car model);
         bool AddCarModelDTO(CarModelViewModel model);
-        bool UpdateCarModel(CarModel model);
+        bool UpdateCarModel(Car model);
         bool UpdateCarModelDTO(CarModelViewModel model);
         bool DeleteCarModel(int ID);
     }

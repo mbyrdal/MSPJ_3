@@ -6,22 +6,22 @@ using ServiceAPI.Utilities;
 
 namespace ServiceAPI.DatabaseAccess
 {
-    public class DbCarModel : ICRUD_DB<CarModel>
+    public class DbCar : ICRUD_DB<Car>
     {
         // Configuration steps
         private string _connectionString;
         private readonly DbHelper _dbHelper;
 
-        public DbCarModel(IConfiguration configuration)
+        public DbCar(IConfiguration configuration)
         {
             _dbHelper = new DbHelper(configuration);
             ConnectionHelper helper = new ConnectionHelper(configuration);
             _connectionString = helper.GetDBConnectionString();
         }
 
-        public List<CarModel> GetAllEntities()
+        public List<Car> GetAllEntities()
         {
-            List<CarModel> carModels = new List<CarModel>();
+            List<Car> carModels = new List<Car>();
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
@@ -31,7 +31,7 @@ namespace ServiceAPI.DatabaseAccess
                     {
                         while (reader.Read())
                         {
-                            CarModel carModelsInTable = new CarModel(
+                            Car carModelsInTable = new Car(
                                 reader.GetInt32(reader.GetOrdinal("ID")),
                                 reader.GetInt32(reader.GetOrdinal("CarTemplateID")),
                                 reader.GetString(reader.GetOrdinal("VINNumber")),
@@ -47,9 +47,9 @@ namespace ServiceAPI.DatabaseAccess
             return carModels;
         }
 
-        public CarModel GetByIdentifier(int ID)
+        public Car GetByIdentifier(int ID)
         {
-            CarModel carModel = null;
+            Car carModel = null;
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
@@ -60,7 +60,7 @@ namespace ServiceAPI.DatabaseAccess
                     {
                         if(reader.Read())
                         {
-                            carModel = new CarModel(
+                            carModel = new Car(
                                 reader.GetInt32(reader.GetOrdinal("ID")),
                                 reader.GetInt32(reader.GetOrdinal("CarTemplateID")),
                                 reader.GetString(reader.GetOrdinal("VINNumber")),
@@ -74,7 +74,7 @@ namespace ServiceAPI.DatabaseAccess
             return carModel;
         }
 
-        public int CreateEntity(CarModel newCarModel)
+        public int CreateEntity(Car newCarModel)
         {
             int numberOfRowsInserted;
             using(SqlConnection conn = new SqlConnection(_connectionString))
@@ -117,7 +117,7 @@ namespace ServiceAPI.DatabaseAccess
             return numberOfRowsInserted;
         }
 
-        public int UpdateEntity(CarModel updateCarModel)
+        public int UpdateEntity(Car updateCarModel)
         {
             int numberOfRowsUpdated = 0;
             using (SqlConnection conn = new SqlConnection(_connectionString))

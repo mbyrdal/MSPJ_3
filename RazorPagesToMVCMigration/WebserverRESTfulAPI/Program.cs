@@ -12,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 // builder.Services.AddScoped<ICRUD_DB<Product>, DbProduct>(); ??
 builder.Services.AddScoped<DbProduct>();
 builder.Services.AddScoped<DbCustomer>();
-builder.Services.AddScoped<DbCarModel>();
+builder.Services.AddScoped<DbCar>();
 
 // Allows for Controllers to access CF objects through DI Container
 builder.Services.AddScoped<IProductControl, ProductControl>();
