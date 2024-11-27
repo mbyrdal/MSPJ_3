@@ -96,7 +96,7 @@ namespace ServiceAPI.DatabaseAccess
             return numberOfRowsInserted;
         }
 
-        public int CreateEntityDTO(CarModelViewModel newCarModel)
+        public int CreateEntityDTO(CarViewModel newCarModel)
         {
             int numberOfRowsInserted;
             using (SqlConnection conn = new SqlConnection(_connectionString))
@@ -148,7 +148,7 @@ namespace ServiceAPI.DatabaseAccess
             }
         }
 
-        public int UpdateEntityDTO(CarModelViewModel updateCarModel)
+        public int UpdateEntityDTO(CarViewModel updateCarModel)
         {
             int numberOfRowsUpdated = 0;
             using (SqlConnection conn = new SqlConnection(_connectionString))

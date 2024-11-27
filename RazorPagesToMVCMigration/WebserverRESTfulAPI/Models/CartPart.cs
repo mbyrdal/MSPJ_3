@@ -8,7 +8,7 @@ namespace ServiceAPI.Models
         public int ID { get; set; }
 
         [Required]
-        public int CarModelID { get; set; }
+        public int CarID { get; set; }
 
         [Required]
         [StringLength(30)]
@@ -23,10 +23,10 @@ namespace ServiceAPI.Models
 
         public CartPart() { }
 
-        public CartPart(int ID, int carModelID, string name, string notes)
+        public CartPart(int ID, int carID, string name, string notes)
         {
             this.ID = ID;
-            CarModelID = carModelID;
+            CarID = carID;
             Name = name;
             Notes = notes;
         }
