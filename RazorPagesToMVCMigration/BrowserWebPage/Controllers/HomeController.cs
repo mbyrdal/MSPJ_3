@@ -17,6 +17,7 @@ namespace BrowserWebPage.Controllers
 
         public IActionResult Index()
         {
+            ShoppingCart myShoppingCart = new ShoppingCart();
             return View("~Views/Inventory/Index.cshtml");
         }
         public IActionResult Inventory()
