@@ -1,6 +1,9 @@
-﻿namespace ServiceAPI.BusinessLogic
+﻿using ServiceAPI.BusinessLogic.Interfaces;
+
+namespace ServiceAPI.BusinessLogic
 {
-    public class CarTemplateControl
+    public class CarTemplateControl : ICarTemplateControl
     {
+
     }
 }
