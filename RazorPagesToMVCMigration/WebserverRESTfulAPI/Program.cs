@@ -11,13 +11,17 @@ var builder = WebApplication.CreateBuilder(args);
 // Allows for CF objects to access DbAccess objects through DI Container
 // builder.Services.AddScoped<ICRUD_DB<Product>, DbProduct>(); ??
 builder.Services.AddScoped<DbProduct>();
+// builder.Services.AddScoped<DbCarPart>();
 builder.Services.AddScoped<DbCustomer>();
 builder.Services.AddScoped<DbCar>();
+builder.Services.AddScoped<DbCarTemplate>();
 
 // Allows for Controllers to access CF objects through DI Container
 builder.Services.AddScoped<IProductControl, ProductControl>();
+// builder.Services.AddScoped<ICarPartControl, CarPartControl>();
 builder.Services.AddScoped<ICustomerControl, CustomerControl>();
-builder.Services.AddScoped<ICarModelControl, CarModelControl>();
+builder.Services.AddScoped<ICarControl, CarControl>();
+builder.Services.AddScoped<ICarTemplateControl, CarTemplateControl>();
 
 // Configure Session state to store ShoppingCart (customer specific)
 builder.Services.AddDistributedMemoryCache(); // For session storage

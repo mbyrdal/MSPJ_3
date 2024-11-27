@@ -11,9 +11,9 @@ namespace ServiceAPI.Controllers
     [ApiController]
     public class CarModelsController : ControllerBase
     {
-        private readonly ICarModelControl _carModelControl;
+        private readonly ICarControl _carModelControl;
 
-        public CarModelsController(ICarModelControl carModelControl)
+        public CarModelsController(ICarControl carModelControl)
         {
             _carModelControl = carModelControl;
         }
