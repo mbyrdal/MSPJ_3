@@ -84,7 +84,7 @@ namespace ServiceAPI.Controllers
 
         // POST https://localhost:7134/api/dto/carmodels
         [HttpPost("dto")]
-        public ActionResult<CarModelViewModel> CreateCarModelDTO([FromBody] CarModelViewModel newCarModel)
+        public ActionResult<CarViewModel> CreateCarModelDTO([FromBody] CarViewModel newCarModel)
         {
             if (newCarModel == null)
             {
@@ -145,7 +145,7 @@ namespace ServiceAPI.Controllers
 
         // PUT https://localhost:7134/api/dto/carmodels/dto/ID
         [HttpPut("dto/{ID:int}")]
-        public IActionResult UpdateCustomerDTO(int ID, [FromBody] CarModelViewModel updatedCarModel)
+        public IActionResult UpdateCustomerDTO(int ID, [FromBody] CarViewModel updatedCarModel)
         {
             if (updatedCarModel == null)
             {
