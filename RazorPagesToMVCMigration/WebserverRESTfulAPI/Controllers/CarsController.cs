@@ -9,55 +9,55 @@ namespace ServiceAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CarModelsController : ControllerBase
+    public class CarsController : ControllerBase
     {
-        private readonly ICarControl _carModelControl;
+        private readonly ICarControl _carControl;
 
-        public CarModelsController(ICarControl carModelControl)
+        public CarsController(ICarControl carControl)
         {
-            _carModelControl = carModelControl;
+            _carControl = carControl;
         }
 
-        // GET https://localhost:7134/api/carmodels
+        // GET https://localhost:7134/api/cars
         [HttpGet]
-        public ActionResult<List<Car>> GetCarModels()
+        public ActionResult<List<Car>> GetCars()
         {
-            var allCarModels = _carModelControl.GetAllCarModels();
+            var allCars = _carControl.GetAllCars();
 
-            if (allCarModels == null)
+            if (allCars == null)
             {
                 // Return 400: Bad request response
-                return BadRequest("ERROR: List of carModels is null. " +
+                return BadRequest("ERROR: List of cars is null. " +
                                   "A bad GET request was made.");
             }
 
-            if (allCarModels.Count == 0)
+            if (allCars.Count == 0)
             {
-                // Return 404: No carModels found
-                return NotFound("ERROR: No carModels found in the database.");
+                // Return 404: No cars found
+                return NotFound("ERROR: No cars found in the database.");
             }
 
             // Return 200: OK
-            return Ok(allCarModels);
+            return Ok(allCars);
         }
 
-        // GET https://localhost:7134/api/carmodels/ID
+        // GET https://localhost:7134/api/cars/ID
         [HttpGet("{ID:int}")]
-        public ActionResult<Car> GetCarModel(int ID)
+        public ActionResult<Car> GetCar(int ID)
         {
-            var foundCarModel = _carModelControl.GetCarModelByID(ID);
+            var foundCar = _carControl.GetCarByID(ID);
 
-            if (foundCarModel == null)
+            if (foundCar == null)
             {
                 // Return 404: No carModel found, null
-                return NotFound($"CarModel with ID '{ID}' not found.");
+                return NotFound($"Car with ID '{ID}' not found.");
             }
 
             // Return 200: OK
-            return Ok(foundCarModel);
+            return Ok(foundCar);
         }
 
-        // POST https://localhost:7134/api/carmodels
+        // POST https://localhost:7134/api/cars
         [HttpPost]
         public ActionResult<Car> CreateCarModel([FromBody] Car newCarModel)
         {
@@ -67,13 +67,13 @@ namespace ServiceAPI.Controllers
                 return BadRequest("ERROR: Bad CarModel request body.");
             }
 
-            var wasCarModelCreated = _carModelControl.AddCarModel(newCarModel);
+            var wasCarModelCreated = _carControl.AddCar(newCarModel);
 
             if (wasCarModelCreated)
             {
                 // Return 201: Created CarModel
                 return CreatedAtAction(
-                    nameof(GetCarModel),
+                    nameof(GetCar),
                     new { ID = newCarModel.ID },
                     newCarModel);
             }
@@ -82,7 +82,7 @@ namespace ServiceAPI.Controllers
             return Conflict($"ERROR: CarModel with ID '{newCarModel.ID}' already exists in the database, or insertion failed in another manner.");
         }
 
-        // POST https://localhost:7134/api/dto/carmodels
+        // POST https://localhost:7134/api/dto/cars
         [HttpPost("dto")]
         public ActionResult<CarViewModel> CreateCarModelDTO([FromBody] CarViewModel newCarModel)
         {
@@ -92,13 +92,13 @@ namespace ServiceAPI.Controllers
                 return BadRequest("ERROR: Bad CarModel request body.");
             }
 
-            var wasCarModelCreated = _carModelControl.AddCarModelDTO(newCarModel);
+            var wasCarModelCreated = _carControl.AddCarDTO(newCarModel);
 
             if (wasCarModelCreated)
             {
                 // Return 201: Created CarModel
                 return CreatedAtAction(
-                    nameof(GetCarModel),
+                    nameof(GetCar),
                     new { ID = newCarModel.ID },
                     newCarModel);
             }
@@ -107,7 +107,7 @@ namespace ServiceAPI.Controllers
             return Conflict($"ERROR: CarModel with ID '{newCarModel.ID}' already exists in the database, or insertion failed in another manner.");
         }
 
-        // PUT https://localhost:7134/api/dto/carmodels/ID
+        // PUT https://localhost:7134/api/dto/cars/ID
         [HttpPut("{ID:int}")]
         public IActionResult UpdateCustomer(int ID, [FromBody] Car updatedCarModel)
         {
@@ -117,7 +117,7 @@ namespace ServiceAPI.Controllers
                 return BadRequest("ERROR: Bad CarModel request body.");
             }
 
-            var existingCarModel = _carModelControl.GetCarModelByID(ID);
+            var existingCarModel = _carControl.GetCarByID(ID);
 
             if (existingCarModel == null)
             {
@@ -131,7 +131,7 @@ namespace ServiceAPI.Controllers
                 return Conflict($"Found CarModel with ID '{existingCarModel.ID}' does not match ID in request body '{updatedCarModel.ID}'.");
             }
 
-            var wasCarModelUpdated = _carModelControl.UpdateCarModel(updatedCarModel);
+            var wasCarModelUpdated = _carControl.UpdateCar(updatedCarModel);
 
             if (!wasCarModelUpdated)
             {
@@ -143,7 +143,7 @@ namespace ServiceAPI.Controllers
             return NoContent();
         }
 
-        // PUT https://localhost:7134/api/dto/carmodels/dto/ID
+        // PUT https://localhost:7134/api/dto/cars/dto/ID
         [HttpPut("dto/{ID:int}")]
         public IActionResult UpdateCustomerDTO(int ID, [FromBody] CarViewModel updatedCarModel)
         {
@@ -153,7 +153,7 @@ namespace ServiceAPI.Controllers
                 return BadRequest("ERROR: Bad CarModel request body.");
             }
 
-            var existingCarModel = _carModelControl.GetCarModelByID(ID);
+            var existingCarModel = _carControl.GetCarByID(ID);
 
             if (existingCarModel == null)
             {
@@ -167,7 +167,7 @@ namespace ServiceAPI.Controllers
                 return Conflict($"Found CarModel with ID '{existingCarModel.ID}' does not match ID in request body '{updatedCarModel.ID}'.");
             }
 
-            var wasCarModelUpdated = _carModelControl.UpdateCarModelDTO(updatedCarModel);
+            var wasCarModelUpdated = _carControl.UpdateCarDTO(updatedCarModel);
 
             if (!wasCarModelUpdated)
             {
@@ -179,11 +179,11 @@ namespace ServiceAPI.Controllers
             return NoContent();
         }
 
-        // DELETE: https://localhost:7134/api/carmodels/ID
+        // DELETE: https://localhost:7134/api/cars/ID
         [HttpDelete("{ID:int}")]
         public IActionResult DeleteCustomer(int ID)
         {
-            var foundCarModel = _carModelControl.GetCarModelByID(ID);
+            var foundCarModel = _carControl.GetCarByID(ID);
 
             if (foundCarModel == null)
             {
@@ -191,7 +191,7 @@ namespace ServiceAPI.Controllers
                 return NotFound($"No existing CarModel with ID '{foundCarModel.ID}' found.");
             }
 
-            var wasCarModelRemoved = _carModelControl.DeleteCarModel(ID);
+            var wasCarModelRemoved = _carControl.DeleteCar(ID);
 
             if (!wasCarModelRemoved)
             {
