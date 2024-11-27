@@ -22,15 +22,32 @@ namespace RazorPagesToMVCMigration.Controllers
             return View();
         }
 
-        public IActionResult Inventory()
+       /* public async Task<IActionResult> Inventory()
         {
-            /*
-            List<Car> allCars = (List<Car>)_carRepository.GetAll();
-            return View("~/Views/Inventory/Inventory.cshtml", allCars);
-            */
-            List<Product> allProducts = _productRepository.GetAll().ToList();
+            List<Product> allProducts = (await _productRepository.GetAllAsync()).ToList();
+            return View("~/Views/Inventory/Inventory.cshtml", allProducts);
+        }*/
+
+        public async Task<IActionResult> Inventory(string oemNumber)
+        {
+            List<Product> allProducts;
+
+            // If oemNumber is provided, filter products by OEM number
+            if (string.IsNullOrEmpty(oemNumber))
+            {
+                allProducts = (await _productRepository.GetAllAsync()).ToList();
+            }
+            else
+            {
+                // Filter products by oemNumber if a search term is provided
+                allProducts = (await _productRepository.GetAllAsync())
+                    .Where(p => p.OEM.Contains(oemNumber, StringComparison.OrdinalIgnoreCase)) // Case-insensitive search for OEM number
+                    .ToList();
+            }
+
             return View("~/Views/Inventory/Inventory.cshtml", allProducts);
         }
+
 
         public IActionResult Privacy()
         {

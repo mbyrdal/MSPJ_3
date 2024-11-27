@@ -13,6 +13,7 @@ namespace RazorPagesToMVCMigration.DAL.Repository
             var configHelper = new ConfigurationHelper(configuration);
             _connectionString = configHelper.GetDBConnectionString();
         }
+
         public void Create(Product entity)
         {
             throw new NotImplementedException();
@@ -23,34 +24,48 @@ namespace RazorPagesToMVCMigration.DAL.Repository
             throw new NotImplementedException();
         }
 
-        public IEnumerable<Product> GetAll()
-        {
-            List<Product> allProducts = new List<Product>();
+        public async Task<IEnumerable<Product>> GetAllAsync()
+{
+    List<Product> allProducts = new List<Product>();
 
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+    using (SqlConnection conn = new SqlConnection(_connectionString))
+    {
+        await conn.OpenAsync();
+        using (SqlCommand sqlQuery = new SqlCommand("SELECT * FROM Product", conn))
+        {
+            using (SqlDataReader reader = await sqlQuery.ExecuteReaderAsync())
             {
-                conn.Open();
-                using (SqlCommand sqlQuery = new SqlCommand("SELECT * FROM Product", conn))
+                if (!reader.HasRows)  // Check if no rows are returned
                 {
-                    using (SqlDataReader reader = sqlQuery.ExecuteReader())
+                    throw new InvalidOperationException("Error, No products returned"); //muligvis ændres 
+                }
+
+                while (await reader.ReadAsync())
+                {
+                    Product productInTable = new Product
                     {
-                        while (reader.Read())
-                        {
-                            Product productInTable = new Product
-                            {
-                                OEM = reader.GetString(0), // Column 1, VINNumber ...
-                                VINNumber = reader.GetString(1),
-                                Name = reader.GetString(2),
-                                Price = reader.GetDecimal(3),
-                                DateAvailable = reader.GetDateTime(4),
-                                Notes = reader.GetString(5)
-                            };
-                            allProducts.Add(productInTable);
-                        }
-                    }
+                       ID = reader.GetInt32(reader.GetOrdinal("ID")),
+                                CarPartID = reader.GetInt32(reader.GetOrdinal("CarPartID")),
+                                SaleID = reader.GetInt32(reader.GetOrdinal("SaleID")),
+                                OEM = reader.GetString(reader.GetOrdinal("OEM")),
+                                Price = reader.GetDecimal(reader.GetOrdinal("Price")),
+                                DateAvailable = reader.GetDateTime(reader.GetOrdinal("DateAvailable")),
+                                Condition = reader.GetString(reader.GetOrdinal("Condition")),
+                                ItemDescription = reader.GetString(reader.GetOrdinal("ItemDescription"))
+                    };
+                    allProducts.Add(productInTable);
                 }
             }
-            return allProducts;
+        }
+    }
+
+    return allProducts;
+}
+
+
+        public IEnumerable<Product> GetAll()
+        {
+            return GetAllAsync().Result;
         }
 
         public Product GetById(int id)

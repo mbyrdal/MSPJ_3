@@ -1,6 +1,7 @@
 ﻿@model List<RazorPagesToMVCMigration.Models.Product>
-{
-    ViewData["Title"] = "Lager";
+
+@{
+    ViewData["Title"] = "Inventory";
 }
 
 <!DOCTYPE html>
@@ -12,7 +13,7 @@
 </head>
 <body>
     <header>
-        <img src="~/resources/images/Remove background project.png" alt="Huggerriget Logo" class="logo"> <!-- LOGO location -->
+        <img src="~/resources/images/Remove background project.png" alt="Huggerriget Logo" class="logo">
         <h1>HUGGERRIGET</h1>
         <p>I HYGGER, Julia HUGGER</p>
         <div class="top-links">
@@ -23,48 +24,33 @@
 
     <main class="container">
 
-        <!-- Sidebar Section -->
-        <aside class="sidebar">
-            <h2>Hvad kigger du efter?</h2>
-            <ul>
-                <li><a href="#">Kategori 1</a></li>
-                <li><a href="#">Kategori 2</a></li>
-                <li><a href="#">Kategori 3</a></li>
-                <li><a href="#">Kategori 4</a></li>
-                <li><a href="#">Kategori 5</a></li>
-                <li><a href="#">Kategori 6</a></li>
-                <li><a href="#">Kategorier af Parts for Mads cybernetics implant</a></li>
-            </ul>
-        </aside>
+        <!-- Main Search Section -->
+        <section class="search-section">
+            <h2>Søg reservedele</h2>
+            <form method="get" action="@Url.Action("Inventory", "Home")">
+                <input type="text" name="oemNumber" placeholder="OEM Nummer" id="oemSearch" value="@Context.Request.Query["oemNumber"]" />
+                <button type="submit">Søg</button>
+            </form>
+        </section>
 
-        <!-- Main Content Area with Search and Lager Sections -->
-        <div class="content-area">
-            <!-- Main Search Section -->
-            <section class="search-section">
-                <h2>Søg reservedele</h2>
-                <form id="search-part">
-                    <input type="text" name="partName" placeholder="Reservedel" id="partNameSearch" />
-                    <button type="submit">Søg</button>
-                </form>
-                <img id="flying-image" src="~/resources/images/troll/9abmg7.jpg" alt="Flying Image" style="display: none;">
-            </section>
-
-            <!-- Lager List Section -->
-            <section class="search-result">
-                <h3>Lager</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>OEM</th>
-                            <th>VINNummer</th>
-                            <th>Name</th>
-                            <th>Price</th>
-                            <th>DateAvailable</th>
-                            <th>Notes</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var product in Model)
+        <!-- Lager List Section -->
+        <section class="search-result">
+            <h3>Lager</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>OEM</th>
+                        <th>VINNummer</th>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>DateAvailable</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Any())
+                    {
+                        foreach (var product in Model)
                         {
                             <tr>
                                 <td>@product.OEM</td>
@@ -75,14 +61,19 @@
                                 <td>@product.Notes</td>
                             </tr>
                         }
-                    </tbody>
-                </table>
-            </section>
-        </div>
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6">No products found.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </section>
+
     </main>
 
     <script src="~/js/script.js"></script>
 </body>
 </html>
-
-
