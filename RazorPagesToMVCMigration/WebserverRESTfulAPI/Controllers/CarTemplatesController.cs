@@ -58,27 +58,27 @@ namespace ServiceAPI.Controllers
 
         // POST https://localhost:7134/api/cartemplates
         [HttpPost]
-        public ActionResult<Car> CreateCarModel([FromBody] Car newCarModel)
+        public ActionResult<CarTemplate> CreateCarTemplate([FromBody] CarTemplate newCarTemplate)
         {
-            if (newCarModel == null)
+            if (newCarTemplate == null)
             {
                 // Return 400: Bad request response
-                return BadRequest("ERROR: Bad CarModel request body.");
+                return BadRequest("ERROR: Bad CarTemplate request body.");
             }
 
-            var wasCarModelCreated = _carControl.AddCar(newCarModel);
+            var wasCarTemplateCreated = _carTemplateControl.AddCarTemplate(newCarTemplate);
 
-            if (wasCarModelCreated)
+            if (wasCarTemplateCreated)
             {
                 // Return 201: Created CarModel
                 return CreatedAtAction(
-                    nameof(GetCar),
-                    new { ID = newCarModel.ID },
-                    newCarModel);
+                    nameof(GetCarTemplate),
+                    new { ID = newCarTemplate.ID },
+                    newCarTemplate);
             }
 
-            // Return 409: Conflict if failure when creating carModel (e.g., duplicate VINNumber)
-            return Conflict($"ERROR: CarModel with ID '{newCarModel.ID}' already exists in the database, or insertion failed in another manner.");
+            // Return 409: Conflict if failure when creating carTemplate (e.g., duplicate ID)
+            return Conflict($"ERROR: CarTemplate with ID '{newCarTemplate.ID}' already exists in the database, or insertion failed in another manner.");
         }
     }
 }
