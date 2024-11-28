@@ -15,20 +15,6 @@ namespace ServiceAPI.BusinessLogic
             _dbCarAccess = dbCarAccess;
         }
 
-        public Car GetCarByID(int ID)
-        {
-            Car carPlaceholder = null;
-            try
-            {
-                carPlaceholder = _dbCarAccess.GetByIdentifier(ID);
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.Message);
-            }
-            return carPlaceholder;
-        }
-
         public List<Car> GetAllCars()
         {
             List<Car> allCars = new List<Car>();
@@ -42,6 +28,20 @@ namespace ServiceAPI.BusinessLogic
                 Debug.WriteLine(ex.Message);
             }
             return allCars;
+        }
+
+        public Car GetCarByID(int ID)
+        {
+            Car carPlaceholder = null;
+            try
+            {
+                carPlaceholder = _dbCarAccess.GetByIdentifier(ID);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+            }
+            return carPlaceholder;
         }
 
         public bool AddCar(Car car)
@@ -128,7 +128,7 @@ namespace ServiceAPI.BusinessLogic
                 carExists = _dbCarAccess.CarExists(car.ID, car.VINNumber);
                 if (!carExists) // CASE: Car does not exist in DB --> Cannot be updated
                 {
-                    throw new InvalidOperationException($"A Car with the ID '{car.ID}' and VINNumber '{car.VINNumber}' does not exist in the Customer table.");
+                    throw new InvalidOperationException($"A Car with the ID '{car.ID}' and VINNumber '{car.VINNumber}' does not exist in the Car table.");
                 }
 
                 // Cardoes exist
@@ -152,7 +152,7 @@ namespace ServiceAPI.BusinessLogic
                 carExists = _dbCarAccess.CarExists(ID, carVinNumber);
                 if (!carExists)
                 {
-                    throw new InvalidOperationException($"A Car with the ID '{ID}' and VINNumber '{carVinNumber}' does not exist in the Customer table.");
+                    throw new InvalidOperationException($"A Car with the ID '{ID}' and VINNumber '{carVinNumber}' does not exist in the Car table.");
                 }
 
                 // CASE: Car does exist in DB

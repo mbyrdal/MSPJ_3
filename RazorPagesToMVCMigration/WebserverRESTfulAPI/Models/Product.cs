@@ -11,7 +11,7 @@ namespace ServiceAPI.Models
         public int? CarPartID { get; set; }
 
         [Required]
-        public int? SaleID { get; set; }
+        public int? CarID { get; set; }
 
         [Required]
         [StringLength(40)]
@@ -31,11 +31,11 @@ namespace ServiceAPI.Models
 
         public Product() { }
 
-        public Product(int ID, int cartPartID, int saleID, string oem, decimal price, DateTime dt, string cond, string itemDesc)
+        public Product(int ID, int cartPartID, int carID, string oem, decimal price, DateTime dt, string cond, string itemDesc)
         {
             this.ID = ID;
             CarPartID = cartPartID;
-            SaleID = saleID;
+            CarID = carID;
             OEM = oem;
             Price = price;
             DateAvailable = dt;
