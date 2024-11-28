@@ -43,7 +43,6 @@ namespace ServiceAPI.Models
             DateAvailable = dt;
             Condition = cond;
             ItemDescription = itemDesc;
-            DateSold = dateSold;
             ItemAvailable = isAvailable;
         }
     }
