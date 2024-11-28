@@ -29,13 +29,11 @@ namespace ServiceAPI.Models
 
         public string ItemDescription { get; set; } = string.Empty;
 
-        public DateTime? DateSold { get; set; }
-
         public bool ItemAvailable { get; set; }
 
         public Product() { }
 
-        public Product(int ID, int cartPartID, int carID, string oem, decimal price, DateTime dt, string cond, string itemDesc, DateTime dateSold, bool isAvailable)
+        public Product(int ID, int cartPartID, int carID, string oem, decimal price, DateTime dt, string cond, string itemDesc, bool isAvailable)
         {
             this.ID = ID;
             CarPartID = cartPartID;

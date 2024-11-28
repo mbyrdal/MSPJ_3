@@ -42,7 +42,6 @@ namespace ServiceAPI.DatabaseAccess
                                 DateAvailable = reader.GetDateTime(reader.GetOrdinal("DateAvailable")),
                                 Condition = reader.GetString(reader.GetOrdinal("Condition")),
                                 ItemDescription = reader.GetString(reader.GetOrdinal("ItemDescription")),
-                                DateSold = reader.GetDateTime(reader.GetOrdinal("DateSold")),
                                 ItemAvailable = reader.GetBoolean(reader.GetOrdinal("ItemAvailable"))
                             };
                             products.Add(productInTable);
@@ -61,7 +60,7 @@ namespace ServiceAPI.DatabaseAccess
             {
                 conn.Open();
                 using (SqlCommand readCommand = new SqlCommand("SELECT ID, CarPartID, CarID, OEM, Price, DateAvailable, " +
-                                                               "Condition, ItemDescription, DateSold, ItemAvailable FROM Product WHERE ID = @ID", conn))
+                                                               "Condition, ItemDescription, ItemAvailable FROM Product WHERE ID = @ID", conn))
                 {
                     // Bind value from string input OEM to parameter OEM from Product in DB.
                     readCommand.Parameters.AddWithValue("@ID", ID);
@@ -79,7 +78,6 @@ namespace ServiceAPI.DatabaseAccess
                                 DateAvailable = reader.GetDateTime(reader.GetOrdinal("DateAvailable")),
                                 Condition = reader.GetString(reader.GetOrdinal("Condition")),
                                 ItemDescription = reader.GetString(reader.GetOrdinal("ItemDescription")),
-                                DateSold = reader.GetDateTime(reader.GetOrdinal("DateSold")),
                                 ItemAvailable = reader.GetBoolean(reader.GetOrdinal("ItemAvailable"))
                             };
                         }
@@ -98,7 +96,7 @@ namespace ServiceAPI.DatabaseAccess
                 conn.Open();
                 using (SqlCommand createCommand = new SqlCommand(
                     "INSERT INTO Product (ID, CarPartID, CarID, OEM, Price, DateAvailable, Condition, ItemDescription, DateSold, ItemAvailable) "
-                    + "VALUES (@ID, @CarPartID, @CarID, @OEM, @Price, @DateAvailable, @Condition, @ItemDescription, @DateSold, @ItemAvailable)", conn
+                    + "VALUES (@ID, @CarPartID, @CarID, @OEM, @Price, @DateAvailable, @Condition, @ItemDescription, @ItemAvailable)", conn
                     ))
                 {
                     // Mapping method input values to sql query input values
@@ -110,7 +108,6 @@ namespace ServiceAPI.DatabaseAccess
                     createCommand.Parameters.AddWithValue("@DateAvailable", newProduct.DateAvailable);
                     createCommand.Parameters.AddWithValue("@Condition", newProduct.Condition);
                     createCommand.Parameters.AddWithValue("@ItemDescription", newProduct.ItemDescription);
-                    createCommand.Parameters.AddWithValue("@DateSold", newProduct.DateSold);
                     createCommand.Parameters.AddWithValue("@ItemAvailable", newProduct.ItemAvailable);
 
                     // Use non query because we are updating/changing the DB, not querying it
@@ -129,7 +126,7 @@ namespace ServiceAPI.DatabaseAccess
                 conn.Open();
                 using (SqlCommand createCommand = new SqlCommand(
                     "INSERT INTO Product (OEM, Price, DateAvailable, Condition, ItemDescription, DateSold, ItemAvailable) "
-                    + "VALUES (@OEM, @Price, @DateAvailable, @Condition, @ItemDescription, @DateSold, @ItemAvailable)", conn
+                    + "VALUES (@OEM, @Price, @DateAvailable, @Condition, @ItemDescription, @ItemAvailable)", conn
                     ))
                 {
                     // Mapping method input values to sql query input values
@@ -140,7 +137,6 @@ namespace ServiceAPI.DatabaseAccess
                     createCommand.Parameters.AddWithValue("@DateAvailable", newProduct.DateAvailable);
                     createCommand.Parameters.AddWithValue("@Condition", newProduct.Condition);
                     createCommand.Parameters.AddWithValue("@ItemDescription", newProduct.ItemDescription);
-                    createCommand.Parameters.AddWithValue("@DateSold", newProduct.DateSold);
                     createCommand.Parameters.AddWithValue("@ItemAvailable", newProduct.ItemAvailable);
 
                     // Use non query because we are updating/changing the DB, not querying it
@@ -162,7 +158,7 @@ namespace ServiceAPI.DatabaseAccess
                     using (SqlCommand updateCommand = new SqlCommand("UPDATE Product " +
                                                                      "SET ID=@ID, CarPartID=@CarPartID, CarID=@CarID, OEM=@OEM, " +
                                                                      "Price=@Price, DateAvailable=@DateAvailable, Condition=@Condition, " +
-                                                                     "ItemDescription=@ItemDescription, DateSold=@DateSold, ItemAvailable=@ItemAvailable" +
+                                                                     "ItemDescription=@ItemDescription, ItemAvailable=@ItemAvailable" +
                                                                      "WHERE ID = @ID AND OEM = @OEM", conn))
                     {
                         // Mapping method input values to sql query input values
@@ -174,7 +170,6 @@ namespace ServiceAPI.DatabaseAccess
                         updateCommand.Parameters.AddWithValue("@DateAvailable", updateProduct.DateAvailable);
                         updateCommand.Parameters.AddWithValue("@Condition", updateProduct.Condition);
                         updateCommand.Parameters.AddWithValue("@ItemDescription", updateProduct.ItemDescription);
-                        updateCommand.Parameters.AddWithValue("@DateSold", updateProduct.DateSold);
                         updateCommand.Parameters.AddWithValue("@ItemAvailable", updateProduct.ItemAvailable);
 
                         // Use non query because we are updating/changing the DB, not querying it
@@ -201,7 +196,7 @@ namespace ServiceAPI.DatabaseAccess
                     conn.Open();
                     using (SqlCommand updateCommand = new SqlCommand("UPDATE Product " +
                                                                      "SET Price=@Price, DateAvailable=@DateAvailable, Condition=@Condition, " +
-                                                                     "ItemDescription=@ItemDescription, DateSold=@DateSold, ItemAvailable=@ItemAvailable" +
+                                                                     "ItemDescription=@ItemDescription, ItemAvailable=@ItemAvailable" +
                                                                      "WHERE ID = @ID AND OEM = @OEM", conn))
                     {
                         // Mapping method input values to sql query input values
@@ -211,7 +206,6 @@ namespace ServiceAPI.DatabaseAccess
                         updateCommand.Parameters.AddWithValue("@DateAvailable", updateProduct.DateAvailable);
                         updateCommand.Parameters.AddWithValue("@Condition", updateProduct.Condition);
                         updateCommand.Parameters.AddWithValue("@ItemDescription", updateProduct.ItemDescription);
-                        updateCommand.Parameters.AddWithValue("DateSold", updateProduct.DateSold);
                         updateCommand.Parameters.AddWithValue("ItemAvailable", updateProduct.ItemAvailable);
 
                         // Use non query because we are updating/changing the DB, not querying it
