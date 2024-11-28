@@ -29,7 +29,7 @@ namespace ServiceAPI.Models
 
         public string ItemDescription { get; set; } = string.Empty;
 
-        public DateTime DateSold { get; set; }
+        public DateTime? DateSold { get; set; }
 
         public bool ItemAvailable { get; set; }
 
