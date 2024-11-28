@@ -32,6 +32,8 @@ namespace ServiceAPI.Models
         public string ItemDescription { get; set; } = string.Empty;
 
         public bool ItemAvailable { get; set; }
+        public Car ProductCarOrigin { get; set; }
+        public CarPart ProductCarPartOrigin { get; set; }
 
         public Product() { }
 

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using ServiceAPI.Models;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
@@ -14,7 +15,7 @@ namespace ServiceAPI.DTOs
         public int CarPartID { get; set; }
 
         [JsonIgnore]
-        public int SaleID { get; set; }
+        public int CarID { get; set; }
 
         [Required]
         [StringLength(40)]
@@ -30,17 +31,26 @@ namespace ServiceAPI.DTOs
         [StringLength(500)]
         public string Condition { get; set; } = string.Empty;
 
-        public string ItemDescription { get; set; } = string.Empty;
+        public string? ItemDescription { get; set; } = string.Empty;
 
+        [Required]
         public bool ItemAvailable { get; set; }
+
+        [Required]
+        [ForeignKey("CarPartID")]
+        public CarPart ProductCarPartOrigin { get; set; }
+
+        [Required]
+        [ForeignKey("CarID")]
+        public Car ProductCarOrigin { get; set; }
 
         public ProductViewModel() { }
 
-        public ProductViewModel(int ID, int cartPartID, int saleID, string oem, decimal price, DateTime dt, string cond, string itemDesc, bool itemAvailable)
+        public ProductViewModel(int ID, string oem, decimal price, DateTime dt, string cond, string itemDesc, bool itemAvailable, CarPart myCarPart, Car myCar)
         {
             this.ID = ID;
-            CarPartID = cartPartID;
-            SaleID = saleID;
+            CarPartID = myCarPart.ID;
+            CarID = myCar.ID;
             OEM = oem;
             Price = price;
             DateAvailable = dt;
