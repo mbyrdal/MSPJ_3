@@ -93,27 +93,6 @@ namespace ServiceAPI.DatabaseAccess
             return numberOfRowsInserted;
         }
 
-        // DTO VERSION
-        public int CreateEntityDTO(CarTemplateViewModel newCarTemplate)
-        {
-            int numberOfRowsInserted;
-            using (SqlConnection conn = new SqlConnection(_connectionString))
-            {
-                conn.Open();
-                using (SqlCommand createCommand = new SqlCommand(
-                    "INSERT INTO CarTemplate (Brand, Model, CarType) " +
-                    "VALUES (@Brand, @Model, @CarType)", conn))
-                {
-                    createCommand.Parameters.AddWithValue("@Brand", newCarTemplate.Brand);
-                    createCommand.Parameters.AddWithValue("@Model", newCarTemplate.Model);
-                    createCommand.Parameters.AddWithValue("@CarType", newCarTemplate.CarType);
-                    numberOfRowsInserted = createCommand.ExecuteNonQuery();
-                }
-                conn.Close();
-            }
-            return numberOfRowsInserted;
-        }
-
         public int UpdateEntity(CarTemplate updateCarTemplate)
         {
             int numberOfRowsUpdated = 0;
@@ -128,35 +107,6 @@ namespace ServiceAPI.DatabaseAccess
                         "WHERE ID=@ID", conn))
                     {
                         updateCommand.Parameters.AddWithValue("@ID", updateCarTemplate.ID);
-                        updateCommand.Parameters.AddWithValue("@Brand", updateCarTemplate.Brand);
-                        updateCommand.Parameters.AddWithValue("@Model", updateCarTemplate.Model);
-                        updateCommand.Parameters.AddWithValue("@CarType", updateCarTemplate.CarType);
-
-                        numberOfRowsUpdated = updateCommand.ExecuteNonQuery();
-                    }
-                }
-                catch (SqlException ex)
-                {
-                    Console.WriteLine($"SQL error occurred: {ex.Message}");
-                }
-                return numberOfRowsUpdated;
-            }
-        }
-
-        // DTO VERSION
-        public int UpdateEntityDTO(CarTemplateViewModel updateCarTemplate)
-        {
-            int numberOfRowsUpdated = 0;
-            using (SqlConnection conn = new SqlConnection(_connectionString))
-            {
-                try
-                {
-                    conn.Open();
-                    using (SqlCommand updateCommand = new SqlCommand(
-                        "UPDATE CarTemplate " +
-                        "SET Brand=@Brand, Model=@Model, CarType=@CarType " +
-                        "WHERE ID=@ID", conn))
-                    {
                         updateCommand.Parameters.AddWithValue("@Brand", updateCarTemplate.Brand);
                         updateCommand.Parameters.AddWithValue("@Model", updateCarTemplate.Model);
                         updateCommand.Parameters.AddWithValue("@CarType", updateCarTemplate.CarType);

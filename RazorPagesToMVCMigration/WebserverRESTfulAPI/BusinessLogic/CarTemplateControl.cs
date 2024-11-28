@@ -69,31 +69,6 @@ namespace ServiceAPI.BusinessLogic
             return wasCarTemplateInserted;
         }
 
-        public bool AddCarTemplateDTO(CarTemplateViewModel newCarTemplate)
-        {
-            bool carTemplateExists = false;
-            bool wasCarTemplateInserted = false;
-            int numberOfRowsInserted;
-            try
-            {
-                carTemplateExists = _dbCarTemplateAccess.CarTemplateExists(newCarTemplate.ID);
-                if (carTemplateExists) // CASE: CarTemplate does exist in DB --> Cannot be created
-                {
-                    throw new InvalidOperationException($"A CarTemplate with the ID '{newCarTemplate.ID}' already exists in the CarTemplate table.");
-                }
-
-                // Customer does not exist
-                numberOfRowsInserted = _dbCarTemplateAccess.CreateEntityDTO(newCarTemplate);
-                wasCarTemplateInserted = (numberOfRowsInserted == 1);
-            }
-            catch (Exception ex)
-            {
-                newCarTemplate = null;
-                Debug.WriteLine(ex.Message);
-            }
-            return wasCarTemplateInserted;
-        }
-
         public bool UpdateCarTemplate(CarTemplate updateCarTemplate)
         {
             bool carTemplateExists = false;
@@ -109,30 +84,6 @@ namespace ServiceAPI.BusinessLogic
 
                 // CarModel does exist
                 numberOfRowsUpdated = _dbCarTemplateAccess.UpdateEntity(updateCarTemplate);
-                wasCarTemplateUpdated = (numberOfRowsUpdated == 1);
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.Message);
-            }
-            return wasCarTemplateUpdated;
-        }
-
-        public bool UpdateCarTemplateDTO(CarTemplateViewModel updateCarTemplate)
-        {
-            bool carTemplateExists = false;
-            bool wasCarTemplateUpdated = false;
-            int numberOfRowsUpdated;
-            try
-            {
-                carTemplateExists = _dbCarTemplateAccess.CarTemplateExists(updateCarTemplate.ID);
-                if (!carTemplateExists) // CASE: Car does not exist in DB --> Cannot be updated
-                {
-                    throw new InvalidOperationException($"A CarTemplate with the ID '{updateCarTemplate.ID}' does not exist in the CarTemplate table.");
-                }
-
-                // CarModel does exist
-                numberOfRowsUpdated = _dbCarTemplateAccess.UpdateEntityDTO(updateCarTemplate);
                 wasCarTemplateUpdated = (numberOfRowsUpdated == 1);
             }
             catch (Exception ex)

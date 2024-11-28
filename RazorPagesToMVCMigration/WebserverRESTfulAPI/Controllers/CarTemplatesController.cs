@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ServiceAPI.BusinessLogic;
 using ServiceAPI.BusinessLogic.Interfaces;
+using ServiceAPI.DTOs;
 using ServiceAPI.Models;
 
 namespace ServiceAPI.Controllers
@@ -79,6 +80,65 @@ namespace ServiceAPI.Controllers
 
             // Return 409: Conflict if failure when creating carTemplate (e.g., duplicate ID)
             return Conflict($"ERROR: CarTemplate with ID '{newCarTemplate.ID}' already exists in the database, or insertion failed in another manner.");
+        }
+
+        // PUT https://localhost:7134/api/dto/cartemplates/ID
+        [HttpPut("{ID:int}")]
+        public IActionResult UpdateCarTemplate(int ID, [FromBody] CarTemplate updatedCarTemplate)
+        {
+            if (updatedCarTemplate == null)
+            {
+                // Return 400: Bad request response
+                return BadRequest("ERROR: Bad CarTemplate request body.");
+            }
+
+            var existingCarTemplate = _carTemplateControl.GetCarTemplateByID(ID);
+
+            if (existingCarTemplate == null)
+            {
+                // Return 404: no existing carTemplate found
+                return NotFound($"No existing Car with ID '{existingCarTemplate.ID}' found.");
+            }
+
+            if (existingCarTemplate.ID != updatedCarTemplate.ID)
+            {
+                // Return 409: IDs of existing carTemplate and response body car do not match.
+                return Conflict($"Found CarTemplate with ID '{existingCarTemplate.ID}' does not match ID in request body '{updatedCarTemplate.ID}'.");
+            }
+
+            var wasCarTemplateUpdated = _carTemplateControl.UpdateCarTemplate(updatedCarTemplate);
+
+            if (!wasCarTemplateUpdated)
+            {
+                // Return 500: Internal Server Error if the update fails
+                return StatusCode(500, $"ERROR: Unable to update CarTemplate with ID '{ID}' in the database.");
+            }
+
+            // Return 204: No Content (Successful deletion)
+            return NoContent();
+        }
+
+        // DELETE: https://localhost:7134/api/cartemplates/ID
+        [HttpDelete("{ID:int}")]
+        public IActionResult DeleteCarTemplate(int ID)
+        {
+            var foundCarTemplate = _carTemplateControl.GetCarTemplateByID(ID);
+
+            if (foundCarTemplate == null)
+            {
+                // Return 404: no existing carTemplate found
+                return NotFound($"No existing CarTemplate with ID '{foundCarTemplate.ID}' found.");
+            }
+
+            var wasCarTemplateRemoved = _carTemplateControl.DeleteCarTemplate(ID);
+
+            if (!wasCarTemplateRemoved)
+            {
+                return StatusCode(500, $"ERROR: Unable to delete CarTemplate with ID '{foundCarTemplate.ID}' from database.");
+            }
+
+            // Return 204: No content (Successful deletion)
+            return NoContent();
         }
     }
 }
