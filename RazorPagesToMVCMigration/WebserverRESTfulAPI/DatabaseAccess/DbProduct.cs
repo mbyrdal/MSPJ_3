@@ -246,5 +246,22 @@ namespace ServiceAPI.DatabaseAccess
         {
             return _dbHelper.EntityExists("Product", "ID", ID.ToString());
         }
+
+
+
+        internal bool ProductForeignKeyIDsExists(int carPartID, int carID)
+        {
+            bool carPartExists = false;
+            bool carExists = false;
+            bool canProductBeCreated = false;
+
+            carPartExists = _dbHelper.EntityExists("CarPart", "ID", carPartID.ToString());
+            carExists = _dbHelper.EntityExists("Car", "ID", carID.ToString());
+
+            canProductBeCreated = carPartExists && carExists;
+
+            return canProductBeCreated;
+
+        }
     }
 }
