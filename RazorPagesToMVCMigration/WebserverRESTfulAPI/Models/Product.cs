@@ -8,10 +8,10 @@ namespace ServiceAPI.Models
         public int ID { get; set; }
 
         [Required]
-        public int? CarPartID { get; set; }
+        public int CarPartID { get; set; }
 
         [Required]
-        public int? CarID { get; set; }
+        public int CarID { get; set; }
 
         [Required]
         [StringLength(40)]
@@ -29,9 +29,13 @@ namespace ServiceAPI.Models
 
         public string ItemDescription { get; set; } = string.Empty;
 
+        public DateTime DateSold { get; set; }
+
+        public bool IsAvailable { get; set; }
+
         public Product() { }
 
-        public Product(int ID, int cartPartID, int carID, string oem, decimal price, DateTime dt, string cond, string itemDesc)
+        public Product(int ID, int cartPartID, int carID, string oem, decimal price, DateTime dt, string cond, string itemDesc, DateTime dateSold, bool isAvailable)
         {
             this.ID = ID;
             CarPartID = cartPartID;
@@ -41,6 +45,8 @@ namespace ServiceAPI.Models
             DateAvailable = dt;
             Condition = cond;
             ItemDescription = itemDesc;
+            DateSold = dateSold;
+            IsAvailable = isAvailable;
         }
     }
 }
