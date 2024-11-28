@@ -1,4 +1,4 @@
-using ServiceAPI.BusinessLogic;
+/*using ServiceAPI.BusinessLogic;
 using ServiceAPI.BusinessLogic.Interfaces;
 using ServiceAPI.DatabaseAccess;
 using ServiceAPI.DatabaseAccess.Interfaces;
@@ -37,6 +37,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddScoped<DbProduct>();
 
 var app = builder.Build();
 
@@ -55,9 +56,62 @@ app.UseSession(); // Enable session
 
 app.MapControllers();
 
+
 /*
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Products}/{action=GetProducts}/{id?}");
+
+app.Run();
+
 */
+
+using ServiceAPI.BusinessLogic.Interfaces;
+using ServiceAPI.BusinessLogic;
+using ServiceAPI.DatabaseAccess;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+builder.Services.AddScoped<DbProduct>();
+builder.Services.AddScoped<DbCustomer>();
+builder.Services.AddScoped<DbCar>();
+builder.Services.AddScoped<DbCarTemplate>();
+
+builder.Services.AddScoped<IProductControl, ProductControl>();
+builder.Services.AddScoped<ICustomerControl, CustomerControl>();
+builder.Services.AddScoped<ICarControl, CarControl>();
+builder.Services.AddScoped<ICarTemplateControl, CarTemplateControl>();
+
+// Configure session state to store ShoppingCart (customer specific)
+builder.Services.AddDistributedMemoryCache(); // For session storage
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(5); // Session timeout
+    options.Cookie.HttpOnly = true; // Make session cookie HttpOnly
+    options.Cookie.IsEssential = true; // Make session cookie essential
+});
+
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseHttpsRedirection();
+
+app.UseAuthorization();
+
+// Enable session middleware
+app.UseSession(); // This enables session for the ServiceAPI project
+
+app.MapControllers();
+
 app.Run();
