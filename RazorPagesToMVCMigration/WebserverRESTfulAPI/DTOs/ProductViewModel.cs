@@ -34,11 +34,11 @@ namespace ServiceAPI.DTOs
 
         public DateTime DateSold { get; set; }
 
-        public bool IsAvailable { get; set; }
+        public bool ItemAvailable { get; set; }
 
         public ProductViewModel() { }
 
-        public ProductViewModel(int ID, int cartPartID, int saleID, string oem, decimal price, DateTime dt, string cond, string itemDesc, DateTime dateSold, bool isAvailable)
+        public ProductViewModel(int ID, int cartPartID, int saleID, string oem, decimal price, DateTime dt, string cond, string itemDesc, DateTime dateSold, bool itemAvailable)
         {
             this.ID = ID;
             CarPartID = cartPartID;
@@ -49,7 +49,7 @@ namespace ServiceAPI.DTOs
             Condition = cond;
             ItemDescription = itemDesc;
             DateSold = dateSold;
-            IsAvailable = isAvailable;
+            ItemAvailable = itemAvailable;
         }
     }
 }

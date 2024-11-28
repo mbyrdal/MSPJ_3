@@ -31,7 +31,7 @@ namespace ServiceAPI.Models
 
         public DateTime DateSold { get; set; }
 
-        public bool IsAvailable { get; set; }
+        public bool ItemAvailable { get; set; }
 
         public Product() { }
 
@@ -46,7 +46,7 @@ namespace ServiceAPI.Models
             Condition = cond;
             ItemDescription = itemDesc;
             DateSold = dateSold;
-            IsAvailable = isAvailable;
+            ItemAvailable = isAvailable;
         }
     }
 }
