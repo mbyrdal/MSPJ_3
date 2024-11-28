@@ -191,7 +191,7 @@ namespace ServiceAPI.DatabaseAccess
 
         internal bool CarTemplateExists(int ID)
         {
-            bool carTemplateIdentifierExists = _dbHelper.EntityExists("Customer", "ID", ID.ToString());
+            bool carTemplateIdentifierExists = _dbHelper.EntityExists("CarTemplate", "ID", ID.ToString());
 
             if (!carTemplateIdentifierExists)
             {

@@ -191,5 +191,17 @@ namespace ServiceAPI.DatabaseAccess
             }
             return wasCarPartDeleted;
         }
+
+        internal bool CarPartExists(int ID)
+        {
+            bool carPartIdentifierExists = _dbHelper.EntityExists("CarPart", "ID", ID.ToString());
+
+            if (!carPartIdentifierExists)
+            {
+                return false;
+            }
+
+            return carPartIdentifierExists;
+        }
     }
 }
