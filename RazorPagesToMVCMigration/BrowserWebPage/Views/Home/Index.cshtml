@@ -115,30 +115,41 @@
     </main>
 
     <script>
-        function removeFromCart(productId) {
-            fetch(`/ShoppingCart/RemoveFromCart?productID=${productId}`, {
-                method: 'DELETE',
+        function addToCart(productId) {
+            const product = { ID: productId };
+            fetch('/ShoppingCart/AddToCart', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(product)
             })
                 .then(response => response.json())
                 .then(data => {
-                    // Update cart UI
-                    location.reload(); // Reload to show updated cart
+                    if (data.success) alert(data.message);
+                    else alert("Failed to add product.");
+                });
+        }
+
+        function removeFromCart(productId) {
+            fetch(`/ShoppingCart/RemoveFromCart?productID=${productId}`, {
+                method: 'DELETE'
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) location.reload();
+                    else alert("Failed to remove product.");
                 });
         }
 
         function clearCart() {
-            fetch(`/ShoppingCart/ClearCart`, {
-                method: 'POST',
-            })
-                .then(response => response.json())
-                .then(data => {
-                    location.reload();
-                });
+            fetch('/ShoppingCart/ClearCart', { method: 'POST' })
+                .then(() => location.reload());
         }
 
         function checkout() {
-            window.location.href = '/ShoppingCart/CheckOut';
+            fetch('/ShoppingCart/CheckOut', { method: 'POST' })
+                .then(() => location.href = '/ShoppingCart/OrderConfirmation');
         }
+
     </script>
 </body>
 </html>

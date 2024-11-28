@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using ServiceAPI.DatabaseAccess;
 using ServiceAPI.Models;
 using ServiceAPI.Utilities;
 using System.Linq;
@@ -9,6 +10,13 @@ namespace ServiceAPI.Controllers
     {
         private const string CartSessionKey = "Cart";
 
+        private readonly DbProduct _dbProduct;
+
+        public ShoppingCartController(DbProduct dbProduct)
+        {
+            _dbProduct = dbProduct;
+        }
+
         // Display the shopping cart
         public IActionResult Index()
         {
@@ -16,26 +24,36 @@ namespace ServiceAPI.Controllers
             return View(cart);
         }
 
+
+
         // Add a product to the cart
         [HttpPost]
-        public JsonResult AddToCart([FromBody] Product product)
+        public IActionResult AddToCart(int productID)
         {
-            var cart = HttpContext.Session.GetObjectFromJSON<ShoppingCart>(CartSessionKey) ?? new ShoppingCart();
+            var product = _dbProduct.GetByIdentifier(productID);
+            // Assuming _dbContext is injected to access your database
 
-            // Check if the product already exists in the cart
-            var existingProduct = cart.Items.FirstOrDefault(i => i.ID == product.ID);
-
-            if (existingProduct == null)
+            if (product != null)
             {
-                cart.Items.Add(product);
+                var cart = HttpContext.Session.GetObjectFromJSON<ShoppingCart>(CartSessionKey) ?? new ShoppingCart();
+
+                // Check if product is already in cart
+                var existingProduct = cart.Items.FirstOrDefault(i => i.ID == product.ID);
+                if (existingProduct == null)
+                {
+                    cart.Items.Add(product); // Add product to cart
+                }
+
+                // Update the total price
+                cart.TotalPrice = cart.Items.Sum(i => i.Price);
+
+                // Save updated cart to session
+                HttpContext.Session.SetObjectAsJSON(CartSessionKey, cart);
             }
 
-            // Recalculate the total price
-            cart.TotalPrice = cart.Items.Sum(i => i.Price);
-            HttpContext.Session.SetObjectAsJSON(CartSessionKey, cart);
-
-            return Json(new { success = true, message = "Product added to cart", cart });
+            return RedirectToAction("Index", "ShoppingCart"); // Redirect to the cart page or wherever you need
         }
+
 
         // Remove a product from the cart
         [HttpDelete]
