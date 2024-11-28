@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ServiceAPI.DatabaseAccess;
+using ServiceAPI.DTOs;
 using ServiceAPI.Models;
 using ServiceAPI.Utilities;
 using System.Linq;
@@ -33,7 +34,7 @@ namespace ServiceAPI.Controllers
             var product = _dbProduct.GetByIdentifier(productID);
             // Assuming _dbContext is injected to access your database
 
-            if (product != null)
+            if (product != null && product.ItemAvailable == true)
             {
                 var cart = HttpContext.Session.GetObjectFromJSON<ShoppingCart>(CartSessionKey) ?? new ShoppingCart();
 
@@ -42,6 +43,8 @@ namespace ServiceAPI.Controllers
                 if (existingProduct == null)
                 {
                     cart.Items.Add(product); // Add product to cart
+                    product.ItemAvailable = false;
+                    _dbProduct.UpdateEntity(product); // Update product availability in database
                 }
 
                 // Update the total price
