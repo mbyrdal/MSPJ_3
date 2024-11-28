@@ -129,8 +129,37 @@ namespace ServiceAPI.DatabaseAccess
                     ))
                 {
                     // Mapping method input values to sql query input values
-                    createCommand.Parameters.AddWithValue("@CarPartID", newProduct.ProductCarPartOrigin.ID);
-                    createCommand.Parameters.AddWithValue("@CarID", newProduct.ProductCarOrigin.ID);
+                    createCommand.Parameters.AddWithValue("@CarPartID", newProduct.CarPartID);
+                    createCommand.Parameters.AddWithValue("@CarID", newProduct.CarID);
+                    createCommand.Parameters.AddWithValue("@OEM", newProduct.OEM);
+                    createCommand.Parameters.AddWithValue("@Price", newProduct.Price);
+                    createCommand.Parameters.AddWithValue("@DateAvailable", newProduct.DateAvailable);
+                    createCommand.Parameters.AddWithValue("@Condition", newProduct.Condition);
+                    createCommand.Parameters.AddWithValue("@ItemDescription", newProduct.ItemDescription);
+                    createCommand.Parameters.AddWithValue("@ItemAvailable", newProduct.ItemAvailable);
+
+                    // Use non query because we are updating/changing the DB, not querying it
+                    numberOfRowsInserted = createCommand.ExecuteNonQuery();
+                }
+                conn.Close();
+            }
+            return numberOfRowsInserted;
+        }
+
+        public int CreateEntityDTO(ProductViewModel newProduct, int carPartID, int carID)
+        {
+            int numberOfRowsInserted;
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                conn.Open();
+                using (SqlCommand createCommand = new SqlCommand(
+                    "INSERT INTO Product (CarPartID, CarID, OEM, Price, DateAvailable, Condition, ItemDescription, ItemAvailable) "
+                    + "VALUES (@CarPartID, @CarID, @OEM, @Price, @DateAvailable, @Condition, @ItemDescription, @ItemAvailable)", conn
+                    ))
+                {
+                    // Mapping method input values to sql query input values
+                    createCommand.Parameters.AddWithValue("@CarPartID", carPartID);
+                    createCommand.Parameters.AddWithValue("@CarID", carID);
                     createCommand.Parameters.AddWithValue("@OEM", newProduct.OEM);
                     createCommand.Parameters.AddWithValue("@Price", newProduct.Price);
                     createCommand.Parameters.AddWithValue("@DateAvailable", newProduct.DateAvailable);
@@ -247,21 +276,55 @@ namespace ServiceAPI.DatabaseAccess
             return _dbHelper.EntityExists("Product", "ID", ID.ToString());
         }
 
-
-
-        internal bool ProductForeignKeyIDsExists(int carPartID, int carID)
+        internal bool CarAndCarPartExists(string carPartName, string carVINNumber)
         {
             bool carPartExists = false;
             bool carExists = false;
             bool canProductBeCreated = false;
 
-            carPartExists = _dbHelper.EntityExists("CarPart", "ID", carPartID.ToString());
-            carExists = _dbHelper.EntityExists("Car", "ID", carID.ToString());
+            carPartExists = _dbHelper.EntityExists("CarPart", "Name", carPartName);
+            carExists = _dbHelper.EntityExists("Car", "VINNumber", carVINNumber);
 
             canProductBeCreated = carPartExists && carExists;
 
             return canProductBeCreated;
 
+        }
+
+        internal int GetCarPartIDByName(string value)
+        {
+            int tempID = 0;
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                conn.Open();
+                string IDSelectorQuery = $"SELECT ID FROM CarPart WHERE Name = @Name";
+                using (SqlCommand checkCommand = new SqlCommand(IDSelectorQuery, conn))
+                {
+                    // Add parameters to the query to prevent SQL injection
+                    checkCommand.Parameters.AddWithValue("@Name", value);
+                    tempID = (int)checkCommand.ExecuteScalar();
+                }
+                conn.Close();
+            }
+            return tempID;
+        }
+
+        internal int GetCarByVINNumber(string value)
+        {
+            int tempID = 0;
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                conn.Open();
+                string IDSelectorQuery = $"SELECT ID FROM Car WHERE VINNumber = @VINNumber";
+                using (SqlCommand checkCommand = new SqlCommand(IDSelectorQuery, conn))
+                {
+                    // Add parameters to the query to prevent SQL injection
+                    checkCommand.Parameters.AddWithValue("@VINNumber", value);
+                    tempID = (int)checkCommand.ExecuteScalar();
+                }
+                conn.Close();
+            }
+            return tempID;
         }
     }
 }

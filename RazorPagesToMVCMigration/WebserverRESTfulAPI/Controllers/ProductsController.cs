@@ -85,9 +85,9 @@ namespace ServiceAPI.Controllers
             return Conflict($"ERROR: Product with ID '{newProduct.ID}' already exists in the database, or insertion failed in another manner.");
         }
 
-        // POST: https://localhost:7134/api/dto/Products/
-        [HttpPost("dto")]
-        public ActionResult<ProductViewModel> CreateProductDTO([FromBody] ProductViewModel newProduct)
+        // POST: https://localhost:7134/api/dto-v2/Products/
+        [HttpPost("dto-v2")]
+        public ActionResult<ProductViewModel> CreateProductDTO([FromBody] ProductViewModel newProduct, string name, string vinNumber)
         {
             if (newProduct == null)
             {
@@ -95,7 +95,7 @@ namespace ServiceAPI.Controllers
                 return BadRequest("ERROR: Bad Product request body.");
             }
 
-            var wasProductCreated = _productControl.AddProductDTO(newProduct);
+            var wasProductCreated = _productControl.AddProductDTO(newProduct, name, vinNumber);
 
             if (wasProductCreated)
             {
