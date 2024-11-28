@@ -36,7 +36,7 @@ namespace ServiceAPI.DatabaseAccess
                             {
                                 ID = reader.GetInt32(reader.GetOrdinal("ID")),
                                 CarPartID = reader.GetInt32(reader.GetOrdinal("CarPartID")),
-                                SaleID = reader.GetInt32(reader.GetOrdinal("SaleID")),
+                                CarID = reader.GetInt32(reader.GetOrdinal("CarID")),
                                 OEM = reader.GetString(reader.GetOrdinal("OEM")),
                                 Price = reader.GetDecimal(reader.GetOrdinal("Price")),
                                 DateAvailable = reader.GetDateTime(reader.GetOrdinal("DateAvailable")),
@@ -58,7 +58,7 @@ namespace ServiceAPI.DatabaseAccess
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
-                using (SqlCommand readCommand = new SqlCommand("SELECT ID, CarPartID, SaleID, OEM, Price, DateAvailable, Condition, ItemDescription FROM Product WHERE ID = @ID", conn))
+                using (SqlCommand readCommand = new SqlCommand("SELECT ID, CarPartID, CarID, OEM, Price, DateAvailable, Condition, ItemDescription FROM Product WHERE ID = @ID", conn))
                 {
                     // Bind value from string input OEM to parameter OEM from Product in DB.
                     readCommand.Parameters.AddWithValue("@ID", ID);
@@ -70,7 +70,7 @@ namespace ServiceAPI.DatabaseAccess
                             {
                                 ID = reader.GetInt32(reader.GetOrdinal("ID")),
                                 CarPartID = reader.GetInt32(reader.GetOrdinal("CarPartID")),
-                                SaleID = reader.GetInt32(reader.GetOrdinal("SaleID")),
+                                CarID = reader.GetInt32(reader.GetOrdinal("CarID")),
                                 OEM = reader.GetString(reader.GetOrdinal("OEM")),
                                 Price = reader.GetDecimal(reader.GetOrdinal("Price")),
                                 DateAvailable = reader.GetDateTime(reader.GetOrdinal("DateAvailable")),
@@ -92,14 +92,14 @@ namespace ServiceAPI.DatabaseAccess
             {
                 conn.Open();
                 using (SqlCommand createCommand = new SqlCommand(
-                    "INSERT INTO Product (ID, CarPartID, SaleID, OEM, Price, DateAvailable, Condition, ItemDescription) "
-                    + "VALUES (@ID, @CarPartID, @SaleID, @OEM, @Price, @DateAvailable, @Condition, @ItemDescription)", conn
+                    "INSERT INTO Product (ID, CarPartID, CarID, OEM, Price, DateAvailable, Condition, ItemDescription) "
+                    + "VALUES (@ID, @CarPartID, @CarID, @OEM, @Price, @DateAvailable, @Condition, @ItemDescription)", conn
                     ))
                 {
                     // Mapping method input values to sql query input values
                     createCommand.Parameters.AddWithValue("@ID", newProduct.ID);
                     createCommand.Parameters.AddWithValue("@CarPartID", newProduct.CarPartID);
-                    createCommand.Parameters.AddWithValue("@SaleID", newProduct.SaleID);
+                    createCommand.Parameters.AddWithValue("@CarID", newProduct.CarID);
                     createCommand.Parameters.AddWithValue("@OEM", newProduct.OEM);
                     createCommand.Parameters.AddWithValue("@Price", newProduct.Price);
                     createCommand.Parameters.AddWithValue("@DateAvailable", newProduct.DateAvailable);
@@ -151,11 +151,15 @@ namespace ServiceAPI.DatabaseAccess
                 {
                     conn.Open();
                     using (SqlCommand updateCommand = new SqlCommand("UPDATE Product " +
-                                                                     "SET ID=@ID, CarPartID=@CarPartID, SaleID=@SaleID, OEM=@OEM, " +
+                                                                     "SET ID=@ID, CarPartID=@CarPartID, CarID=@CarID, OEM=@OEM, " +
                                                                      "Price=@Price, DateAvailable=@DateAvailable, Condition=@Condition, ItemDescription=@ItemDescription" +
-                                                                     "WHERE ID = @ID AND CarPartID = @CarPartID AND SaleID = @SaleID AND OEM = @OEM", conn))
+                                                                     "WHERE ID = @ID AND OEM = @OEM", conn))
                     {
                         // Mapping method input values to sql query input values
+                        updateCommand.Parameters.AddWithValue("@ID", updateProduct.ID);
+                        updateCommand.Parameters.AddWithValue("@CarPartID", updateProduct.CarPartID);
+                        updateCommand.Parameters.AddWithValue("@CarID", updateProduct.CarID);
+                        updateCommand.Parameters.AddWithValue("@OEM", updateProduct.OEM);
                         updateCommand.Parameters.AddWithValue("@Price", updateProduct.Price);
                         updateCommand.Parameters.AddWithValue("@DateAvailable", updateProduct.DateAvailable);
                         updateCommand.Parameters.AddWithValue("@Condition", updateProduct.Condition);
@@ -184,11 +188,12 @@ namespace ServiceAPI.DatabaseAccess
                 {
                     conn.Open();
                     using (SqlCommand updateCommand = new SqlCommand("UPDATE Product " +
-                                                                     "SET CarPartID=@CarPartID, SaleID=@SaleID, OEM=@OEM, " +
-                                                                     "Price=@Price, DateAvailable=@DateAvailable, Condition=@Condition, ItemDescription=@ItemDescription" +
-                                                                     "WHERE ID = @ID AND CarPartID = @CarPartID AND SaleID = @SaleID AND OEM = @OEM", conn))
+                                                                     "SET Price=@Price, DateAvailable=@DateAvailable, Condition=@Condition, ItemDescription=@ItemDescription" +
+                                                                     "WHERE ID = @ID AND OEM = @OEM", conn))
                     {
                         // Mapping method input values to sql query input values
+                        updateCommand.Parameters.AddWithValue("@ID", updateProduct.ID);
+                        updateCommand.Parameters.AddWithValue("@OEM", updateProduct.OEM);
                         updateCommand.Parameters.AddWithValue("@Price", updateProduct.Price);
                         updateCommand.Parameters.AddWithValue("@DateAvailable", updateProduct.DateAvailable);
                         updateCommand.Parameters.AddWithValue("@Condition", updateProduct.Condition);
