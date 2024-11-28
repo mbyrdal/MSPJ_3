@@ -1,10 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace ServiceAPI.Models
 {
     public class Product
     {
         [Key]
+        [JsonIgnore]
         public int ID { get; set; }
 
         [Required]

@@ -95,12 +95,11 @@ namespace ServiceAPI.DatabaseAccess
             {
                 conn.Open();
                 using (SqlCommand createCommand = new SqlCommand(
-                    "INSERT INTO Product (ID, CarPartID, CarID, OEM, Price, DateAvailable, Condition, ItemDescription, DateSold, ItemAvailable) "
-                    + "VALUES (@ID, @CarPartID, @CarID, @OEM, @Price, @DateAvailable, @Condition, @ItemDescription, @ItemAvailable)", conn
+                    "INSERT INTO Product (CarPartID, CarID, OEM, Price, DateAvailable, Condition, ItemDescription, ItemAvailable) "
+                    + "VALUES (@CarPartID, @CarID, @OEM, @Price, @DateAvailable, @Condition, @ItemDescription, @ItemAvailable)", conn
                     ))
                 {
                     // Mapping method input values to sql query input values
-                    createCommand.Parameters.AddWithValue("@ID", newProduct.ID);
                     createCommand.Parameters.AddWithValue("@CarPartID", newProduct.CarPartID);
                     createCommand.Parameters.AddWithValue("@CarID", newProduct.CarID);
                     createCommand.Parameters.AddWithValue("@OEM", newProduct.OEM);
@@ -125,7 +124,7 @@ namespace ServiceAPI.DatabaseAccess
             {
                 conn.Open();
                 using (SqlCommand createCommand = new SqlCommand(
-                    "INSERT INTO Product (OEM, Price, DateAvailable, Condition, ItemDescription, DateSold, ItemAvailable) "
+                    "INSERT INTO Product (OEM, Price, DateAvailable, Condition, ItemDescription, ItemAvailable) "
                     + "VALUES (@OEM, @Price, @DateAvailable, @Condition, @ItemDescription, @ItemAvailable)", conn
                     ))
                 {
