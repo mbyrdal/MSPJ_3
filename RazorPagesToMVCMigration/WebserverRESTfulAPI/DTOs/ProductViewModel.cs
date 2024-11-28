@@ -42,7 +42,7 @@ namespace ServiceAPI.DTOs
 
         [Required]
         [ForeignKey("CarID")]
-        public CarViewModel ProductCarOrigin { get; set; }
+        public Car ProductCarOrigin { get; set; }
 
         public ProductViewModel() { }
 
