@@ -174,7 +174,6 @@ namespace ServiceAPI.DatabaseAccess
             }
             return numberOfRowsInserted;
         }
-
         public int UpdateEntity(Product updateProduct)
         {
             int numberOfRowsUpdated = 0;
@@ -187,9 +186,48 @@ namespace ServiceAPI.DatabaseAccess
                                                                      "SET CarPartID=@CarPartID, CarID=@CarID, OEM=@OEM, " +
                                                                      "Price=@Price, DateAvailable=@DateAvailable, Condition=@Condition, " +
                                                                      "ItemDescription=@ItemDescription, ItemAvailable=@ItemAvailable" +
-                                                                     "WHERE ID = @ID AND OEM = @OEM", conn))
+                                                                     "WHERE ID = @ID", conn))
                     {
                         // Mapping method input values to sql query input values
+                        updateCommand.Parameters.AddWithValue("@CarPartID", updateProduct.CarPartID);
+                        updateCommand.Parameters.AddWithValue("@CarID", updateProduct.CarID);
+                        updateCommand.Parameters.AddWithValue("@OEM", updateProduct.OEM);
+                        updateCommand.Parameters.AddWithValue("@Price", updateProduct.Price);
+                        updateCommand.Parameters.AddWithValue("@DateAvailable", updateProduct.DateAvailable);
+                        updateCommand.Parameters.AddWithValue("@Condition", updateProduct.Condition);
+                        updateCommand.Parameters.AddWithValue("@ItemDescription", updateProduct.ItemDescription);
+                        updateCommand.Parameters.AddWithValue("@ItemAvailable", updateProduct.ItemAvailable);
+
+                        // Use non query because we are updating/changing the DB, not querying it
+                        numberOfRowsUpdated = updateCommand.ExecuteNonQuery();
+                    }
+                    conn.Close();
+                }
+                catch (SqlException ex)
+                {
+                    // Log or handle the exception (logging to console for now)
+                    Console.WriteLine($"SQL error occurred: {ex.Message}");
+                }
+                return numberOfRowsUpdated;
+            }
+        }
+
+        public int UpdateEntity(Product updateProduct, int productID)
+        {
+            int numberOfRowsUpdated = 0;
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                try
+                {
+                    conn.Open();
+                    using (SqlCommand updateCommand = new SqlCommand("UPDATE Product " +
+                                                                     "SET CarPartID=@CarPartID, CarID=@CarID, OEM=@OEM, " +
+                                                                     "Price=@Price, DateAvailable=@DateAvailable, Condition=@Condition, " +
+                                                                     "ItemDescription=@ItemDescription, ItemAvailable=@ItemAvailable " +
+                                                                     "WHERE ID = @ID", conn))
+                    {
+                        // Mapping method input values to sql query input values
+                        updateCommand.Parameters.AddWithValue("@ID", productID);
                         updateCommand.Parameters.AddWithValue("@CarPartID", updateProduct.CarPartID);
                         updateCommand.Parameters.AddWithValue("@CarID", updateProduct.CarID);
                         updateCommand.Parameters.AddWithValue("@OEM", updateProduct.OEM);
@@ -320,6 +358,24 @@ namespace ServiceAPI.DatabaseAccess
                 {
                     // Add parameters to the query to prevent SQL injection
                     checkCommand.Parameters.AddWithValue("@VINNumber", value);
+                    tempID = (int)checkCommand.ExecuteScalar();
+                }
+                conn.Close();
+            }
+            return tempID;
+        }
+
+        internal int GetProductIDByOEM(string value)
+        {
+            int tempID = 0;
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                conn.Open();
+                string IDSelectorQuery = $"SELECT ID FROM Product WHERE OEM = @OEM";
+                using (SqlCommand checkCommand = new SqlCommand(IDSelectorQuery, conn))
+                {
+                    // Add parameters to the query to prevent SQL injection
+                    checkCommand.Parameters.AddWithValue("@OEM", value);
                     tempID = (int)checkCommand.ExecuteScalar();
                 }
                 conn.Close();
