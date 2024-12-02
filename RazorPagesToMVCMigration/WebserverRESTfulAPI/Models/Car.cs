@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ServiceAPI.Models
 {
-    public class CarModel
+    public class Car
     {
         [Key]
         public int ID { get; set; }
@@ -25,9 +25,9 @@ namespace ServiceAPI.Models
         // [ForeignKey("CarTemplate")]
         // public CarTemplate CarTemplate { get; set; }
 
-        public CarModel() { }
+        public Car() { }
 
-        public CarModel(int ID, int carTemplateID, string vin, DateTime py, int mileage)
+        public Car(int ID, int carTemplateID, string vin, DateTime py, int mileage)
         {
             this.ID = ID;
             CarTemplateID = carTemplateID;

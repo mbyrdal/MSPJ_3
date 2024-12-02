@@ -1,17 +1,19 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace ServiceAPI.Models
 {
     public class Product
     {
         [Key]
+        [JsonIgnore]
         public int ID { get; set; }
 
         [Required]
-        public int? CarPartID { get; set; }
+        public int CarPartID { get; set; }
 
         [Required]
-        public int? SaleID { get; set; }
+        public int CarID { get; set; }
 
         [Required]
         [StringLength(40)]
@@ -29,18 +31,21 @@ namespace ServiceAPI.Models
 
         public string ItemDescription { get; set; } = string.Empty;
 
+        public bool ItemAvailable { get; set; }
+
         public Product() { }
 
-        public Product(int ID, int cartPartID, int saleID, string oem, decimal price, DateTime dt, string cond, string itemDesc)
+        public Product(int ID, int cartPartID, int carID, string oem, decimal price, DateTime dt, string cond, string itemDesc, bool isAvailable)
         {
             this.ID = ID;
             CarPartID = cartPartID;
-            SaleID = saleID;
+            CarID = carID;
             OEM = oem;
             Price = price;
             DateAvailable = dt;
             Condition = cond;
             ItemDescription = itemDesc;
+            ItemAvailable = isAvailable;
         }
     }
 }
