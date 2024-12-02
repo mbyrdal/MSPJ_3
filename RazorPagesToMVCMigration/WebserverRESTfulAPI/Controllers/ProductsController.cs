@@ -85,9 +85,9 @@ namespace ServiceAPI.Controllers
             return Conflict($"ERROR: Product with ID '{newProduct.ID}' already exists in the database, or insertion failed in another manner.");
         }
 
-        // POST: https://localhost:7134/api/dto/Products/
-        [HttpPost("dto")]
-        public ActionResult<ProductViewModel> CreateProductDTO([FromBody] ProductViewModel newProduct)
+        // POST: https://localhost:7134/api/dto-v2/Products/
+        [HttpPost("dto-v2")]
+        public ActionResult<ProductViewModel> CreateProductDTO([FromBody] ProductViewModel newProduct, string name, string vinNumber)
         {
             if (newProduct == null)
             {
@@ -95,7 +95,7 @@ namespace ServiceAPI.Controllers
                 return BadRequest("ERROR: Bad Product request body.");
             }
 
-            var wasProductCreated = _productControl.AddProductDTO(newProduct);
+            var wasProductCreated = _productControl.AddProductDTO(newProduct, name, vinNumber);
 
             if (wasProductCreated)
             {
@@ -126,13 +126,13 @@ namespace ServiceAPI.Controllers
 
             var existingProduct = _productControl.GetProductByID(ID);
 
-            if(existingProduct == null)
+            if (existingProduct == null)
             {
                 // Return 404: no existing product found
                 return NotFound($"No existing Product with ID '{existingProduct.ID}' found.");
             }
 
-            if(existingProduct.ID != updatedProduct.ID)
+            if (existingProduct.ID != updatedProduct.ID)
             {
                 // Return 409: OEMs of existing product and response body product do not match.
                 return Conflict($"Found Product with ID '{existingProduct.ID}' does not match ID in request body '{updatedProduct.ID}'.");
@@ -140,10 +140,47 @@ namespace ServiceAPI.Controllers
 
             var wasProductUpdated = _productControl.UpdateProduct(updatedProduct);
 
-            if(!wasProductUpdated)
+            if (!wasProductUpdated)
             {
                 // Return 500: Internal Server Error if the update fails
                 return StatusCode(500, $"ERROR: Unable to update Product with ID '{ID}' in the database.");
+            }
+
+            // Return 204: No Content (Successful update)
+            return NoContent();
+        }
+
+        // TODO: trim and remove existingProduct logic since _productControl.UpdateProduct handles existing product issue already.
+        // PUT: https://localhost:7134/api/Products/OEM
+        [HttpPut("{OEM}")]
+        public IActionResult UpdateProduct(string OEM, [FromBody] Product updatedProduct)
+        {
+            if (updatedProduct == null)
+            {
+                // Return 400: Bad request response
+                return BadRequest("ERROR: Bad Product request body.");
+            }
+
+            var existingProduct = _productControl.GetProductByOEM(OEM);
+
+            if(existingProduct == null)
+            {
+                // Return 404: no existing product found
+                return NotFound($"No existing Product with OEM '{OEM}' found.");
+            }
+
+            if(OEM != existingProduct.OEM)
+            {
+                // Return 409: OEMs of existing product and response body product do not match.
+                return Conflict($"Found Product with OEM '{OEM}' does not match OEM in request body '{existingProduct.OEM}'.");
+            }
+
+            var wasProductUpdated = _productControl.UpdateProduct(OEM, updatedProduct);
+
+            if(!wasProductUpdated)
+            {
+                // Return 500: Internal Server Error if the update fails
+                return StatusCode(500, $"ERROR: Unable to update Product with OEM '{OEM}' in the database.");
             }
 
             // Return 204: No Content (Successful update)

@@ -36,6 +36,7 @@ namespace ServiceAPI.DTOs
         [Required]
         public bool ItemAvailable { get; set; }
 
+        /*
         [Required]
         [ForeignKey("CarPartID")]
         public CarPart ProductCarPartOrigin { get; set; }
@@ -43,14 +44,17 @@ namespace ServiceAPI.DTOs
         [Required]
         [ForeignKey("CarID")]
         public Car ProductCarOrigin { get; set; }
+        */
+
+        //, CarPart myCarPart, Car myCar
 
         public ProductViewModel() { }
 
-        public ProductViewModel(int ID, string oem, decimal price, DateTime dt, string cond, string itemDesc, bool itemAvailable, CarPart myCarPart, Car myCar)
+        public ProductViewModel(int ID, int carPartID, int carID, string oem, decimal price, DateTime dt, string cond, string itemDesc, bool itemAvailable)
         {
             this.ID = ID;
-            CarPartID = myCarPart.ID;
-            CarID = myCar.ID;
+            CarPartID = carPartID;
+            CarID = carID;
             OEM = oem;
             Price = price;
             DateAvailable = dt;
