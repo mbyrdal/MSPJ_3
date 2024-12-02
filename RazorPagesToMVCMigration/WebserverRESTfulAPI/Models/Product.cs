@@ -9,43 +9,47 @@ namespace ServiceAPI.Models
         [JsonIgnore]
         public int ID { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Car Part ID is required.")]
         public int CarPartID { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Car ID is required.")]
         public int CarID { get; set; }
 
-        [Required]
-        [StringLength(40)]
+        [Required(ErrorMessage = "OEM is required.")]
+        [StringLength(40, ErrorMessage = "OEM cannot exceed 40 characters.")]
         public string OEM { get; set; } = string.Empty;
 
-        [Required]
+        [Required(ErrorMessage = "Price is required.")]
+        [Range(0, double.MaxValue, ErrorMessage = "Price must be a non-negative value.")]
         public decimal Price { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Date Available is required.")]
+        [DataType(DataType.Date)]
         public DateTime DateAvailable { get; set; }
 
-        [Required]
-        [StringLength(500)]
+        [Required(ErrorMessage = "Condition is required.")]
+        [StringLength(500, ErrorMessage = "Condition cannot exceed 500 characters.")]
         public string Condition { get; set; } = string.Empty;
 
-        public string ItemDescription { get; set; } = string.Empty;
+        [StringLength(1000, ErrorMessage = "Item Description cannot exceed 1000 characters.")]
+        public string? ItemDescription { get; set; } = string.Empty;
 
+        [Required]
         public bool ItemAvailable { get; set; }
 
         public Product() { }
 
-        public Product(int ID, int cartPartID, int carID, string oem, decimal price, DateTime dt, string cond, string itemDesc, bool isAvailable)
+        public Product(int id, int carPartID, int carID, string oem, decimal price, DateTime dateAvailable, string condition, string? itemDescription, bool itemAvailable)
         {
-            this.ID = ID;
-            CarPartID = cartPartID;
+            ID = id;
+            CarPartID = carPartID;
             CarID = carID;
             OEM = oem;
             Price = price;
-            DateAvailable = dt;
-            Condition = cond;
-            ItemDescription = itemDesc;
-            ItemAvailable = isAvailable;
+            DateAvailable = dateAvailable;
+            Condition = condition;
+            ItemDescription = itemDescription;
+            ItemAvailable = itemAvailable;
         }
     }
 }

@@ -1,15 +1,16 @@
 ﻿using Microsoft.Data.SqlClient;
 using ServiceAPI.DatabaseAccess.Interfaces;
-using ServiceAPI.DTOs;
 using ServiceAPI.Models;
 using ServiceAPI.Utilities;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ServiceAPI.DatabaseAccess
 {
     public class DbCarTemplate : ICRUD_DB<CarTemplate>
     {
-        // Configuration steps
-        private string _connectionString;
+        private readonly string _connectionString;
         private readonly DbHelper _dbHelper;
 
         public DbCarTemplate(IConfiguration configuration)
@@ -19,136 +20,160 @@ namespace ServiceAPI.DatabaseAccess
             _connectionString = helper.GetDBConnectionString();
         }
 
-        public List<CarTemplate> GetAllEntities()
+        public async Task<List<CarTemplate>> GetAllEntitiesAsync()
         {
-            List<CarTemplate> carTemplates = new List<CarTemplate>();
-            using(SqlConnection conn = new SqlConnection(_connectionString))
+            var carTemplates = new List<CarTemplate>();
+            try
             {
-                conn.Open();
-                using(SqlCommand readAllCommand = new SqlCommand("SELECT * FROM CarTemplate", conn))
+                using (SqlConnection conn = new SqlConnection(_connectionString))
                 {
-                    using(SqlDataReader reader = readAllCommand.ExecuteReader())
+                    await conn.OpenAsync();
+                    using (SqlCommand readAllCommand = new SqlCommand("SELECT * FROM CarTemplate", conn))
                     {
-                        while (reader.Read())
+                        using (SqlDataReader reader = await readAllCommand.ExecuteReaderAsync())
                         {
-                            CarTemplate carTemplatesInTable = new CarTemplate(
-                                reader.GetInt32(reader.GetOrdinal("ID")),
-                                reader.GetString(reader.GetOrdinal("Brand")),
-                                reader.GetString(reader.GetOrdinal("Model")),
-                                reader.GetString(reader.GetOrdinal("CarType")));
-
-                            carTemplates.Add(carTemplatesInTable);
+                            while (await reader.ReadAsync())
+                            {
+                                var carTemplate = MapCarTemplateFromReader(reader);
+                                carTemplates.Add(carTemplate);
+                            }
                         }
                     }
                 }
-                conn.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error occurred while retrieving car templates: {ex.Message}");
             }
             return carTemplates;
         }
 
-        public CarTemplate GetByIdentifier(int ID)
+        public async Task<CarTemplate> GetByIdentifierAsync(int ID)
         {
             CarTemplate carTemplate = null;
-            using(SqlConnection conn = new SqlConnection(_connectionString))
+            try
             {
-                conn.Open();
-                using(SqlCommand readCommand = new SqlCommand("SELECT ID, Brand, Model, CarType FROM CarTemplate WHERE ID = @ID"))
+                using (SqlConnection conn = new SqlConnection(_connectionString))
                 {
-                    readCommand.Parameters.AddWithValue("@ID", ID);
-                    using(SqlDataReader reader = readCommand.ExecuteReader())
+                    await conn.OpenAsync();
+                    using (SqlCommand readCommand = new SqlCommand(
+                        "SELECT ID, Brand, Model, CarType FROM CarTemplate WHERE ID = @ID", conn))
                     {
-                        if(reader.Read())
+                        readCommand.Parameters.AddWithValue("@ID", ID);
+                        using (SqlDataReader reader = await readCommand.ExecuteReaderAsync())
                         {
-                            carTemplate = new CarTemplate(
-                                reader.GetInt32(reader.GetOrdinal("ID")),
-                                reader.GetString(reader.GetOrdinal("Brand")),
-                                reader.GetString(reader.GetOrdinal("Model")),
-                                reader.GetString(reader.GetOrdinal("CarType")));
+                            if (await reader.ReadAsync())
+                            {
+                                carTemplate = MapCarTemplateFromReader(reader);
+                            }
                         }
                     }
                 }
-                conn.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error occurred while retrieving car template with ID {ID}: {ex.Message}");
             }
             return carTemplate;
         }
 
-        public int CreateEntity(CarTemplate newCarTemplate)
+        public async Task<int> CreateEntityAsync(CarTemplate newCarTemplate)
         {
-            int numberOfRowsInserted;
-            using(SqlConnection conn = new SqlConnection(_connectionString))
+            int rowsInserted = 0;
+            try
             {
-                conn.Open();
-                using(SqlCommand createCommand = new SqlCommand(
-                    "INSERT INTO CarTemplate (ID, Brand, Model, CarType) " +
-                    "VALUES (@ID, @Brand, @Model, @CarType)", conn))
+                using (SqlConnection conn = new SqlConnection(_connectionString))
                 {
-                    createCommand.Parameters.AddWithValue("@ID", newCarTemplate.ID);
-                    createCommand.Parameters.AddWithValue("@Brand", newCarTemplate.Brand);
-                    createCommand.Parameters.AddWithValue("@Model", newCarTemplate.Model);
-                    createCommand.Parameters.AddWithValue("@CarType", newCarTemplate.CarType);
-                    numberOfRowsInserted = createCommand.ExecuteNonQuery();
+                    await conn.OpenAsync();
+                    using (SqlCommand createCommand = new SqlCommand(
+                        "INSERT INTO CarTemplate (Brand, Model, CarType) VALUES (@Brand, @Model, @CarType)", conn))
+                    {
+                        createCommand.Parameters.AddWithValue("@Brand", newCarTemplate.Brand);
+                        createCommand.Parameters.AddWithValue("@Model", newCarTemplate.Model);
+                        createCommand.Parameters.AddWithValue("@CarType", newCarTemplate.CarType);
+
+                        rowsInserted = await createCommand.ExecuteNonQueryAsync();
+                    }
                 }
-                conn.Close();
             }
-            return numberOfRowsInserted;
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error occurred while creating a car template: {ex.Message}");
+            }
+            return rowsInserted;
         }
 
-        public int UpdateEntity(CarTemplate updateCarTemplate)
+        public async Task<int> UpdateEntityAsync(CarTemplate updateCarTemplate)
         {
-            int numberOfRowsUpdated = 0;
-            using(SqlConnection conn = new SqlConnection(_connectionString))
+            int rowsUpdated = 0;
+            try
             {
-                try
+                using (SqlConnection conn = new SqlConnection(_connectionString))
                 {
-                    conn.Open();
+                    await conn.OpenAsync();
                     using (SqlCommand updateCommand = new SqlCommand(
-                        "UPDATE CarTemplate " +
-                        "SET ID=@ID, Brand=@Brand, Model=@Model, CarType=@CarType " +
-                        "WHERE ID=@ID", conn))
+                        "UPDATE CarTemplate SET Brand = @Brand, Model = @Model, CarType = @CarType WHERE ID = @ID", conn))
                     {
                         updateCommand.Parameters.AddWithValue("@ID", updateCarTemplate.ID);
                         updateCommand.Parameters.AddWithValue("@Brand", updateCarTemplate.Brand);
                         updateCommand.Parameters.AddWithValue("@Model", updateCarTemplate.Model);
                         updateCommand.Parameters.AddWithValue("@CarType", updateCarTemplate.CarType);
 
-                        numberOfRowsUpdated = updateCommand.ExecuteNonQuery();
+                        rowsUpdated = await updateCommand.ExecuteNonQueryAsync();
                     }
                 }
-                catch (SqlException ex)
-                {
-                    Console.WriteLine($"SQL error occurred: {ex.Message}");
-                }
-                return numberOfRowsUpdated;
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error occurred while updating car template with ID {updateCarTemplate.ID}: {ex.Message}");
+            }
+            return rowsUpdated;
         }
 
-        public bool DeleteEntity(int ID)
+        public async Task<bool> DeleteEntityAsync(int ID)
         {
-            bool wasCarTemplateDeleted = false;
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            bool isDeleted = false;
+            try
             {
-                conn.Open();
-                using (SqlCommand deleteCommand = new SqlCommand("DELETE from CarTemplate WHERE ID = @ID", conn))
+                using (SqlConnection conn = new SqlConnection(_connectionString))
                 {
-                    deleteCommand.Parameters.AddWithValue("@ID", ID);
-                    int numberOfRowsAffectedByDeletion = deleteCommand.ExecuteNonQuery();
-                    wasCarTemplateDeleted = numberOfRowsAffectedByDeletion == 1;
+                    await conn.OpenAsync();
+                    using (SqlCommand deleteCommand = new SqlCommand("DELETE FROM CarTemplate WHERE ID = @ID", conn))
+                    {
+                        deleteCommand.Parameters.AddWithValue("@ID", ID);
+                        isDeleted = await deleteCommand.ExecuteNonQueryAsync() == 1;
+                    }
                 }
-                conn.Close();
             }
-            return wasCarTemplateDeleted;
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error occurred while deleting car template with ID {ID}: {ex.Message}");
+            }
+            return isDeleted;
         }
 
-        internal bool CarTemplateExists(int ID)
+        public async Task<bool> CarTemplateExistsAsync(int ID)
         {
-            bool carTemplateIdentifierExists = _dbHelper.EntityExists("CarTemplate", "ID", ID.ToString());
-
-            if (!carTemplateIdentifierExists)
+            try
             {
+                return await _dbHelper.EntityExistsAsync("CarTemplate", "ID", ID.ToString());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error occurred while checking if car template exists with ID {ID}: {ex.Message}");
                 return false;
             }
+        }
 
-            return carTemplateIdentifierExists;
+        // Helper Method to Map CarTemplate from SqlDataReader
+        private CarTemplate MapCarTemplateFromReader(SqlDataReader reader)
+        {
+            return new CarTemplate(
+                reader.GetInt32(reader.GetOrdinal("ID")),
+                reader.GetString(reader.GetOrdinal("Brand")),
+                reader.GetString(reader.GetOrdinal("Model")),
+                reader.GetString(reader.GetOrdinal("CarType"))
+            );
         }
     }
 }

@@ -2,6 +2,7 @@
 using ServiceAPI.BusinessLogic.Interfaces;
 using ServiceAPI.DTOs;
 using ServiceAPI.Models;
+using Microsoft.Extensions.Logging;
 
 namespace ServiceAPI.Controllers
 {
@@ -10,43 +11,56 @@ namespace ServiceAPI.Controllers
     public class CarsController : ControllerBase
     {
         private readonly ICarControl _carControl;
+        private readonly ILogger<CarsController> _logger;
 
-        public CarsController(ICarControl carControl)
+        public CarsController(ICarControl carControl, ILogger<CarsController> logger)
         {
             _carControl = carControl;
+            _logger = logger;
         }
 
         // GET https://localhost:7134/api/cars
         [HttpGet]
         public async Task<ActionResult<List<Car>>> GetCars()
         {
-            var allCars = await _carControl.GetAllCarsAsync();
-
-            if (allCars == null)
+            try
             {
-                return BadRequest("ERROR: List of cars is null. A bad GET request was made.");
-            }
+                var allCars = await _carControl.GetAllCarsAsync();
 
-            if (allCars.Count == 0)
+                if (allCars == null || allCars.Count == 0)
+                {
+                    return NotFound("No cars found in the database.");
+                }
+
+                return Ok(allCars);
+            }
+            catch (Exception ex)
             {
-                return NotFound("ERROR: No cars found in the database.");
+                _logger.LogError(ex, "Error occurred while retrieving all cars.");
+                return StatusCode(500, "An error occurred while processing your request.");
             }
-
-            return Ok(allCars);
         }
 
         // GET https://localhost:7134/api/cars/ID
         [HttpGet("{ID:int}")]
         public async Task<ActionResult<Car>> GetCar(int ID)
         {
-            var foundCar = await _carControl.GetCarByIDAsync(ID);
-
-            if (foundCar == null)
+            try
             {
-                return NotFound($"Car with ID '{ID}' not found.");
-            }
+                var foundCar = await _carControl.GetCarByIDAsync(ID);
 
-            return Ok(foundCar);
+                if (foundCar == null)
+                {
+                    return NotFound($"Car with ID '{ID}' not found.");
+                }
+
+                return Ok(foundCar);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error occurred while retrieving car with ID: {ID}.");
+                return StatusCode(500, "An error occurred while processing your request.");
+            }
         }
 
         // POST https://localhost:7134/api/cars
@@ -55,20 +69,25 @@ namespace ServiceAPI.Controllers
         {
             if (newCar == null)
             {
-                return BadRequest("ERROR: Bad Car request body.");
+                return BadRequest("Invalid car request body.");
             }
 
-            var wasCarCreated = await _carControl.AddCarAsync(newCar);
-
-            if (wasCarCreated)
+            try
             {
-                return CreatedAtAction(
-                    nameof(GetCar),
-                    new { ID = newCar.ID },
-                    newCar);
-            }
+                var wasCarCreated = await _carControl.AddCarAsync(newCar);
 
-            return Conflict($"ERROR: Car with ID '{newCar.ID}' already exists in the database, or insertion failed in another manner.");
+                if (wasCarCreated)
+                {
+                    return CreatedAtAction(nameof(GetCar), new { ID = newCar.ID }, newCar);
+                }
+
+                return Conflict($"Car with ID '{newCar.ID}' already exists or insertion failed.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while creating a car.");
+                return StatusCode(500, "An error occurred while processing your request.");
+            }
         }
 
         // POST https://localhost:7134/api/dto/cars
@@ -77,103 +96,111 @@ namespace ServiceAPI.Controllers
         {
             if (newCar == null)
             {
-                return BadRequest("ERROR: Bad Car request body.");
+                return BadRequest("Invalid car request body.");
             }
 
-            var wasCarCreated = await _carControl.AddCarDTOAsync(newCar);
-
-            if (wasCarCreated)
+            try
             {
-                return CreatedAtAction(
-                    nameof(GetCar),
-                    new { ID = newCar.ID },
-                    newCar);
-            }
+                var wasCarCreated = await _carControl.AddCarDTOAsync(newCar);
 
-            return Conflict($"ERROR: Car with ID '{newCar.ID}' already exists in the database, or insertion failed in another manner.");
+                if (wasCarCreated)
+                {
+                    return CreatedAtAction(nameof(GetCar), new { ID = newCar.ID }, newCar);
+                }
+
+                return Conflict($"Car with ID '{newCar.ID}' already exists or insertion failed.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while creating a car DTO.");
+                return StatusCode(500, "An error occurred while processing your request.");
+            }
         }
 
-        // PUT https://localhost:7134/api/dto/cars/ID
+        // PUT https://localhost:7134/api/cars/ID
         [HttpPut("{ID:int}")]
         public async Task<IActionResult> UpdateCar(int ID, [FromBody] Car updatedCar)
         {
             if (updatedCar == null)
             {
-                return BadRequest("ERROR: Bad Car request body.");
+                return BadRequest("Invalid car request body.");
             }
 
-            var existingCar = await _carControl.GetCarByIDAsync(ID);
-
-            if (existingCar == null)
+            if (ID != updatedCar.ID)
             {
-                return NotFound($"No existing Car with ID '{ID}' found.");
+                return BadRequest("The ID in the URL does not match the ID in the request body.");
             }
 
-            if (existingCar.ID != updatedCar.ID)
+            try
             {
-                return Conflict($"Found Car with ID '{existingCar.ID}' does not match ID in request body '{updatedCar.ID}'.");
+                var wasCarUpdated = await _carControl.UpdateCarAsync(updatedCar);
+
+                if (wasCarUpdated)
+                {
+                    return NoContent();
+                }
+
+                return NotFound($"Car with ID '{ID}' does not exist.");
             }
-
-            var wasCarUpdated = await _carControl.UpdateCarAsync(updatedCar);
-
-            if (!wasCarUpdated)
+            catch (Exception ex)
             {
-                return StatusCode(500, $"ERROR: Unable to update Car with ID '{ID}' in the database.");
+                _logger.LogError(ex, $"Error occurred while updating car with ID: {ID}.");
+                return StatusCode(500, "An error occurred while processing your request.");
             }
-
-            return NoContent();
         }
 
-        // PUT https://localhost:7134/api/dto/cars/dto/ID
+        // PUT https://localhost:7134/api/cars/dto/ID
         [HttpPut("dto/{ID:int}")]
         public async Task<IActionResult> UpdateCarDTO(int ID, [FromBody] CarViewModel updatedCar)
         {
             if (updatedCar == null)
             {
-                return BadRequest("ERROR: Bad Car request body.");
+                return BadRequest("Invalid car request body.");
             }
 
-            var existingCar = await _carControl.GetCarByIDAsync(ID);
-
-            if (existingCar == null)
+            if (ID != updatedCar.ID)
             {
-                return NotFound($"No existing Car with ID '{ID}' and OEM '{existingCar?.VINNumber}' found.");
+                return BadRequest("The ID in the URL does not match the ID in the request body.");
             }
 
-            if (existingCar.ID != updatedCar.ID)
+            try
             {
-                return Conflict($"Found Car with ID '{existingCar.ID}' does not match ID in request body '{updatedCar.ID}'.");
+                var wasCarUpdated = await _carControl.UpdateCarDTOAsync(updatedCar);
+
+                if (wasCarUpdated)
+                {
+                    return NoContent();
+                }
+
+                return NotFound($"Car with ID '{ID}' does not exist.");
             }
-
-            var wasCarUpdated = await _carControl.UpdateCarDTOAsync(updatedCar);
-
-            if (!wasCarUpdated)
+            catch (Exception ex)
             {
-                return StatusCode(500, $"ERROR: Unable to update Car with ID '{ID}' in the database.");
+                _logger.LogError(ex, $"Error occurred while updating car DTO with ID: {ID}.");
+                return StatusCode(500, "An error occurred while processing your request.");
             }
-
-            return NoContent();
         }
 
         // DELETE: https://localhost:7134/api/cars/ID
         [HttpDelete("{ID:int}")]
         public async Task<IActionResult> DeleteCar(int ID)
         {
-            var foundCar = await _carControl.GetCarByIDAsync(ID);
-
-            if (foundCar == null)
+            try
             {
-                return NotFound($"No existing Car with ID '{ID}' found.");
+                var wasCarDeleted = await _carControl.DeleteCarAsync(ID);
+
+                if (wasCarDeleted)
+                {
+                    return NoContent();
+                }
+
+                return NotFound($"Car with ID '{ID}' does not exist.");
             }
-
-            var wasCarRemoved = await _carControl.DeleteCarAsync(ID);
-
-            if (!wasCarRemoved)
+            catch (Exception ex)
             {
-                return StatusCode(500, $"ERROR: Unable to delete Car with ID '{ID}' from database.");
+                _logger.LogError(ex, $"Error occurred while deleting car with ID: {ID}.");
+                return StatusCode(500, "An error occurred while processing your request.");
             }
-
-            return NoContent();
         }
     }
 }

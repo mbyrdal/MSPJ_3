@@ -4,13 +4,13 @@ using ServiceAPI.DTOs;
 using ServiceAPI.Models;
 using ServiceAPI.Utilities;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ServiceAPI.Controllers
 {
     public class ShoppingCartController : Controller
     {
         private const string CartSessionKey = "Cart";
-
         private readonly DbProduct _dbProduct;
 
         public ShoppingCartController(DbProduct dbProduct)
@@ -25,15 +25,13 @@ namespace ServiceAPI.Controllers
             return View(cart);
         }
 
-
-
         // Add a product to the cart
         [HttpPost]
-        public IActionResult AddToCart(int productID)
+        public async Task<IActionResult> AddToCart(int productID)
         {
-            var product = _dbProduct.GetByIdentifier(productID); // Retrieve the product from the database
+            var product = await _dbProduct.GetByIdentifierAsync(productID); // Retrieve the product asynchronously
 
-            if (product != null && product.ItemAvailable == true)
+            if (product != null && product.ItemAvailable)
             {
                 var cart = HttpContext.Session.GetObjectFromJSON<ShoppingCart>(CartSessionKey) ?? new ShoppingCart();
 
@@ -58,8 +56,8 @@ namespace ServiceAPI.Controllers
                         ItemAvailable = product.ItemAvailable
                     };
 
-                    // Call UpdateEntity with the correct ViewModel
-                    _dbProduct.UpdateEntityDTO(productViewModel); // Update product availability in the database
+                    // Update product availability in the database
+                    await _dbProduct.UpdateEntityDTOAsync(productViewModel);
                 }
 
                 // Update the total price of the cart
@@ -69,14 +67,12 @@ namespace ServiceAPI.Controllers
                 HttpContext.Session.SetObjectAsJSON(CartSessionKey, cart);
             }
 
-            return RedirectToAction("Index", "ShoppingCart"); // Redirect to the cart page
+            return RedirectToAction("Index", "ShoppingCart");
         }
-
-
 
         // Remove a product from the cart
         [HttpDelete]
-        public JsonResult RemoveFromCart(int productID)
+        public async Task<JsonResult> RemoveFromCart(int productID)
         {
             var cart = HttpContext.Session.GetObjectFromJSON<ShoppingCart>(CartSessionKey);
 
@@ -88,6 +84,21 @@ namespace ServiceAPI.Controllers
                     cart.Items.Remove(productToRemove);
                     cart.TotalPrice = cart.Items.Sum(i => i.Price);
                     HttpContext.Session.SetObjectAsJSON(CartSessionKey, cart);
+
+                    // Update product availability in the database
+                    productToRemove.ItemAvailable = true;
+                    var productViewModel = new ProductViewModel
+                    {
+                        ID = productToRemove.ID,
+                        OEM = productToRemove.OEM,
+                        Price = productToRemove.Price,
+                        DateAvailable = productToRemove.DateAvailable,
+                        Condition = productToRemove.Condition,
+                        ItemDescription = productToRemove.ItemDescription,
+                        ItemAvailable = productToRemove.ItemAvailable
+                    };
+
+                    await _dbProduct.UpdateEntityDTOAsync(productViewModel);
                 }
             }
 
@@ -102,13 +113,14 @@ namespace ServiceAPI.Controllers
         }
 
         // Checkout
-        public IActionResult CheckOut()
+        public async Task<IActionResult> CheckOut()
         {
             var cart = HttpContext.Session.GetObjectFromJSON<ShoppingCart>(CartSessionKey);
 
             if (cart != null && cart.Items?.Count > 0)
             {
-                // Handle order processing here (e.g., save to database)
+                // Handle order processing asynchronously
+                await ProcessOrderAsync(cart);
 
                 // After processing, clear the cart
                 HttpContext.Session.Remove(CartSessionKey);
@@ -124,6 +136,13 @@ namespace ServiceAPI.Controllers
         public IActionResult OrderConfirmation()
         {
             return View();
+        }
+
+        // Simulated async order processing
+        private async Task ProcessOrderAsync(ShoppingCart cart)
+        {
+            // Simulate saving the order to the database or processing logic
+            await Task.Delay(500); // Replace with actual implementation
         }
     }
 }

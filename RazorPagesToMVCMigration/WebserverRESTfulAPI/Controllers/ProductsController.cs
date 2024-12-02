@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using ServiceAPI.BusinessLogic;
+﻿using Microsoft.AspNetCore.Mvc;
 using ServiceAPI.BusinessLogic.Interfaces;
 using ServiceAPI.DTOs;
 using ServiceAPI.Models;
@@ -20,128 +18,108 @@ namespace ServiceAPI.Controllers
 
         // GET: https://localhost:7134/api/Products
         [HttpGet]
-        public ActionResult<List<Product>> GetProducts()
+        public async Task<ActionResult<List<Product>>> GetProducts()
         {
-            var allProducts = _productControl.GetAllProducts();
+            var allProducts = await _productControl.GetAllProductsAsync();
 
             if (allProducts == null)
             {
-                // Return 400: Bad request response
                 return BadRequest("ERROR: List of products is null. A bad GET request was made.");
-                
             }
 
-            if(allProducts.Count == 0)
+            if (allProducts.Count == 0)
             {
-                // Return 404: No products found
                 return NotFound("ERROR: No products found in the database.");
             }
 
-            // Return 200: OK
             return Ok(allProducts);
         }
 
         // GET: https://localhost:7134/api/Products/OEM
         [HttpGet("{OEM}")]
-        public ActionResult<Product> GetProduct(string OEM)
+        public async Task<ActionResult<Product>> GetProduct(string OEM)
         {
-            var foundProduct = _productControl.GetProductByOEM(OEM);
+            var foundProduct = await _productControl.GetProductByOEMAsync(OEM);
 
             if (foundProduct == null)
             {
-                // Return 404: No product found, null
                 return NotFound($"Product with OEM '{OEM}' not found.");
             }
 
-            // Return 200: OK
             return Ok(foundProduct);
         }
 
         // POST: https://localhost:7134/api/Products
         [HttpPost]
-        public ActionResult<ProductViewModel> CreateProduct([FromBody] ProductViewModel newProduct, string name, string vinNumber)
+        public async Task<ActionResult<ProductViewModel>> CreateProduct([FromBody] ProductViewModel newProduct, string name, string vinNumber)
         {
             if (newProduct == null)
             {
-                // Return 400: Bad request response
                 return BadRequest("ERROR: Bad Product request body.");
             }
 
-            var wasProductCreated = _productControl.AddProduct(newProduct, name, vinNumber);
+            var wasProductCreated = await _productControl.AddProductAsync(newProduct, name, vinNumber);
 
             if (wasProductCreated)
             {
-                // Return 201: Successful creation (add) of new Product in DB
-                // Procedure below:
-                // CreatedAtAction response object is 201
-                // nameof(...) determines action method to be used
-                // new {...} determines input parameters
-                // newProduct is response object
-                return CreatedAtAction(nameof(GetProduct), new { ID = newProduct.ID }, newProduct);
+                return CreatedAtAction(
+                    nameof(GetProduct),
+                    new { OEM = newProduct.OEM },
+                    newProduct);
             }
 
-            // Return 409: Conflict by already existing OEM (ProductViewModel) or insertion fail
-            // Multiple, identical products may have the OEM number inherited from CarModel. TODO: DETERMINE IS THIS TRUE ???
             return Conflict($"ERROR: Product with OEM '{newProduct.OEM}' already exists in the database, or insertion failed in another manner.");
         }
 
-        // TODO: trim and remove existingProduct logic since _productControl.UpdateProduct handles existing product issue already.
         // PUT: https://localhost:7134/api/Products/OEM
         [HttpPut("{OEM}")]
-        public IActionResult UpdateProduct(string OEM, [FromBody] ProductViewModel updatedProduct, string carPartName, string carVINNumber)
+        public async Task<IActionResult> UpdateProduct(string OEM, [FromBody] ProductViewModel updatedProduct, string carPartName, string carVINNumber)
         {
             if (updatedProduct == null)
             {
-                // Return 400: Bad request response
                 return BadRequest("ERROR: Bad Product request body.");
             }
 
-            var existingProduct = _productControl.GetProductByOEM(OEM);
+            var existingProduct = await _productControl.GetProductByOEMAsync(OEM);
 
-            if(existingProduct == null)
+            if (existingProduct == null)
             {
-                // Return 404: no existing product found
                 return NotFound($"No existing Product with OEM '{OEM}' found.");
             }
 
-            if(OEM != existingProduct.OEM)
+            if (OEM != existingProduct.OEM)
             {
-                // Return 409: OEMs of existing product and response body product do not match.
                 return Conflict($"Found Product with OEM '{OEM}' does not match OEM in request body '{existingProduct.OEM}'.");
             }
 
-            var wasProductUpdated = _productControl.UpdateProduct(OEM, updatedProduct, carPartName, carVINNumber);
+            var wasProductUpdated = await _productControl.UpdateProductAsync(OEM, updatedProduct, carPartName, carVINNumber);
 
-            if(!wasProductUpdated)
+            if (!wasProductUpdated)
             {
-                // Return 500: Internal Server Error if the update fails
                 return StatusCode(500, $"ERROR: Unable to update Product with OEM '{OEM}' in the database.");
             }
 
-            // Return 204: No Content (Successful update)
             return NoContent();
         }
 
         // DELETE: https://localhost:7134/api/Products/OEM
         [HttpDelete("{OEM}")]
-        public IActionResult DeleteProduct(string OEM)
+        public async Task<IActionResult> DeleteProduct(string OEM)
         {
-            var foundProduct = _productControl.GetProductByOEM(OEM);
+            var foundProduct = await _productControl.GetProductByOEMAsync(OEM);
 
-            if(foundProduct == null)
+            if (foundProduct == null)
             {
-                // Return 404: no existing product found
-                return NotFound($"No existing Product with OEM '{foundProduct.OEM}' found.");
+                return NotFound($"No existing Product with OEM '{OEM}' found.");
             }
 
-            var wasProductRemoved = _productControl.DeleteProduct(OEM);
+            var wasProductRemoved = await _productControl.DeleteProductAsync(OEM);
 
-            if(!wasProductRemoved)
+            if (!wasProductRemoved)
             {
-                return StatusCode(500, $"ERROR: Unable to delete Product with OEM '{foundProduct.OEM}' from database.");
+                return StatusCode(500, $"ERROR: Unable to delete Product with OEM '{OEM}' from database.");
             }
 
-            // Return 204: No Content (Successful deletion)
             return NoContent();
         }
     }

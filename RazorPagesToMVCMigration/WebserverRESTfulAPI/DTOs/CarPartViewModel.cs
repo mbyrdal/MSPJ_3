@@ -12,22 +12,19 @@ namespace ServiceAPI.DTOs
         public int CarID { get; set; }
 
         [Required]
-        [StringLength(30)]
+        [StringLength(30, ErrorMessage = "Name cannot exceed 30 characters.")]
         public string Name { get; set; } = string.Empty;
 
         [Required]
+        [StringLength(200, ErrorMessage = "Notes cannot exceed 200 characters.")]
         public string Notes { get; set; } = string.Empty;
-
-        // Navigation Property for CarModel
-        // [ForeignKey("CarModelID")]
-        // public CarModel CarModel { get; set; }
 
         public CarPartViewModel() { }
 
-        public CarPartViewModel(int ID, int carID, string name, string notes)
+        public CarPartViewModel(int id, int carId, string name, string notes)
         {
-            this.ID = ID;
-            CarID = carID;
+            ID = id;
+            CarID = carId;
             Name = name;
             Notes = notes;
         }

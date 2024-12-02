@@ -2,170 +2,143 @@
 using ServiceAPI.DatabaseAccess;
 using ServiceAPI.DTOs;
 using ServiceAPI.Models;
-using System.Diagnostics;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ServiceAPI.BusinessLogic
 {
     public class CustomerControl : ICustomerControl
     {
         private readonly DbCustomer _dbCustomerAccess;
+        private readonly ILogger<CustomerControl> _logger;
 
-        public CustomerControl(DbCustomer dbCustomerAccess)
+        public CustomerControl(DbCustomer dbCustomerAccess, ILogger<CustomerControl> logger)
         {
             _dbCustomerAccess = dbCustomerAccess;
+            _logger = logger;
         }
 
-        public Customer GetCustomerByID(int ID)
+        public async Task<Customer> GetCustomerByIDAsync(int ID)
         {
-            Customer customerPlaceholder = null;
             try
             {
-                customerPlaceholder = _dbCustomerAccess.GetByIdentifier(ID);
+                return await _dbCustomerAccess.GetByIdentifierAsync(ID);
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex.Message);
+                _logger.LogError(ex, $"Error occurred while retrieving customer with ID: {ID}.");
+                return null;
             }
-            return customerPlaceholder;
         }
 
-        public List<Customer> GetAllCustomers()
+        public async Task<List<Customer>> GetAllCustomersAsync()
         {
-            List<Customer> allCustomers = new List<Customer>();
             try
             {
-                allCustomers = _dbCustomerAccess.GetAllEntities();
+                return await _dbCustomerAccess.GetAllEntitiesAsync();
             }
             catch (Exception ex)
             {
-                allCustomers = null;
-                Debug.WriteLine(ex.Message);
+                _logger.LogError(ex, "Error occurred while retrieving all customers.");
+                return null;
             }
-            return allCustomers;
         }
 
-        public bool AddCustomer(Customer customer)
+        public async Task<bool> AddCustomerAsync(Customer customer)
         {
-            bool customerExists = false;
-            bool wasAccountInserted = false;
-            int numberOfRowsInserted;
             try
             {
-                customerExists = _dbCustomerAccess.CustomerExists(customer.ID, customer.Email);
-                if (customerExists) // CASE: Customer does exist in DB --> Cannot be created
-                {
-                    throw new InvalidOperationException($"A Customer with the ID '{customer.ID}' and Email '{customer.Email}' already exists in the Customer table.");
-                }
+                if (await CustomerExistsAsync(customer.ID, customer.Email))
+                    throw new InvalidOperationException($"Customer with ID {customer.ID} and Email {customer.Email} already exists.");
 
-                // Customer does not exist
-                numberOfRowsInserted = _dbCustomerAccess.CreateEntity(customer);
-                wasAccountInserted = (numberOfRowsInserted == 1);
+                return await _dbCustomerAccess.CreateEntityAsync(customer) == 1;
             }
             catch (Exception ex)
             {
-                customer = null;
-                Debug.WriteLine(ex.Message);
+                _logger.LogError(ex, "Error occurred while adding a customer.");
+                return false;
             }
-            return wasAccountInserted;
         }
 
-        // DTO VERSION
-        public bool AddCustomerDTO(CustomerViewModel customerDTO)
+        public async Task<bool> AddCustomerDTOAsync(CustomerViewModel customerDTO)
         {
-            bool customerExists = false;
-            bool wasAccountInserted = false;
-            int numberOfRowsInserted;
             try
             {
-                customerExists = _dbCustomerAccess.CustomerExists(customerDTO.ID, customerDTO.Email);
-                if (customerExists) // CASE: Customer does exist in DB --> Cannot be created
-                {
-                    throw new InvalidOperationException($"A Customer with the Email '{customerDTO.Email}' already exists in the Customer table.");
-                }
+                if (await CustomerExistsAsync(customerDTO.ID, customerDTO.Email))
+                    throw new InvalidOperationException($"Customer with ID {customerDTO.ID} and Email {customerDTO.Email} already exists.");
 
-                // Customer does not exist
-                numberOfRowsInserted = _dbCustomerAccess.CreateEntityDTO(customerDTO);
-                wasAccountInserted = (numberOfRowsInserted == 1);
+                return await _dbCustomerAccess.CreateEntityDTOAsync(customerDTO) == 1;
             }
             catch (Exception ex)
             {
-                customerDTO = null;
-                Debug.WriteLine(ex.Message);
+                _logger.LogError(ex, "Error occurred while adding a customer (DTO).");
+                return false;
             }
-            return wasAccountInserted;
         }
 
-        public bool UpdateCustomer(Customer customer)
+        public async Task<bool> UpdateCustomerAsync(Customer customer)
         {
-            bool customerExists = false;
-            bool wasCustomerUpdated = false;
-            int numberOfRowsUpdated;
             try
             {
-                customerExists = _dbCustomerAccess.CustomerExists(customer.ID, customer.Email);
-                if (!customerExists) // CASE: Customer does not exist in DB --> Cannot be updated
-                {
-                    throw new InvalidOperationException($"A Customer with the ID '{customer.ID}' and Email '{customer.Email}' does not exist in the Customer table.");
-                }
+                if (!await CustomerExistsAsync(customer.ID, customer.Email))
+                    throw new InvalidOperationException($"Customer with ID {customer.ID} and Email {customer.Email} does not exist.");
 
-                // Customer does exist
-                numberOfRowsUpdated = _dbCustomerAccess.UpdateEntity(customer);
-                wasCustomerUpdated = (numberOfRowsUpdated == 1);
+                return await _dbCustomerAccess.UpdateEntityAsync(customer) == 1;
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex.Message);
+                _logger.LogError(ex, "Error occurred while updating a customer.");
+                return false;
             }
-            return wasCustomerUpdated;
         }
 
-        // DTO VERSION
-        public bool UpdateCustomerDTO(CustomerViewModel customerDTO)
+        public async Task<bool> UpdateCustomerDTOAsync(CustomerViewModel customerDTO)
         {
-            bool customerExists = false;
-            bool wasCustomerUpdated = false;
-            int numberOfRowsUpdated;
             try
             {
-                customerExists = _dbCustomerAccess.CustomerExists(customerDTO.ID, customerDTO.Email);
-                if (!customerExists) // CASE: Customer does not exist in DB --> Cannot be updated
-                {
-                    throw new InvalidOperationException($"A Customer with the ID '{customerDTO.ID}' and Email '{customerDTO.Email}' does not exist in the Customer table.");
-                }
+                if (!await CustomerExistsAsync(customerDTO.ID, customerDTO.Email))
+                    throw new InvalidOperationException($"Customer with ID {customerDTO.ID} and Email {customerDTO.Email} does not exist.");
 
-                // Customer does exist
-                numberOfRowsUpdated = _dbCustomerAccess.UpdateEntityDTO(customerDTO);
-                wasCustomerUpdated = (numberOfRowsUpdated == 1);
+                return await _dbCustomerAccess.UpdateEntityDTOAsync(customerDTO) == 1;
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex.Message);
+                _logger.LogError(ex, "Error occurred while updating a customer (DTO).");
+                return false;
             }
-            return wasCustomerUpdated;
         }
 
-        public bool DeleteCustomer(int ID)
+        public async Task<bool> DeleteCustomerAsync(int ID)
         {
-            bool customerExists;
-            bool wasCustomerDeleted = false;
             try
             {
-                string customerEmail = GetCustomerByID(ID).Email;
-                customerExists = _dbCustomerAccess.CustomerExists(ID, customerEmail);
-                if (!customerExists)
-                {
-                    throw new InvalidOperationException($"A Customer with the ID '{ID}' and Email '{customerEmail}' does not exist in the Customer table.");
-                }
+                var customer = await GetCustomerByIDAsync(ID);
+                if (customer == null)
+                    throw new InvalidOperationException($"Customer with ID {ID} does not exist.");
 
-                // CASE: Customer does exist in DB
-                wasCustomerDeleted = _dbCustomerAccess.DeleteEntity(ID);
+                return await _dbCustomerAccess.DeleteEntityAsync(ID);
             }
             catch (Exception ex)
             {
-                wasCustomerDeleted = false;
-                Debug.WriteLine(ex.Message);
+                _logger.LogError(ex, "Error occurred while deleting a customer.");
+                return false;
             }
-            return wasCustomerDeleted;
+        }
+
+        // Private helper to check if a customer exists
+        private async Task<bool> CustomerExistsAsync(int ID, string Email)
+        {
+            try
+            {
+                return await _dbCustomerAccess.CustomerExistsAsync(ID, Email);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while checking if a customer exists.");
+                throw;
+            }
         }
     }
 }

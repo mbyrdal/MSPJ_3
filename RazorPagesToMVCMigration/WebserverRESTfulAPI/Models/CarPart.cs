@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ServiceAPI.Models
 {
@@ -7,26 +8,28 @@ namespace ServiceAPI.Models
         [Key]
         public int ID { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Car ID is required.")]
         public int CarID { get; set; }
 
-        [Required]
-        [StringLength(30)]
+        [Required(ErrorMessage = "Name is required.")]
+        [StringLength(30, ErrorMessage = "Name cannot exceed 30 characters.")]
         public string Name { get; set; } = string.Empty;
 
-        [Required]
+        [Required(ErrorMessage = "Notes are required.")]
+        [StringLength(200, ErrorMessage = "Notes cannot exceed 200 characters.")]
         public string Notes { get; set; } = string.Empty;
 
-        // Navigation Property for CarModel
-        // [ForeignKey("CarModelID")]
-        // public CarModel CarModel { get; set; }
+        // Navigation Property for Car
+        // Uncomment if a relationship is needed in the future
+        // [ForeignKey("CarID")]
+        // public Car? Car { get; set; }
 
         public CarPart() { }
 
-        public CarPart(int ID, int carID, string name, string notes)
+        public CarPart(int id, int carId, string name, string notes)
         {
-            this.ID = ID;
-            CarID = carID;
+            ID = id;
+            CarID = carId;
             Name = name;
             Notes = notes;
         }

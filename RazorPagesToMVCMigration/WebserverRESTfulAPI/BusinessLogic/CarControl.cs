@@ -2,168 +2,143 @@
 using ServiceAPI.DatabaseAccess;
 using ServiceAPI.DTOs;
 using ServiceAPI.Models;
-using System.Diagnostics;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ServiceAPI.BusinessLogic
 {
     public class CarControl : ICarControl
     {
         private readonly DbCar _dbCarAccess;
+        private readonly ILogger<CarControl> _logger;
 
-        public CarControl(DbCar dbCarAccess)
+        public CarControl(DbCar dbCarAccess, ILogger<CarControl> logger)
         {
             _dbCarAccess = dbCarAccess;
+            _logger = logger;
         }
 
-        public List<Car> GetAllCars()
+        public async Task<List<Car>> GetAllCarsAsync()
         {
-            List<Car> allCars = new List<Car>();
             try
             {
-                allCars = _dbCarAccess.GetAllEntities();
+                return await _dbCarAccess.GetAllEntitiesAsync();
             }
             catch (Exception ex)
             {
-                allCars = null;
-                Debug.WriteLine(ex.Message);
+                _logger.LogError(ex, "Error occurred while retrieving all cars.");
+                return null;
             }
-            return allCars;
         }
 
-        public Car GetCarByID(int ID)
+        public async Task<Car> GetCarByIDAsync(int ID)
         {
-            Car carPlaceholder = null;
             try
             {
-                carPlaceholder = _dbCarAccess.GetByIdentifier(ID);
+                return await _dbCarAccess.GetByIdentifierAsync(ID);
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex.Message);
+                _logger.LogError(ex, $"Error occurred while retrieving car with ID: {ID}.");
+                return null;
             }
-            return carPlaceholder;
         }
 
-        public bool AddCar(Car car)
+        public async Task<bool> AddCarAsync(Car car)
         {
-            bool carExists = false;
-            bool wasCarInserted = false;
-            int numberOfRowsInserted;
             try
             {
-                carExists = _dbCarAccess.CarExists(car.ID, car.VINNumber);
-                if (carExists) // CASE: Car does exist in DB --> Cannot be created
-                {
-                    throw new InvalidOperationException($"A Car with the ID '{car.ID}' and VINNumber '{car.VINNumber}' already exists in the CarModel table.");
-                }
+                if (await CarExistsAsync(car.ID, car.VINNumber))
+                    throw new InvalidOperationException($"Car with ID {car.ID} and VIN {car.VINNumber} already exists.");
 
-                // Customer does not exist
-                numberOfRowsInserted = _dbCarAccess.CreateEntity(car);
-                wasCarInserted = (numberOfRowsInserted == 1);
+                return await _dbCarAccess.CreateEntityAsync(car) == 1;
             }
             catch (Exception ex)
             {
-                car = null;
-                Debug.WriteLine(ex.Message);
+                _logger.LogError(ex, "Error occurred while adding a car.");
+                return false;
             }
-            return wasCarInserted;
         }
 
-        public bool AddCarDTO(CarViewModel car)
+        public async Task<bool> AddCarDTOAsync(CarViewModel car)
         {
-            bool carExists = false;
-            bool wasCarInserted = false;
-            int numberOfRowsInserted;
             try
             {
-                carExists = _dbCarAccess.CarExists(car.ID, car.VINNumber);
-                if (carExists) // CASE: Car does exist in DB --> Cannot be created
-                {
-                    throw new InvalidOperationException($"A Car with the ID '{car.ID}' and VINNumber '{car.VINNumber}' already exists in the CarModel table.");
-                }
+                if (await CarExistsAsync(car.ID, car.VINNumber))
+                    throw new InvalidOperationException($"Car with ID {car.ID} and VIN {car.VINNumber} already exists.");
 
-                // Car does not exist
-                numberOfRowsInserted = _dbCarAccess.CreateEntityDTO(car);
-                wasCarInserted = (numberOfRowsInserted == 1);
+                return await _dbCarAccess.CreateEntityDTOAsync(car) == 1;
             }
             catch (Exception ex)
             {
-                car = null;
-                Debug.WriteLine(ex.Message);
+                _logger.LogError(ex, "Error occurred while adding a car (DTO).");
+                return false;
             }
-            return wasCarInserted;
         }
 
-        public bool UpdateCar(Car car)
+        public async Task<bool> UpdateCarAsync(Car car)
         {
-            bool carExists = false;
-            bool wasCarUpdated = false;
-            int numberOfRowsUpdated;
             try
             {
-                carExists = _dbCarAccess.CarExists(car.ID, car.VINNumber);
-                if (!carExists) // CASE: Car does not exist in DB --> Cannot be updated
-                {
-                    throw new InvalidOperationException($"A Car with the ID '{car.ID}' and VINNumber '{car.VINNumber}' does not exist in the Customer table.");
-                }
+                if (!await CarExistsAsync(car.ID, car.VINNumber))
+                    throw new InvalidOperationException($"Car with ID {car.ID} and VIN {car.VINNumber} does not exist.");
 
-                // CarModel does exist
-                numberOfRowsUpdated = _dbCarAccess.UpdateEntity(car);
-                wasCarUpdated = (numberOfRowsUpdated == 1);
+                return await _dbCarAccess.UpdateEntityAsync(car) == 1;
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex.Message);
+                _logger.LogError(ex, "Error occurred while updating a car.");
+                return false;
             }
-            return wasCarUpdated;
         }
 
-        public bool UpdateCarDTO(CarViewModel car)
+        public async Task<bool> UpdateCarDTOAsync(CarViewModel car)
         {
-            bool carExists = false;
-            bool wasCarUpdated = false;
-            int numberOfRowsUpdated;
             try
             {
-                carExists = _dbCarAccess.CarExists(car.ID, car.VINNumber);
-                if (!carExists) // CASE: Car does not exist in DB --> Cannot be updated
-                {
-                    throw new InvalidOperationException($"A Car with the ID '{car.ID}' and VINNumber '{car.VINNumber}' does not exist in the Car table.");
-                }
+                if (!await CarExistsAsync(car.ID, car.VINNumber))
+                    throw new InvalidOperationException($"Car with ID {car.ID} and VIN {car.VINNumber} does not exist.");
 
-                // Cardoes exist
-                numberOfRowsUpdated = _dbCarAccess.UpdateEntityDTO(car);
-                wasCarUpdated = (numberOfRowsUpdated == 1);
+                return await _dbCarAccess.UpdateEntityDTOAsync(car) == 1;
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex.Message);
+                _logger.LogError(ex, "Error occurred while updating a car (DTO).");
+                return false;
             }
-            return wasCarUpdated;
         }
 
-        public bool DeleteCar(int ID)
+        public async Task<bool> DeleteCarAsync(int ID)
         {
-            bool carExists;
-            bool wasCarDeleted = false;
             try
             {
-                string carVinNumber = GetCarByID(ID).VINNumber;
-                carExists = _dbCarAccess.CarExists(ID, carVinNumber);
-                if (!carExists)
-                {
-                    throw new InvalidOperationException($"A Car with the ID '{ID}' and VINNumber '{carVinNumber}' does not exist in the Car table.");
-                }
+                var car = await GetCarByIDAsync(ID);
+                if (car == null)
+                    throw new InvalidOperationException($"Car with ID {ID} does not exist.");
 
-                // CASE: Car does exist in DB
-                wasCarDeleted = _dbCarAccess.DeleteEntity(ID);
+                return await _dbCarAccess.DeleteEntityAsync(ID);
             }
             catch (Exception ex)
             {
-                wasCarDeleted = false;
-                Debug.WriteLine(ex.Message);
+                _logger.LogError(ex, "Error occurred while deleting a car.");
+                return false;
             }
-            return wasCarDeleted;
+        }
+
+        // Private helper to check if a car exists
+        private async Task<bool> CarExistsAsync(int ID, string VINNumber)
+        {
+            try
+            {
+                return await _dbCarAccess.CarExistsAsync(ID, VINNumber);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while checking if a car exists.");
+                throw;
+            }
         }
     }
 }

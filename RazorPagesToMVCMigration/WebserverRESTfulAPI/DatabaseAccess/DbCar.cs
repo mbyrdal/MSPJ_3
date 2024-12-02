@@ -3,13 +3,14 @@ using ServiceAPI.DatabaseAccess.Interfaces;
 using ServiceAPI.DTOs;
 using ServiceAPI.Models;
 using ServiceAPI.Utilities;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ServiceAPI.DatabaseAccess
 {
     public class DbCar : ICRUD_DB<Car>
     {
-        // Configuration steps
-        private string _connectionString;
+        private readonly string _connectionString;
         private readonly DbHelper _dbHelper;
 
         public DbCar(IConfiguration configuration)
@@ -19,195 +20,190 @@ namespace ServiceAPI.DatabaseAccess
             _connectionString = helper.GetDBConnectionString();
         }
 
-        public List<Car> GetAllEntities()
+        public async Task<List<Car>> GetAllEntitiesAsync()
         {
-            List<Car> cars = new List<Car>();
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            var cars = new List<Car>();
+            try
             {
-                conn.Open();
-                using (SqlCommand readAllCommand = new SqlCommand("SELECT * FROM Car", conn))
+                using (SqlConnection conn = new SqlConnection(_connectionString))
                 {
-                    using (SqlDataReader reader = readAllCommand.ExecuteReader())
+                    await conn.OpenAsync();
+                    using (SqlCommand readAllCommand = new SqlCommand("SELECT * FROM Car", conn))
                     {
-                        while (reader.Read())
+                        using (SqlDataReader reader = await readAllCommand.ExecuteReaderAsync())
                         {
-                            Car carsInTable = new Car(
-                                reader.GetInt32(reader.GetOrdinal("ID")),
-                                reader.GetInt32(reader.GetOrdinal("CarTemplateID")),
-                                reader.GetString(reader.GetOrdinal("VINNumber")),
-                                reader.GetDateTime(reader.GetOrdinal("ProductionYear")),
-                                reader.GetInt32(reader.GetOrdinal("Mileage")));
-
-                            cars.Add(carsInTable);
+                            while (await reader.ReadAsync())
+                            {
+                                var car = MapCarFromReader(reader);
+                                cars.Add(car);
+                            }
                         }
                     }
                 }
-                conn.Close();
+            }
+            catch (SqlException ex)
+            {
+                Console.WriteLine($"SQL error occurred: {ex.Message}");
             }
             return cars;
         }
 
-        public Car GetByIdentifier(int ID)
+        public async Task<Car> GetByIdentifierAsync(int id)
         {
             Car car = null;
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            try
             {
-                conn.Open();
-                using(SqlCommand readCommand = new SqlCommand("SELECT ID, CarTemplateID, VINNumber, ProductionYear, Mileage FROM Car WHERE ID = @ID", conn))
+                using (SqlConnection conn = new SqlConnection(_connectionString))
                 {
-                    readCommand.Parameters.AddWithValue("@ID", ID);
-                    using(SqlDataReader reader = readCommand.ExecuteReader())
+                    await conn.OpenAsync();
+                    using (SqlCommand readCommand = new SqlCommand(
+                        "SELECT ID, CarTemplateID, VINNumber, ProductionYear, Mileage FROM Car WHERE ID = @ID", conn))
                     {
-                        if(reader.Read())
+                        readCommand.Parameters.AddWithValue("@ID", id);
+
+                        using (SqlDataReader reader = await readCommand.ExecuteReaderAsync())
                         {
-                            car = new Car(
-                                reader.GetInt32(reader.GetOrdinal("ID")),
-                                reader.GetInt32(reader.GetOrdinal("CarTemplateID")),
-                                reader.GetString(reader.GetOrdinal("VINNumber")),
-                                reader.GetDateTime(reader.GetOrdinal("ProductionYear")),
-                                reader.GetInt32(reader.GetOrdinal("Mileage")));
+                            if (await reader.ReadAsync())
+                            {
+                                car = MapCarFromReader(reader);
+                            }
                         }
                     }
                 }
-                conn.Close();
+            }
+            catch (SqlException ex)
+            {
+                Console.WriteLine($"SQL error occurred: {ex.Message}");
             }
             return car;
         }
 
-        public int CreateEntity(Car newCar)
+        public async Task<int> CreateEntityAsync(Car newCar)
         {
-            int numberOfRowsInserted;
-            using(SqlConnection conn = new SqlConnection(_connectionString))
+            int rowsInserted = 0;
+            try
             {
-                conn.Open();
-                using(SqlCommand createCommand = new SqlCommand(
-                    "INSERT INTO Car (ID, CarTemplateID, VINNumber, ProductionYear, Mileage " +
-                    "VALUES (@ID, @CarTemplateID, @VINNumber, @ProductionYear, @Mileage)", conn))
+                using (SqlConnection conn = new SqlConnection(_connectionString))
                 {
-                    createCommand.Parameters.AddWithValue("@ID", newCar.ID);
-                    createCommand.Parameters.AddWithValue("@CarTemplateID", newCar.CarTemplateID);
-                    createCommand.Parameters.AddWithValue("@VINNumber", newCar.VINNumber);
-                    createCommand.Parameters.AddWithValue("@ProductionYear", newCar.ProductionYear);
-                    createCommand.Parameters.AddWithValue("@Mileage", newCar.Mileage);
-                    numberOfRowsInserted = createCommand.ExecuteNonQuery();
-                }
-                conn.Close();
-            }
-            return numberOfRowsInserted;
-        }
-
-        public int CreateEntityDTO(CarViewModel newCar)
-        {
-            int numberOfRowsInserted;
-            using (SqlConnection conn = new SqlConnection(_connectionString))
-            {
-                conn.Open();
-                using (SqlCommand createCommand = new SqlCommand(
-                    "INSERT INTO Car (CarTemplateID, VINNumber, ProductionYear, Mileage " +
-                    "VALUES (@CarTemplateID, @VINNumber, @ProductionYear, @Mileage)", conn))
-                {
-                    createCommand.Parameters.AddWithValue("@CarTemplateID", newCar.CarTemplateID);
-                    createCommand.Parameters.AddWithValue("@VINNumber", newCar.VINNumber);
-                    createCommand.Parameters.AddWithValue("@ProductionYear", newCar.ProductionYear);
-                    createCommand.Parameters.AddWithValue("@Mileage", newCar.Mileage);
-                    numberOfRowsInserted = createCommand.ExecuteNonQuery();
-                }
-                conn.Close();
-            }
-            return numberOfRowsInserted;
-        }
-
-        public int UpdateEntity(Car updateCar)
-        {
-            int numberOfRowsUpdated = 0;
-            using (SqlConnection conn = new SqlConnection(_connectionString))
-            {
-                try
-                {
-                    conn.Open();
-                    using (SqlCommand updateCommand = new SqlCommand("UPDATE Car " +
-                                                                     "SET ID=@ID, CarTemplateID=@CarTemplateID, VINNumber=@VINNumber, " +
-                                                                     "ProductionYear=@ProductionYear, Mileage=@Mileage " +
-                                                                     "WHERE ID = @ID", conn))
+                    await conn.OpenAsync();
+                    using (SqlCommand createCommand = new SqlCommand(
+                        "INSERT INTO Car (CarTemplateID, VINNumber, ProductionYear, Mileage) " +
+                        "VALUES (@CarTemplateID, @VINNumber, @ProductionYear, @Mileage)", conn))
                     {
-                        updateCommand.Parameters.AddWithValue("@ID", updateCar.ID);
-                        updateCommand.Parameters.AddWithValue("@CarTemplateID", updateCar.CarTemplateID);
-                        updateCommand.Parameters.AddWithValue("@VINNumber", updateCar.VINNumber);
-                        updateCommand.Parameters.AddWithValue("@ProductionYear", updateCar.ProductionYear);
-                        updateCommand.Parameters.AddWithValue("@Mileage", updateCar.Mileage);
+                        createCommand.Parameters.AddWithValue("@CarTemplateID", newCar.CarTemplateID);
+                        createCommand.Parameters.AddWithValue("@VINNumber", newCar.VINNumber);
+                        createCommand.Parameters.AddWithValue("@ProductionYear", newCar.ProductionYear);
+                        createCommand.Parameters.AddWithValue("@Mileage", newCar.Mileage);
 
-                        numberOfRowsUpdated = updateCommand.ExecuteNonQuery();
+                        rowsInserted = await createCommand.ExecuteNonQueryAsync();
                     }
-                    conn.Close();
                 }
-                catch (SqlException ex)
-                {
-                    Console.WriteLine($"SQL error occurred: {ex.Message}");
-                }
-                return numberOfRowsUpdated;
             }
+            catch (SqlException ex)
+            {
+                Console.WriteLine($"SQL error occurred: {ex.Message}");
+            }
+            return rowsInserted;
         }
 
-        public int UpdateEntityDTO(CarViewModel updateCar)
+        public async Task<int> CreateEntityDTOAsync(CarViewModel newCar)
         {
-            int numberOfRowsUpdated = 0;
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            int rowsInserted = 0;
+            try
             {
-                try
+                using (SqlConnection conn = new SqlConnection(_connectionString))
                 {
-                    conn.Open();
-                    using (SqlCommand updateCommand = new SqlCommand("UPDATE Car " +
-                                                                     "SET VINNumber=@VINNumber, " +
-                                                                     "ProductionYear=@ProductionYear, Mileage=@Mileage " +
-                                                                     "WHERE ID = @ID", conn))
+                    await conn.OpenAsync();
+                    using (SqlCommand createCommand = new SqlCommand(
+                        "INSERT INTO Car (CarTemplateID, VINNumber, ProductionYear, Mileage) " +
+                        "VALUES (@CarTemplateID, @VINNumber, @ProductionYear, @Mileage)", conn))
                     {
-                        updateCommand.Parameters.AddWithValue("@ID", updateCar.ID);
-                        updateCommand.Parameters.AddWithValue("@VINNumber", updateCar.VINNumber);
-                        updateCommand.Parameters.AddWithValue("@ProductionYear", updateCar.ProductionYear);
-                        updateCommand.Parameters.AddWithValue("@Mileage", updateCar.Mileage);
+                        createCommand.Parameters.AddWithValue("@CarTemplateID", newCar.CarTemplateID);
+                        createCommand.Parameters.AddWithValue("@VINNumber", newCar.VINNumber);
+                        createCommand.Parameters.AddWithValue("@ProductionYear", newCar.ProductionYear);
+                        createCommand.Parameters.AddWithValue("@Mileage", newCar.Mileage);
 
-                        numberOfRowsUpdated = updateCommand.ExecuteNonQuery();
+                        rowsInserted = await createCommand.ExecuteNonQueryAsync();
                     }
-                    conn.Close();
                 }
-                catch (SqlException ex)
-                {
-                    Console.WriteLine($"SQL error occurred: {ex.Message}");
-                }
-                return numberOfRowsUpdated;
             }
+            catch (SqlException ex)
+            {
+                Console.WriteLine($"SQL error occurred: {ex.Message}");
+            }
+            return rowsInserted;
         }
 
-        public bool DeleteEntity(int ID)
+        public async Task<int> UpdateEntityAsync(Car updatedCar)
         {
-            bool wasCarDeleted = false;
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            int rowsUpdated = 0;
+            try
             {
-                conn.Open();
-                using (SqlCommand deleteCommand = new SqlCommand("DELETE from Car WHERE ID = @ID", conn))
+                using (SqlConnection conn = new SqlConnection(_connectionString))
                 {
-                    deleteCommand.Parameters.AddWithValue("@ID", ID);
-                    int numberOfRowsAffectedByDeletion = deleteCommand.ExecuteNonQuery();
-                    wasCarDeleted = numberOfRowsAffectedByDeletion == 1;
+                    await conn.OpenAsync();
+                    using (SqlCommand updateCommand = new SqlCommand(
+                        "UPDATE Car SET CarTemplateID=@CarTemplateID, VINNumber=@VINNumber, " +
+                        "ProductionYear=@ProductionYear, Mileage=@Mileage WHERE ID = @ID", conn))
+                    {
+                        updateCommand.Parameters.AddWithValue("@ID", updatedCar.ID);
+                        updateCommand.Parameters.AddWithValue("@CarTemplateID", updatedCar.CarTemplateID);
+                        updateCommand.Parameters.AddWithValue("@VINNumber", updatedCar.VINNumber);
+                        updateCommand.Parameters.AddWithValue("@ProductionYear", updatedCar.ProductionYear);
+                        updateCommand.Parameters.AddWithValue("@Mileage", updatedCar.Mileage);
+
+                        rowsUpdated = await updateCommand.ExecuteNonQueryAsync();
+                    }
                 }
-                conn.Close();
             }
-            return wasCarDeleted;
+            catch (SqlException ex)
+            {
+                Console.WriteLine($"SQL error occurred: {ex.Message}");
+            }
+            return rowsUpdated;
         }
 
-        internal bool CarExists(int ID, string VINNumber)
+        public async Task<bool> DeleteEntityAsync(int id)
         {
-            bool carExistsIdentifierExists = _dbHelper.EntityExists("Car", "ID", ID.ToString());
-            bool carVinExists = _dbHelper.EntityExists("Car", "VINNumber", VINNumber);
-
-            bool carExists = carExistsIdentifierExists && carVinExists;
-
-            if (!carExists)
+            bool isDeleted = false;
+            try
             {
-                return false;
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    await conn.OpenAsync();
+                    using (SqlCommand deleteCommand = new SqlCommand("DELETE FROM Car WHERE ID = @ID", conn))
+                    {
+                        deleteCommand.Parameters.AddWithValue("@ID", id);
+                        isDeleted = await deleteCommand.ExecuteNonQueryAsync() == 1;
+                    }
+                }
             }
+            catch (SqlException ex)
+            {
+                Console.WriteLine($"SQL error occurred: {ex.Message}");
+            }
+            return isDeleted;
+        }
 
-            return carExists;
+        // Check if a car exists
+        public async Task<bool> CarExistsAsync(int id, string vinNumber)
+        {
+            var idExists = await _dbHelper.EntityExistsAsync("Car", "ID", id.ToString());
+            var vinExists = await _dbHelper.EntityExistsAsync("Car", "VINNumber", vinNumber);
+            return idExists && vinExists;
+        }
+
+        // Helper method to map Car from SqlDataReader
+        private Car MapCarFromReader(SqlDataReader reader)
+        {
+            return new Car
+            (
+                reader.GetInt32(reader.GetOrdinal("ID")),
+                reader.GetInt32(reader.GetOrdinal("CarTemplateID")),
+                reader.GetString(reader.GetOrdinal("VINNumber")),
+                reader.GetDateTime(reader.GetOrdinal("ProductionYear")),
+                reader.GetInt32(reader.GetOrdinal("Mileage"))
+            );
         }
     }
 }

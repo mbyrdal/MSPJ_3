@@ -2,151 +2,137 @@
 using ServiceAPI.DatabaseAccess;
 using ServiceAPI.DTOs;
 using ServiceAPI.Models;
-using System.Diagnostics;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ServiceAPI.BusinessLogic
 {
     public class ProductControl : IProductControl
     {
         private readonly DbProduct _dbProductAccess;
+        private readonly ILogger<ProductControl> _logger;
 
-        public ProductControl(DbProduct dbProductAccess)
+        public ProductControl(DbProduct dbProductAccess, ILogger<ProductControl> logger)
         {
             _dbProductAccess = dbProductAccess;
+            _logger = logger;
         }
 
-        public Product GetProductByID(int ID)
+        public async Task<Product> GetProductByIDAsync(int ID)
         {
-            Product productPlaceholder = null;
             try
             {
-                productPlaceholder = _dbProductAccess.GetByIdentifier(ID);
+                return await _dbProductAccess.GetByIdentifierAsync(ID);
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex.Message);
+                _logger.LogError(ex, $"Error occurred while retrieving product with ID: {ID}.");
+                return null;
             }
-            return productPlaceholder;
         }
 
-        public Product GetProductByOEM(string OEM)
+        public async Task<Product> GetProductByOEMAsync(string OEM)
         {
-            Product productPlaceholder = null;
             try
             {
-                var productIDPlaceholder = _dbProductAccess.GetProductIDByOEM(OEM);
-                productPlaceholder = _dbProductAccess.GetByIdentifier(productIDPlaceholder);
+                int productID = await _dbProductAccess.GetProductIDByOEMAsync(OEM);
+                return await _dbProductAccess.GetByIdentifierAsync(productID);
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex.Message);
+                _logger.LogError(ex, $"Error occurred while retrieving product with OEM: {OEM}.");
+                return null;
             }
-            return productPlaceholder;
         }
 
-        public List<Product> GetAllProducts()
+        public async Task<List<Product>> GetAllProductsAsync()
         {
-            List<Product> allProducts = new List<Product>();
             try
             {
-                allProducts = _dbProductAccess.GetAllEntities();
+                return await _dbProductAccess.GetAllEntitiesAsync();
             }
             catch (Exception ex)
             {
-                allProducts = null;
-                Debug.WriteLine(ex.Message);
+                _logger.LogError(ex, "Error occurred while retrieving all products.");
+                return null;
             }
-            return allProducts;
         }
 
-        public bool AddProduct(ProductViewModel product, string carPartName, string carVINNumber)
+        public async Task<bool> AddProductAsync(ProductViewModel product, string carPartName, string carVINNumber)
         {
-            bool productExists = false;
-            bool carAndCarPartExists = false;
-            int carPartID;
-            int carID;
-
-            bool wasProductInserted = false;
-            int numberOfRowsInserted;
-
-
             try
             {
-                carAndCarPartExists = _dbProductAccess.CarAndCarPartExists(carPartName, carVINNumber);
-
-                if (!carAndCarPartExists) // CASE: Car or car part does not exist in DB.
+                if (!await _dbProductAccess.CarAndCarPartExistsAsync(carPartName, carVINNumber))
                 {
-                    throw new Exception("Either car or car part does not exist");
+                    throw new InvalidOperationException("Either the car or the car part does not exist.");
                 }
 
-                carPartID = _dbProductAccess.GetCarPartIDByName(carPartName);
-                carID = _dbProductAccess.GetCarByVINNumber(carVINNumber);
+                int carPartID = await _dbProductAccess.GetCarPartIDByNameAsync(carPartName);
+                int carID = await _dbProductAccess.GetCarByVINNumberAsync(carVINNumber);
 
-                productExists = _dbProductAccess.ProductExists(product.ID); // Product exists based on whether its ID number can be found in the Product table.
-                if (!productExists) // CASE: Product does not exist in DB.
+                if (await _dbProductAccess.ProductExistsAsync(product.ID))
                 {
-                    numberOfRowsInserted = _dbProductAccess.CreateEntityDTO(product, carPartID, carID);
-                    wasProductInserted = (numberOfRowsInserted == 1); // If only one row was inserted, then we can determine that the product was added correctly.
+                    throw new InvalidOperationException($"Product with ID {product.ID} already exists.");
                 }
+
+                int rowsInserted = await _dbProductAccess.CreateEntityDTOAsync(product, carPartID, carID);
+                return rowsInserted == 1;
             }
             catch (Exception ex)
             {
-                product = null;
-                Debug.WriteLine(ex.Message);
+                _logger.LogError(ex, "Error occurred while adding a product.");
+                return false;
             }
-            return wasProductInserted;
         }
 
-        public bool UpdateProduct(string OEM, ProductViewModel product, string carPartName, string carVINNumber)
+        public async Task<bool> UpdateProductAsync(string OEM, ProductViewModel product, string carPartName, string carVINNumber)
         {
-            bool productExists = false;
-            bool wasProductUpdated = false;
-            int existingProductID = _dbProductAccess.GetProductIDByOEM(OEM);
-            int numberOfRowsUpdated;
             try
             {
-                bool carAndCarPartExist = _dbProductAccess.CarAndCarPartExists(carPartName, carVINNumber);
-                if (!carAndCarPartExist)
+                if (!await _dbProductAccess.CarAndCarPartExistsAsync(carPartName, carVINNumber))
                 {
-                    throw new ArgumentException($"We cannot find either a car with VIN {carVINNumber}, and/or car part {carPartName} with the given inputs.");
+                    throw new ArgumentException($"Car with VIN {carVINNumber} or car part {carPartName} does not exist.");
                 }
 
-                int carPartID = _dbProductAccess.GetCarPartIDByName(carPartName);
-                int carID = _dbProductAccess.GetCarByVINNumber(carVINNumber);
-                productExists = _dbProductAccess.ProductExists(existingProductID);
-                if (productExists) // CASE: Product does exist in DB.
+                int carPartID = await _dbProductAccess.GetCarPartIDByNameAsync(carPartName);
+                int carID = await _dbProductAccess.GetCarByVINNumberAsync(carVINNumber);
+                int existingProductID = await _dbProductAccess.GetProductIDByOEMAsync(OEM);
+
+                if (!await _dbProductAccess.ProductExistsAsync(existingProductID))
                 {
-                    var prodCarPartID = 
-                    numberOfRowsUpdated = _dbProductAccess.UpdateEntity(product, existingProductID, carPartID, carID);
-                    wasProductUpdated = (numberOfRowsUpdated == 1);
+                    throw new InvalidOperationException($"Product with OEM {OEM} does not exist.");
                 }
+
+                int rowsUpdated = await _dbProductAccess.UpdateEntityAsync(product, existingProductID, carPartID, carID);
+                return rowsUpdated == 1;
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex.Message);
+                _logger.LogError(ex, "Error occurred while updating a product.");
+                return false;
             }
-            return wasProductUpdated;
         }
 
-        public bool DeleteProduct(string OEM)
+        public async Task<bool> DeleteProductAsync(string OEM)
         {
-            bool productExists;
-            bool wasProductDeleted = false;
             try
             {
-                int tempID = _dbProductAccess.GetProductIDByOEM(OEM);
-                productExists = _dbProductAccess.ProductExists(tempID);
-                if(productExists) // CASE: Product does exist in DB.
+                int productID = await _dbProductAccess.GetProductIDByOEMAsync(OEM);
+
+                if (!await _dbProductAccess.ProductExistsAsync(productID))
                 {
-                    wasProductDeleted = _dbProductAccess.DeleteEntity(tempID);
+                    throw new InvalidOperationException($"Product with OEM {OEM} does not exist.");
                 }
+
+                return await _dbProductAccess.DeleteEntityAsync(productID);
             }
             catch (Exception ex)
             {
-                wasProductDeleted = false;
-                Debug.WriteLine(ex.Message);
+                _logger.LogError(ex, "Error occurred while deleting a product.");
+                return false;
             }
-            return wasProductDeleted;
         }
     }
 }

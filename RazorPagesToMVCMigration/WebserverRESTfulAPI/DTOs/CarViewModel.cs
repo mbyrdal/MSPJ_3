@@ -13,27 +13,26 @@ namespace ServiceAPI.DTOs
         public int CarTemplateID { get; set; }
 
         [Required]
-        [StringLength(25)]
+        [StringLength(25, ErrorMessage = "VIN Number cannot exceed 25 characters.")]
         public string VINNumber { get; set; } = string.Empty;
 
         [Required]
+        [DataType(DataType.Date)]
+        [Display(Name = "Production Year")]
         public DateTime ProductionYear { get; set; }
 
         [Required]
+        [Range(0, int.MaxValue, ErrorMessage = "Mileage must be a non-negative number.")]
         public int Mileage { get; set; }
-
-        // Navigation Property for CarTemplate
-        // [ForeignKey("CarTemplate")]
-        // public CarTemplate CarTemplate { get; set; }
 
         public CarViewModel() { }
 
-        public CarViewModel(int ID, int carTemplateID, string vin, DateTime py, int mileage)
+        public CarViewModel(int id, int carTemplateID, string vinNumber, DateTime productionYear, int mileage)
         {
-            this.ID = ID;
+            ID = id;
             CarTemplateID = carTemplateID;
-            VINNumber = vin;
-            ProductionYear = py;
+            VINNumber = vinNumber;
+            ProductionYear = productionYear;
             Mileage = mileage;
         }
     }

@@ -1,17 +1,18 @@
-﻿using Microsoft.AspNetCore.Identity.UI.Services;
-using Microsoft.Data.SqlClient;
+﻿using Microsoft.Data.SqlClient;
 using ServiceAPI.DatabaseAccess.Interfaces;
 using ServiceAPI.DTOs;
 using ServiceAPI.Models;
 using ServiceAPI.Utilities;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace ServiceAPI.DatabaseAccess
 {
     public class DbProduct : ICRUD_DB<Product>
     {
-        // Configuration steps
-        private string _connectionString;
+        private readonly string _connectionString;
         private readonly DbHelper _dbHelper;
 
         public DbProduct(IConfiguration configuration)
@@ -21,344 +22,200 @@ namespace ServiceAPI.DatabaseAccess
             _connectionString = helper.GetDBConnectionString();
         }
 
-        public List<Product> GetAllEntities()
+        public async Task<List<Product>> GetAllEntitiesAsync()
         {
-            List<Product> products = new List<Product>();
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            var products = new List<Product>();
+            try
             {
-                conn.Open();
-                using (SqlCommand readAllCommand = new SqlCommand("SELECT * FROM Product", conn))
+                using (SqlConnection conn = new SqlConnection(_connectionString))
                 {
-                    using (SqlDataReader reader = readAllCommand.ExecuteReader())
+                    await conn.OpenAsync();
+                    using (SqlCommand readAllCommand = new SqlCommand("SELECT * FROM Product", conn))
                     {
-                        while (reader.Read())
+                        using (SqlDataReader reader = await readAllCommand.ExecuteReaderAsync())
                         {
-                            Product productInTable = new Product
+                            while (await reader.ReadAsync())
                             {
-                                ID = reader.GetInt32(reader.GetOrdinal("ID")),
-                                CarPartID = reader.GetInt32(reader.GetOrdinal("CarPartID")),
-                                CarID = reader.GetInt32(reader.GetOrdinal("CarID")),
-                                OEM = reader.GetString(reader.GetOrdinal("OEM")),
-                                Price = reader.GetDecimal(reader.GetOrdinal("Price")),
-                                DateAvailable = reader.GetDateTime(reader.GetOrdinal("DateAvailable")),
-                                Condition = reader.GetString(reader.GetOrdinal("Condition")),
-                                ItemDescription = reader.GetString(reader.GetOrdinal("ItemDescription")),
-                                ItemAvailable = reader.GetBoolean(reader.GetOrdinal("ItemAvailable"))
-                            };
-                            products.Add(productInTable);
+                                var product = MapProductFromReader(reader);
+                                products.Add(product);
+                            }
                         }
                     }
                 }
-                conn.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error retrieving products: {ex.Message}");
             }
             return products;
         }
 
-        public Product GetByIdentifier(int ID)
+        public async Task<Product> GetByIdentifierAsync(int ID)
         {
-            Product product = null; // Set product to null initially
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            Product product = null;
+            try
             {
-                conn.Open();
-                using (SqlCommand readCommand = new SqlCommand("SELECT ID, CarPartID, CarID, OEM, Price, DateAvailable, " +
-                                                               "Condition, ItemDescription, ItemAvailable FROM Product " +
-                                                               "WHERE ID = @ID AND CarPartID = @CarPartID AND CarID = @CarID", conn))
+                using (SqlConnection conn = new SqlConnection(_connectionString))
                 {
-                    // Bind value from string input OEM to parameter OEM from Product in DB.
-                    readCommand.Parameters.AddWithValue("@ID", ID);
-                    using (SqlDataReader reader = readCommand.ExecuteReader())
+                    await conn.OpenAsync();
+                    using (SqlCommand readCommand = new SqlCommand(
+                        "SELECT ID, CarPartID, CarID, OEM, Price, DateAvailable, Condition, ItemDescription, ItemAvailable " +
+                        "FROM Product WHERE ID = @ID", conn))
                     {
-                        if (reader.Read())
+                        readCommand.Parameters.AddWithValue("@ID", ID);
+                        using (SqlDataReader reader = await readCommand.ExecuteReaderAsync())
                         {
-                            product = new Product
+                            if (await reader.ReadAsync())
                             {
-                                ID = reader.GetInt32(reader.GetOrdinal("ID")),
-                                CarPartID = reader.GetInt32(reader.GetOrdinal("CarPartID")),
-                                CarID = reader.GetInt32(reader.GetOrdinal("CarID")),
-                                OEM = reader.GetString(reader.GetOrdinal("OEM")),
-                                Price = reader.GetDecimal(reader.GetOrdinal("Price")),
-                                DateAvailable = reader.GetDateTime(reader.GetOrdinal("DateAvailable")),
-                                Condition = reader.GetString(reader.GetOrdinal("Condition")),
-                                ItemDescription = reader.GetString(reader.GetOrdinal("ItemDescription")),
-                                ItemAvailable = reader.GetBoolean(reader.GetOrdinal("ItemAvailable"))
-                            };
+                                product = MapProductFromReader(reader);
+                            }
                         }
                     }
                 }
-                conn.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error retrieving product with ID {ID}: {ex.Message}");
             }
             return product;
         }
 
-        public int CreateEntity(Product newProduct) 
+        public async Task<int> CreateEntityAsync(Product newProduct)
         {
-            int numberOfRowsInserted;
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            int rowsInserted = 0;
+            try
             {
-                conn.Open();
-                using (SqlCommand createCommand = new SqlCommand(
-                    "INSERT INTO Product (CarPartID, CarID, OEM, Price, DateAvailable, Condition, ItemDescription, ItemAvailable) "
-                    + "VALUES (@CarPartID, @CarID, @OEM, @Price, @DateAvailable, @Condition, @ItemDescription, @ItemAvailable)", conn
-                    ))
+                using (SqlConnection conn = new SqlConnection(_connectionString))
                 {
-                    // Mapping method input values to sql query input values
-                    createCommand.Parameters.AddWithValue("@CarPartID", newProduct.CarPartID);
-                    createCommand.Parameters.AddWithValue("@CarID", newProduct.CarID);
-                    createCommand.Parameters.AddWithValue("@OEM", newProduct.OEM);
-                    createCommand.Parameters.AddWithValue("@Price", newProduct.Price);
-                    createCommand.Parameters.AddWithValue("@DateAvailable", newProduct.DateAvailable);
-                    createCommand.Parameters.AddWithValue("@Condition", newProduct.Condition);
-                    createCommand.Parameters.AddWithValue("@ItemDescription", newProduct.ItemDescription);
-                    createCommand.Parameters.AddWithValue("@ItemAvailable", newProduct.ItemAvailable);
-
-                    // Use non query because we are updating/changing the DB, not querying it
-                    numberOfRowsInserted = createCommand.ExecuteNonQuery();
-                }
-                conn.Close();
-            }
-            return numberOfRowsInserted;
-        }
-
-        public int CreateEntityDTO(ProductViewModel newProduct)
-        {
-            int numberOfRowsInserted;
-            using (SqlConnection conn = new SqlConnection(_connectionString))
-            {
-                conn.Open();
-                using (SqlCommand createCommand = new SqlCommand(
-                    "INSERT INTO Product (CarPartID, CarID, OEM, Price, DateAvailable, Condition, ItemDescription, ItemAvailable) "
-                    + "VALUES (@CarPartID, @CarID, @OEM, @Price, @DateAvailable, @Condition, @ItemDescription, @ItemAvailable)", conn
-                    ))
-                {
-                    // Mapping method input values to sql query input values
-                    createCommand.Parameters.AddWithValue("@CarPartID", newProduct.CarPartID);
-                    createCommand.Parameters.AddWithValue("@CarID", newProduct.CarID);
-                    createCommand.Parameters.AddWithValue("@OEM", newProduct.OEM);
-                    createCommand.Parameters.AddWithValue("@Price", newProduct.Price);
-                    createCommand.Parameters.AddWithValue("@DateAvailable", newProduct.DateAvailable);
-                    createCommand.Parameters.AddWithValue("@Condition", newProduct.Condition);
-                    createCommand.Parameters.AddWithValue("@ItemDescription", newProduct.ItemDescription);
-                    createCommand.Parameters.AddWithValue("@ItemAvailable", newProduct.ItemAvailable);
-
-                    // Use non query because we are updating/changing the DB, not querying it
-                    numberOfRowsInserted = createCommand.ExecuteNonQuery();
-                }
-                conn.Close();
-            }
-            return numberOfRowsInserted;
-        }
-
-        public int CreateEntityDTO(ProductViewModel newProduct, int carPartID, int carID)
-        {
-            int numberOfRowsInserted;
-            using (SqlConnection conn = new SqlConnection(_connectionString))
-            {
-                conn.Open();
-                using (SqlCommand createCommand = new SqlCommand(
-                    "INSERT INTO Product (CarPartID, CarID, OEM, Price, DateAvailable, Condition, ItemDescription, ItemAvailable) "
-                    + "VALUES (@CarPartID, @CarID, @OEM, @Price, @DateAvailable, @Condition, @ItemDescription, @ItemAvailable)", conn
-                    ))
-                {
-                    // Mapping method input values to sql query input values
-                    createCommand.Parameters.AddWithValue("@CarPartID", carPartID);
-                    createCommand.Parameters.AddWithValue("@CarID", carID);
-                    createCommand.Parameters.AddWithValue("@OEM", newProduct.OEM);
-                    createCommand.Parameters.AddWithValue("@Price", newProduct.Price);
-                    createCommand.Parameters.AddWithValue("@DateAvailable", newProduct.DateAvailable);
-                    createCommand.Parameters.AddWithValue("@Condition", newProduct.Condition);
-                    createCommand.Parameters.AddWithValue("@ItemDescription", newProduct.ItemDescription);
-                    createCommand.Parameters.AddWithValue("@ItemAvailable", newProduct.ItemAvailable);
-
-                    // Use non query because we are updating/changing the DB, not querying it
-                    numberOfRowsInserted = createCommand.ExecuteNonQuery();
-                }
-                conn.Close();
-            }
-            return numberOfRowsInserted;
-        }
-
-        public int UpdateEntity(Product updateProduct)
-        {
-            int numberOfRowsUpdated = 0;
-            using (SqlConnection conn = new SqlConnection(_connectionString))
-            {
-                try
-                {
-                    conn.Open();
-                    using (SqlCommand updateCommand = new SqlCommand("UPDATE Product " +
-                                                                     "SET OEM=@OEM, " +
-                                                                     "Price=@Price, DateAvailable=@DateAvailable, Condition=@Condition, " +
-                                                                     "ItemDescription=@ItemDescription, ItemAvailable=@ItemAvailable" +
-                                                                     "WHERE ID = @ID AND CarPartID = @CarPartID AND CarID = @CarID", conn))
+                    await conn.OpenAsync();
+                    using (SqlCommand createCommand = new SqlCommand(
+                        "INSERT INTO Product (CarPartID, CarID, OEM, Price, DateAvailable, Condition, ItemDescription, ItemAvailable) " +
+                        "VALUES (@CarPartID, @CarID, @OEM, @Price, @DateAvailable, @Condition, @ItemDescription, @ItemAvailable)", conn))
                     {
-                        // Mapping method input values to sql query input values
+                        AddProductParameters(createCommand, newProduct);
+                        rowsInserted = await createCommand.ExecuteNonQueryAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error creating product: {ex.Message}");
+            }
+            return rowsInserted;
+        }
+
+        public async Task<int> UpdateEntityAsync(Product updateProduct)
+        {
+            int rowsUpdated = 0;
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    await conn.OpenAsync();
+                    using (SqlCommand updateCommand = new SqlCommand(
+                        "UPDATE Product SET OEM = @OEM, Price = @Price, DateAvailable = @DateAvailable, Condition = @Condition, " +
+                        "ItemDescription = @ItemDescription, ItemAvailable = @ItemAvailable WHERE ID = @ID", conn))
+                    {
+                        AddProductParameters(updateCommand, updateProduct);
                         updateCommand.Parameters.AddWithValue("@ID", updateProduct.ID);
-                        updateCommand.Parameters.AddWithValue("@CarPartID", updateProduct.CarPartID);
-                        updateCommand.Parameters.AddWithValue("@CarID", updateProduct.CarID);
-                        updateCommand.Parameters.AddWithValue("@OEM", updateProduct.OEM);
-                        updateCommand.Parameters.AddWithValue("@Price", updateProduct.Price);
-                        updateCommand.Parameters.AddWithValue("@DateAvailable", updateProduct.DateAvailable);
-                        updateCommand.Parameters.AddWithValue("@Condition", updateProduct.Condition);
-                        updateCommand.Parameters.AddWithValue("@ItemDescription", updateProduct.ItemDescription);
-                        updateCommand.Parameters.AddWithValue("@ItemAvailable", updateProduct.ItemAvailable);
-
-                        // Use non query because we are updating/changing the DB, not querying it
-                        numberOfRowsUpdated = updateCommand.ExecuteNonQuery();
+                        rowsUpdated = await updateCommand.ExecuteNonQueryAsync();
                     }
-                    conn.Close();
                 }
-                catch (SqlException ex)
-                {
-                    // Log or handle the exception (logging to console for now)
-                    Console.WriteLine($"SQL error occurred: {ex.Message}");
-                }
-                return numberOfRowsUpdated;
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error updating product with ID {updateProduct.ID}: {ex.Message}");
+            }
+            return rowsUpdated;
         }
 
-        public int UpdateEntity(ProductViewModel updateProduct, int productID, int carPartID, int carID)
+        public async Task<bool> DeleteEntityAsync(int ID)
         {
-            int numberOfRowsUpdated = 0;
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            bool isDeleted = false;
+            try
             {
-                try
+                using (SqlConnection conn = new SqlConnection(_connectionString))
                 {
-                    conn.Open();
-                    using (SqlCommand updateCommand = new SqlCommand("UPDATE Product " +
-                                                                     "SET OEM=@OEM, " +
-                                                                     "Price=@Price, DateAvailable=@DateAvailable, Condition=@Condition, " +
-                                                                     "ItemDescription=@ItemDescription, ItemAvailable=@ItemAvailable " +
-                                                                     "WHERE ID = @ID AND CarPartID = @CarPartID AND CarID = @CarID", conn))
+                    await conn.OpenAsync();
+                    using (SqlCommand deleteCommand = new SqlCommand("DELETE FROM Product WHERE ID = @ID", conn))
                     {
-                        // Mapping method input values to sql query input values
-                        updateCommand.Parameters.AddWithValue("@ID", productID);
-                        updateCommand.Parameters.AddWithValue("@CarPartID", carPartID);
-                        updateCommand.Parameters.AddWithValue("@CarID", carID);
-                        updateCommand.Parameters.AddWithValue("@OEM", updateProduct.OEM);
-                        updateCommand.Parameters.AddWithValue("@Price", updateProduct.Price);
-                        updateCommand.Parameters.AddWithValue("@DateAvailable", updateProduct.DateAvailable);
-                        updateCommand.Parameters.AddWithValue("@Condition", updateProduct.Condition);
-                        updateCommand.Parameters.AddWithValue("@ItemDescription", updateProduct.ItemDescription);
-                        updateCommand.Parameters.AddWithValue("@ItemAvailable", updateProduct.ItemAvailable);
-
-                        // Use non query because we are updating/changing the DB, not querying it
-                        numberOfRowsUpdated = updateCommand.ExecuteNonQuery();
+                        deleteCommand.Parameters.AddWithValue("@ID", ID);
+                        isDeleted = await deleteCommand.ExecuteNonQueryAsync() == 1;
                     }
-                    conn.Close();
                 }
-                catch (SqlException ex)
-                {
-                    // Log or handle the exception (logging to console for now)
-                    Console.WriteLine($"SQL error occurred: {ex.Message}");
-                }
-                return numberOfRowsUpdated;
             }
-        }
-
-        public bool DeleteEntity(int ID)
-        {
-            bool wasProductDeleted = false;
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            catch (Exception ex)
             {
-                conn.Open();
-                using (SqlCommand deleteCommand = new SqlCommand("DELETE from Product WHERE ID = @ID", conn))
-                {
-                    deleteCommand.Parameters.AddWithValue("@ID", ID);
-
-                    // Track number of rows affected (changes made to DB)
-                    int numberOfRowsAffectedByDeletion = deleteCommand.ExecuteNonQuery();
-
-                    // Succession criteria: only one (1) row should be affected, ie one Product deleted
-                    wasProductDeleted = numberOfRowsAffectedByDeletion == 1;
-                }
-                conn.Close();
+                Console.WriteLine($"Error deleting product with ID {ID}: {ex.Message}");
             }
-            return wasProductDeleted;
+            return isDeleted;
         }
 
-        // Helper method that tests whether an entity (Product) entry exists in the database.
-        internal bool ProductExists(int ID)
-        {
-            return _dbHelper.EntityExists("Product", "ID", ID.ToString());
-        }
-
-        internal bool CarAndCarPartExists(string carPartName, string carVINNumber)
-        {
-            bool carPartExists = false;
-            bool carExists = false;
-            bool canProductBeCreated = false;
-
-            carPartExists = _dbHelper.EntityExists("CarPart", "Name", carPartName);
-            carExists = _dbHelper.EntityExists("Car", "VINNumber", carVINNumber);
-
-            canProductBeCreated = carPartExists && carExists;
-
-            return canProductBeCreated;
-
-        }
-
-        internal int GetCarPartIDByName(string value)
-        {
-            int tempID = 0;
-            using (SqlConnection conn = new SqlConnection(_connectionString))
-            {
-                conn.Open();
-                string IDSelectorQuery = $"SELECT ID FROM CarPart WHERE Name = @Name";
-                using (SqlCommand checkCommand = new SqlCommand(IDSelectorQuery, conn))
-                {
-                    // Add parameters to the query to prevent SQL injection
-                    checkCommand.Parameters.AddWithValue("@Name", value);
-                    tempID = (int)checkCommand.ExecuteScalar();
-                }
-                conn.Close();
-            }
-            return tempID;
-        }
-
-        internal int GetCarByVINNumber(string value)
-        {
-            int tempID = 0;
-            using (SqlConnection conn = new SqlConnection(_connectionString))
-            {
-                conn.Open();
-                string IDSelectorQuery = $"SELECT ID FROM Car WHERE VINNumber = @VINNumber";
-                using (SqlCommand checkCommand = new SqlCommand(IDSelectorQuery, conn))
-                {
-                    // Add parameters to the query to prevent SQL injection
-                    checkCommand.Parameters.AddWithValue("@VINNumber", value);
-                    tempID = (int)checkCommand.ExecuteScalar();
-                }
-                conn.Close();
-            }
-            return tempID;
-        }
-
-        internal int GetProductIDByOEM(string value)
+        public async Task<int> GetProductIDByOEMAsync(string OEM)
         {
             try
             {
                 using (SqlConnection conn = new SqlConnection(_connectionString))
                 {
-                    conn.Open();
-                    string IDSelectorQuery = $"SELECT ID FROM Product WHERE OEM = @OEM";
-                    using (SqlCommand checkCommand = new SqlCommand(IDSelectorQuery, conn))
+                    await conn.OpenAsync();
+                    using (SqlCommand command = new SqlCommand("SELECT ID FROM Product WHERE OEM = @OEM", conn))
                     {
-                        // Add parameters to the query to prevent SQL injection
-                        checkCommand.Parameters.AddWithValue("@OEM", value);
-                        var tempID = checkCommand.ExecuteScalar();
-                        if (tempID != null && int.TryParse(tempID.ToString(), out int id))
+                        command.Parameters.AddWithValue("@OEM", OEM);
+                        var result = await command.ExecuteScalarAsync();
+                        if (result != null && int.TryParse(result.ToString(), out int id))
                         {
                             return id;
                         }
                     }
-                    conn.Close();
                 }
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"An error has occurred: {ex.Message}");
+                Console.WriteLine($"Error retrieving product ID by OEM {OEM}: {ex.Message}");
             }
-            return 0; // Only returns 0 if there does not exist a product with the given OEM
+            return 0;
+        }
+
+        public async Task<bool> ProductExistsAsync(int ID)
+        {
+            try
+            {
+                return await _dbHelper.EntityExistsAsync("Product", "ID", ID.ToString());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error checking existence of product with ID {ID}: {ex.Message}");
+                return false;
+            }
+        }
+
+        // Helper Methods
+        private Product MapProductFromReader(SqlDataReader reader)
+        {
+            return new Product
+            {
+                ID = reader.GetInt32(reader.GetOrdinal("ID")),
+                CarPartID = reader.GetInt32(reader.GetOrdinal("CarPartID")),
+                CarID = reader.GetInt32(reader.GetOrdinal("CarID")),
+                OEM = reader.GetString(reader.GetOrdinal("OEM")),
+                Price = reader.GetDecimal(reader.GetOrdinal("Price")),
+                DateAvailable = reader.GetDateTime(reader.GetOrdinal("DateAvailable")),
+                Condition = reader.GetString(reader.GetOrdinal("Condition")),
+                ItemDescription = reader.GetString(reader.GetOrdinal("ItemDescription")),
+                ItemAvailable = reader.GetBoolean(reader.GetOrdinal("ItemAvailable"))
+            };
+        }
+
+        private void AddProductParameters(SqlCommand command, Product product)
+        {
+            command.Parameters.AddWithValue("@CarPartID", product.CarPartID);
+            command.Parameters.AddWithValue("@CarID", product.CarID);
+            command.Parameters.AddWithValue("@OEM", product.OEM);
+            command.Parameters.AddWithValue("@Price", product.Price);
+            command.Parameters.AddWithValue("@DateAvailable", product.DateAvailable);
+            command.Parameters.AddWithValue("@Condition", product.Condition);
+            command.Parameters.AddWithValue("@ItemDescription", product.ItemDescription);
+            command.Parameters.AddWithValue("@ItemAvailable", product.ItemAvailable);
         }
     }
 }

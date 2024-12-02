@@ -1,16 +1,16 @@
 ﻿using Microsoft.Data.SqlClient;
-using ServiceAPI.BusinessLogic.Interfaces;
 using ServiceAPI.DatabaseAccess.Interfaces;
-using ServiceAPI.DTOs;
 using ServiceAPI.Models;
 using ServiceAPI.Utilities;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ServiceAPI.DatabaseAccess
 {
     public class DbCarPart : ICRUD_DB<CarPart>
     {
-        // Configuration steps
-        private string _connectionString;
+        private readonly string _connectionString;
         private readonly DbHelper _dbHelper;
 
         public DbCarPart(IConfiguration configuration)
@@ -20,136 +20,160 @@ namespace ServiceAPI.DatabaseAccess
             _connectionString = helper.GetDBConnectionString();
         }
 
-        public List<CarPart> GetAllEntities()
+        public async Task<List<CarPart>> GetAllEntitiesAsync()
         {
-            List<CarPart> carParts = new List<CarPart>();
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            var carParts = new List<CarPart>();
+            try
             {
-                conn.Open();
-                using (SqlCommand readAllCommand = new SqlCommand("SELECT * FROM CarPart", conn))
+                using (SqlConnection conn = new SqlConnection(_connectionString))
                 {
-                    using (SqlDataReader reader = readAllCommand.ExecuteReader())
+                    await conn.OpenAsync();
+                    using (SqlCommand readAllCommand = new SqlCommand("SELECT * FROM CarPart", conn))
                     {
-                        while (reader.Read())
+                        using (SqlDataReader reader = await readAllCommand.ExecuteReaderAsync())
                         {
-                            CarPart carPartsInTable = new CarPart(
-                                reader.GetInt32(reader.GetOrdinal("ID")),
-                                reader.GetInt32(reader.GetOrdinal("CarID")),
-                                reader.GetString(reader.GetOrdinal("Name")),
-                                reader.GetString(reader.GetOrdinal("Notes")));
-
-                            carParts.Add(carPartsInTable);
+                            while (await reader.ReadAsync())
+                            {
+                                var carPart = MapCarPartFromReader(reader);
+                                carParts.Add(carPart);
+                            }
                         }
                     }
                 }
-                conn.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error occurred while retrieving car parts: {ex.Message}");
             }
             return carParts;
         }
 
-        public CarPart GetByIdentifier(int ID)
+        public async Task<CarPart> GetByIdentifierAsync(int ID)
         {
             CarPart carPart = null;
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            try
             {
-                conn.Open();
-                using (SqlCommand readCommand = new SqlCommand("SELECT ID, CarID, Name, Notes FROM CarPart WHERE ID = @ID", conn))
+                using (SqlConnection conn = new SqlConnection(_connectionString))
                 {
-                    readCommand.Parameters.AddWithValue("@ID", ID);
-                    using (SqlDataReader reader = readCommand.ExecuteReader())
+                    await conn.OpenAsync();
+                    using (SqlCommand readCommand = new SqlCommand(
+                        "SELECT ID, CarID, Name, Notes FROM CarPart WHERE ID = @ID", conn))
                     {
-                        if (reader.Read())
+                        readCommand.Parameters.AddWithValue("@ID", ID);
+                        using (SqlDataReader reader = await readCommand.ExecuteReaderAsync())
                         {
-                            carPart = new CarPart(
-                                reader.GetInt32(reader.GetOrdinal("ID")),
-                                reader.GetInt32(reader.GetOrdinal("CarID")),
-                                reader.GetString(reader.GetOrdinal("Name")),
-                                reader.GetString(reader.GetOrdinal("Notes")));
+                            if (await reader.ReadAsync())
+                            {
+                                carPart = MapCarPartFromReader(reader);
+                            }
                         }
                     }
                 }
-                conn.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error occurred while retrieving car part with ID {ID}: {ex.Message}");
             }
             return carPart;
         }
 
-        public int CreateEntity(CarPart newCarPart)
+        public async Task<int> CreateEntityAsync(CarPart newCarPart)
         {
-            int numberOfRowsInserted;
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            int rowsInserted = 0;
+            try
             {
-                conn.Open();
-                using (SqlCommand createCommand = new SqlCommand(
-                    "INSERT INTO CarPart (ID, CarID, Name, Notes) " +
-                    "VALUES (@ID, @CarID, @Name, @Notes)", conn))
+                using (SqlConnection conn = new SqlConnection(_connectionString))
                 {
-                    createCommand.Parameters.AddWithValue("@ID", newCarPart.ID);
-                    createCommand.Parameters.AddWithValue("@CarID", newCarPart.CarID);
-                    createCommand.Parameters.AddWithValue("@Model", newCarPart.Name);
-                    createCommand.Parameters.AddWithValue("@CarType", newCarPart.Notes);
-                    numberOfRowsInserted = createCommand.ExecuteNonQuery();
+                    await conn.OpenAsync();
+                    using (SqlCommand createCommand = new SqlCommand(
+                        "INSERT INTO CarPart (CarID, Name, Notes) VALUES (@CarID, @Name, @Notes)", conn))
+                    {
+                        createCommand.Parameters.AddWithValue("@CarID", newCarPart.CarID);
+                        createCommand.Parameters.AddWithValue("@Name", newCarPart.Name);
+                        createCommand.Parameters.AddWithValue("@Notes", newCarPart.Notes);
+
+                        rowsInserted = await createCommand.ExecuteNonQueryAsync();
+                    }
                 }
-                conn.Close();
             }
-            return numberOfRowsInserted;
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error occurred while creating a car part: {ex.Message}");
+            }
+            return rowsInserted;
         }
 
-        public int UpdateEntity(CarPart updateCarPart)
+        public async Task<int> UpdateEntityAsync(CarPart updateCarPart)
         {
-            int numberOfRowsUpdated = 0;
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            int rowsUpdated = 0;
+            try
             {
-                try
+                using (SqlConnection conn = new SqlConnection(_connectionString))
                 {
-                    conn.Open();
+                    await conn.OpenAsync();
                     using (SqlCommand updateCommand = new SqlCommand(
-                        "UPDATE CarPart " +
-                        "SET ID=@ID, CarID=@CarID, Name=@Name, Notes=@Notes " +
-                        "WHERE ID=@ID", conn))
+                        "UPDATE CarPart SET CarID = @CarID, Name = @Name, Notes = @Notes WHERE ID = @ID", conn))
                     {
                         updateCommand.Parameters.AddWithValue("@ID", updateCarPart.ID);
                         updateCommand.Parameters.AddWithValue("@CarID", updateCarPart.CarID);
                         updateCommand.Parameters.AddWithValue("@Name", updateCarPart.Name);
                         updateCommand.Parameters.AddWithValue("@Notes", updateCarPart.Notes);
 
-                        numberOfRowsUpdated = updateCommand.ExecuteNonQuery();
+                        rowsUpdated = await updateCommand.ExecuteNonQueryAsync();
                     }
                 }
-                catch (SqlException ex)
-                {
-                    Console.WriteLine($"SQL error occurred: {ex.Message}");
-                }
-                return numberOfRowsUpdated;
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error occurred while updating car part with ID {updateCarPart.ID}: {ex.Message}");
+            }
+            return rowsUpdated;
         }
 
-        public bool DeleteEntity(int ID)
+        public async Task<bool> DeleteEntityAsync(int ID)
         {
-            bool wasCarPartDeleted = false;
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            bool isDeleted = false;
+            try
             {
-                conn.Open();
-                using (SqlCommand deleteCommand = new SqlCommand("DELETE from CarPart WHERE ID = @ID", conn))
+                using (SqlConnection conn = new SqlConnection(_connectionString))
                 {
-                    deleteCommand.Parameters.AddWithValue("@ID", ID);
-                    int numberOfRowsAffectedByDeletion = deleteCommand.ExecuteNonQuery();
-                    wasCarPartDeleted = numberOfRowsAffectedByDeletion == 1;
+                    await conn.OpenAsync();
+                    using (SqlCommand deleteCommand = new SqlCommand("DELETE FROM CarPart WHERE ID = @ID", conn))
+                    {
+                        deleteCommand.Parameters.AddWithValue("@ID", ID);
+                        isDeleted = await deleteCommand.ExecuteNonQueryAsync() == 1;
+                    }
                 }
-                conn.Close();
             }
-            return wasCarPartDeleted;
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error occurred while deleting car part with ID {ID}: {ex.Message}");
+            }
+            return isDeleted;
         }
 
-        internal bool CarPartExists(int ID)
+        public async Task<bool> CarPartExistsAsync(int ID)
         {
-            bool carPartIdentifierExists = _dbHelper.EntityExists("CarPart", "ID", ID.ToString());
-
-            if (!carPartIdentifierExists)
+            try
             {
+                return await _dbHelper.EntityExistsAsync("CarPart", "ID", ID.ToString());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error occurred while checking if car part exists with ID {ID}: {ex.Message}");
                 return false;
             }
+        }
 
-            return carPartIdentifierExists;
+        // Helper Method to Map CarPart from SqlDataReader
+        private CarPart MapCarPartFromReader(SqlDataReader reader)
+        {
+            return new CarPart(
+                reader.GetInt32(reader.GetOrdinal("ID")),
+                reader.GetInt32(reader.GetOrdinal("CarID")),
+                reader.GetString(reader.GetOrdinal("Name")),
+                reader.GetString(reader.GetOrdinal("Notes"))
+            );
         }
     }
 }

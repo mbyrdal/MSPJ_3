@@ -2,118 +2,110 @@
 using ServiceAPI.DatabaseAccess;
 using ServiceAPI.DTOs;
 using ServiceAPI.Models;
-using System.Diagnostics;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ServiceAPI.BusinessLogic
 {
     public class CarTemplateControl : ICarTemplateControl
     {
         private readonly DbCarTemplate _dbCarTemplateAccess;
+        private readonly ILogger<CarTemplateControl> _logger;
 
-        public CarTemplateControl(DbCarTemplate dbCarTemplateAccess)
+        public CarTemplateControl(DbCarTemplate dbCarTemplateAccess, ILogger<CarTemplateControl> logger)
         {
             _dbCarTemplateAccess = dbCarTemplateAccess;
+            _logger = logger;
         }
 
-        public List<CarTemplate> GetAllCarTemplates()
+        public async Task<List<CarTemplate>> GetAllCarTemplatesAsync()
         {
-            List<CarTemplate> allCarTemplates = new List<CarTemplate>();
             try
             {
-                allCarTemplates = _dbCarTemplateAccess.GetAllEntities();
+                return await _dbCarTemplateAccess.GetAllEntitiesAsync();
             }
             catch (Exception ex)
             {
-                allCarTemplates = null;
-                Debug.WriteLine(ex.Message);
+                _logger.LogError(ex, "Error occurred while retrieving all car templates.");
+                return null;
             }
-            return allCarTemplates;
         }
 
-        public CarTemplate GetCarTemplateByID(int ID)
+        public async Task<CarTemplate> GetCarTemplateByIDAsync(int ID)
         {
-            CarTemplate carTemplatePlaceholder = null;
             try
             {
-                carTemplatePlaceholder = _dbCarTemplateAccess.GetByIdentifier(ID);
+                return await _dbCarTemplateAccess.GetByIdentifierAsync(ID);
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex.Message);
+                _logger.LogError(ex, $"Error occurred while retrieving car template with ID: {ID}.");
+                return null;
             }
-            return carTemplatePlaceholder;
         }
 
-        public bool AddCarTemplate(CarTemplate newCarTemplate)
+        public async Task<bool> AddCarTemplateAsync(CarTemplate carTemplate)
         {
-            bool carTemplateExists = false;
-            bool wasCarTemplateInserted = false;
-            int numberOfRowsInserted;
             try
             {
-                carTemplateExists = _dbCarTemplateAccess.CarTemplateExists(newCarTemplate.ID);
-                if (carTemplateExists) // CASE: CarTemplate does exist in DB --> Cannot be created
-                {
-                    throw new InvalidOperationException($"A CarTemplate with the ID '{newCarTemplate.ID}' already exists in the CarTemplate table.");
-                }
+                if (await CarTemplateExistsAsync(carTemplate.ID))
+                    throw new InvalidOperationException($"Car template with ID {carTemplate.ID} already exists.");
 
-                // Customer does not exist
-                numberOfRowsInserted = _dbCarTemplateAccess.CreateEntity(newCarTemplate);
-                wasCarTemplateInserted = (numberOfRowsInserted == 1);
+                return await _dbCarTemplateAccess.CreateEntityAsync(carTemplate) == 1;
             }
             catch (Exception ex)
             {
-                newCarTemplate = null;
-                Debug.WriteLine(ex.Message);
+                _logger.LogError(ex, "Error occurred while adding a car template.");
+                return false;
             }
-            return wasCarTemplateInserted;
         }
 
-        public bool UpdateCarTemplate(CarTemplate updateCarTemplate)
+        public async Task<bool> UpdateCarTemplateAsync(CarTemplate carTemplate)
         {
-            bool carTemplateExists = false;
-            bool wasCarTemplateUpdated = false;
-            int numberOfRowsUpdated;
             try
             {
-                carTemplateExists = _dbCarTemplateAccess.CarTemplateExists(updateCarTemplate.ID);
-                if (!carTemplateExists) // CASE: Car does not exist in DB --> Cannot be updated
-                {
-                    throw new InvalidOperationException($"A CarTemplate with the ID '{updateCarTemplate.ID}' does not exist in the CarTemplate table.");
-                }
+                if (!await CarTemplateExistsAsync(carTemplate.ID))
+                    throw new InvalidOperationException($"Car template with ID {carTemplate.ID} does not exist.");
 
-                // CarModel does exist
-                numberOfRowsUpdated = _dbCarTemplateAccess.UpdateEntity(updateCarTemplate);
-                wasCarTemplateUpdated = (numberOfRowsUpdated == 1);
+                return await _dbCarTemplateAccess.UpdateEntityAsync(carTemplate) == 1;
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex.Message);
+                _logger.LogError(ex, "Error occurred while updating a car template.");
+                return false;
             }
-            return wasCarTemplateUpdated;
         }
 
-        public bool DeleteCarTemplate(int ID)
+        public async Task<bool> DeleteCarTemplateAsync(int ID)
         {
-            bool carTemplateExists;
-            bool wasCarTemplateDeleted = false;
             try
             {
-                carTemplateExists = _dbCarTemplateAccess.CarTemplateExists(ID);
-                if (!carTemplateExists)
-                {
-                    throw new InvalidOperationException($"A Car with the ID '{ID}' does not exist in the Car table.");
-                }
+                if (!await CarTemplateExistsAsync(ID))
+                    throw new InvalidOperationException($"Car template with ID {ID} does not exist.");
 
-                // CASE: CarTemplate does exist in DB
-                wasCarTemplateDeleted = _dbCarTemplateAccess.DeleteEntity(ID);
+                return await _dbCarTemplateAccess.DeleteEntityAsync(ID);
             }
             catch (Exception ex)
             {
-                wasCarTemplateDeleted = false;
-                Debug.WriteLine(ex.Message);
+                _logger.LogError(ex, "Error occurred while deleting a car template.");
+                return false;
             }
-            return wasCarTemplateDeleted;
+        }
+
+        // Private helper to check if a car template exists
+        private async Task<bool> CarTemplateExistsAsync(int ID)
+        {
+            try
+            {
+                return await _dbCarTemplateAccess.EntityExistsAsync(ID);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while checking if a car template exists.");
+                throw;
+            }
         }
     }
 }

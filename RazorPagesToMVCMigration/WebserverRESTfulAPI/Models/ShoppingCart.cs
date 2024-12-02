@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace ServiceAPI.Models
 {
@@ -7,14 +8,11 @@ namespace ServiceAPI.Models
         [Key]
         public int ID { get; set; }
 
-        [Key]
-
-        public int ItemDesctiption { get; set; }
-
-        [Required]
+        [Required(ErrorMessage = "Items in the shopping cart are required.")]
         public List<Product> Items { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Total price is required.")]
+        [Range(0, double.MaxValue, ErrorMessage = "Total price must be a non-negative value.")]
         public decimal TotalPrice { get; set; }
 
         public ShoppingCart()
@@ -25,14 +23,50 @@ namespace ServiceAPI.Models
 
         public ShoppingCart(List<Product> items)
         {
-            Items = items;
-            TotalPrice = items.Sum(item => item.Price);
+            Items = items ?? new List<Product>();
+            TotalPrice = Items.Sum(item => item.Price);
         }
 
         public ShoppingCart(List<Product> items, decimal totalPrice)
         {
-            Items = items;
+            Items = items ?? new List<Product>();
             TotalPrice = totalPrice;
+        }
+
+        /// <summary>
+        /// Adds a product to the shopping cart.
+        /// </summary>
+        public void AddProduct(Product product)
+        {
+            if (product != null)
+            {
+                Items.Add(product);
+                TotalPrice += product.Price;
+            }
+        }
+
+        /// <summary>
+        /// Removes a product from the shopping cart by its ID.
+        /// </summary>
+        public bool RemoveProduct(int productId)
+        {
+            var product = Items.FirstOrDefault(item => item.ID == productId);
+            if (product != null)
+            {
+                Items.Remove(product);
+                TotalPrice -= product.Price;
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Clears all items from the shopping cart.
+        /// </summary>
+        public void ClearCart()
+        {
+            Items.Clear();
+            TotalPrice = 0;
         }
     }
 }

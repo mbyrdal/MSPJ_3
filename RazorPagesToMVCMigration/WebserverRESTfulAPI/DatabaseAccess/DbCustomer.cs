@@ -1,18 +1,17 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.Data.SqlClient;
-using ServiceAPI.BusinessLogic.Interfaces;
+﻿using Microsoft.Data.SqlClient;
 using ServiceAPI.DatabaseAccess.Interfaces;
 using ServiceAPI.DTOs;
 using ServiceAPI.Models;
 using ServiceAPI.Utilities;
-using System.Net;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ServiceAPI.DatabaseAccess
 {
     public class DbCustomer : ICRUD_DB<Customer>
     {
-        // Configuration steps
-        private string _connectionString;
+        private readonly string _connectionString;
         private readonly DbHelper _dbHelper;
 
         public DbCustomer(IConfiguration configuration)
@@ -22,200 +21,168 @@ namespace ServiceAPI.DatabaseAccess
             _connectionString = helper.GetDBConnectionString();
         }
 
-        public List<Customer> GetAllEntities()
+        public async Task<List<Customer>> GetAllEntitiesAsync()
         {
-            List<Customer> customers = new List<Customer>();
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            var customers = new List<Customer>();
+            try
             {
-                conn.Open();
-                using (SqlCommand readAllCommand = new SqlCommand("SELECT * FROM Customer", conn))
+                using (SqlConnection conn = new SqlConnection(_connectionString))
                 {
-                    using (SqlDataReader reader = readAllCommand.ExecuteReader())
+                    await conn.OpenAsync();
+                    using (SqlCommand readAllCommand = new SqlCommand("SELECT * FROM Customer", conn))
                     {
-                        while (reader.Read())
+                        using (SqlDataReader reader = await readAllCommand.ExecuteReaderAsync())
                         {
-                            Customer accountInTable = new Customer(
-                                reader.GetInt32(reader.GetOrdinal("ID")),
-                                reader.GetString(reader.GetOrdinal("FirstName")),
-                                reader.GetString(reader.GetOrdinal("LastName")),
-                                reader.GetString(reader.GetOrdinal("Address")),
-                                reader.GetString(reader.GetOrdinal("PhoneNum")),
-                                reader.GetString(reader.GetOrdinal("Email")));
-
-                            customers.Add(accountInTable);
+                            while (await reader.ReadAsync())
+                            {
+                                var customer = MapCustomerFromReader(reader);
+                                customers.Add(customer);
+                            }
                         }
                     }
                 }
-                conn.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error occurred while retrieving customers: {ex.Message}");
             }
             return customers;
         }
 
-        public Customer GetByIdentifier(int ID)
+        public async Task<Customer> GetByIdentifierAsync(int ID)
         {
             Customer customer = null;
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            try
             {
-                conn.Open();
-                using (SqlCommand readCommand = new SqlCommand("SELECT ID, FirstName, LastName, Address, PhoneNum, Email FROM Customer WHERE ID = @ID", conn))
+                using (SqlConnection conn = new SqlConnection(_connectionString))
                 {
-                    readCommand.Parameters.AddWithValue("@ID", ID);
-                    using (SqlDataReader reader = readCommand.ExecuteReader())
+                    await conn.OpenAsync();
+                    using (SqlCommand readCommand = new SqlCommand(
+                        "SELECT ID, FirstName, LastName, Address, PhoneNum, Email FROM Customer WHERE ID = @ID", conn))
                     {
-                        if (reader.Read())
+                        readCommand.Parameters.AddWithValue("@ID", ID);
+                        using (SqlDataReader reader = await readCommand.ExecuteReaderAsync())
                         {
-                            customer = new Customer(
-                            reader.GetInt32(reader.GetOrdinal("ID")),
-                            reader.GetString(reader.GetOrdinal("FirstName")),
-                            reader.GetString(reader.GetOrdinal("LastName")),
-                            reader.GetString(reader.GetOrdinal("Address")),
-                            reader.GetString(reader.GetOrdinal("PhoneNum")),
-                            reader.GetString(reader.GetOrdinal("Email")));
-                        };
+                            if (await reader.ReadAsync())
+                            {
+                                customer = MapCustomerFromReader(reader);
+                            }
+                        }
                     }
                 }
-                conn.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error occurred while retrieving customer with ID {ID}: {ex.Message}");
             }
             return customer;
         }
 
-        public int CreateEntity(Customer newCustomer)
+        public async Task<int> CreateEntityAsync(Customer newCustomer)
         {
-            int numberOfRowsInserted;
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            int rowsInserted = 0;
+            try
             {
-                conn.Open();
-                using (SqlCommand createCommand = new SqlCommand(
-                    "INSERT INTO Customer (FirstName, LastName, Address, PhoneNum, Email) " +
-                    "VALUES (@FirstName, @LastName, @Address, @PhoneNum, @Email)", conn))
+                using (SqlConnection conn = new SqlConnection(_connectionString))
                 {
-                    createCommand.Parameters.AddWithValue("@FirstName", newCustomer.FirstName);
-                    createCommand.Parameters.AddWithValue("@LastName", newCustomer.LastName);
-                    createCommand.Parameters.AddWithValue("@Address", newCustomer.Address);
-                    createCommand.Parameters.AddWithValue("@PhoneNum", newCustomer.PhoneNum);
-                    createCommand.Parameters.AddWithValue("@Email", newCustomer.Email);
-                    numberOfRowsInserted = createCommand.ExecuteNonQuery();
+                    await conn.OpenAsync();
+                    using (SqlCommand createCommand = new SqlCommand(
+                        "INSERT INTO Customer (FirstName, LastName, Address, PhoneNum, Email) VALUES (@FirstName, @LastName, @Address, @PhoneNum, @Email)", conn))
+                    {
+                        createCommand.Parameters.AddWithValue("@FirstName", newCustomer.FirstName);
+                        createCommand.Parameters.AddWithValue("@LastName", newCustomer.LastName);
+                        createCommand.Parameters.AddWithValue("@Address", newCustomer.Address);
+                        createCommand.Parameters.AddWithValue("@PhoneNum", newCustomer.PhoneNum);
+                        createCommand.Parameters.AddWithValue("@Email", newCustomer.Email);
+
+                        rowsInserted = await createCommand.ExecuteNonQueryAsync();
+                    }
                 }
-                conn.Close();
             }
-            return numberOfRowsInserted;
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error occurred while creating a customer: {ex.Message}");
+            }
+            return rowsInserted;
         }
 
-        // DTO VERSION
-        public int CreateEntityDTO(CustomerViewModel newCustomerDTO)
+        public async Task<int> UpdateEntityAsync(Customer updateCustomer)
         {
-            int numberOfRowsInserted;
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            int rowsUpdated = 0;
+            try
             {
-                conn.Open();
-                using (SqlCommand createCommand = new SqlCommand(
-                    "INSERT INTO Customer (FirstName, LastName, Address, PhoneNum, Email) " +
-                    "VALUES (@FirstName, @LastName, @Address, @PhoneNum, @Email)", conn))
+                using (SqlConnection conn = new SqlConnection(_connectionString))
                 {
-                    createCommand.Parameters.AddWithValue("@FirstName", newCustomerDTO.FirstName);
-                    createCommand.Parameters.AddWithValue("@LastName", newCustomerDTO.LastName);
-                    createCommand.Parameters.AddWithValue("@Address", newCustomerDTO.Address);
-                    createCommand.Parameters.AddWithValue("@PhoneNum", newCustomerDTO.PhoneNum);
-                    createCommand.Parameters.AddWithValue("@Email", newCustomerDTO.Email);
-                    numberOfRowsInserted = createCommand.ExecuteNonQuery();
-                }
-                conn.Close();
-            }
-            return numberOfRowsInserted;
-        }
-
-        public int UpdateEntity(Customer updateCustomer)
-        {
-            int numberOfRowsUpdated = 0;
-            using (SqlConnection conn = new SqlConnection(_connectionString))
-            {
-                try
-                {
-                    conn.Open();
-                    using (SqlCommand updateCommand = new SqlCommand("UPDATE Customer " +
-                                                                     "SET FirstName=@FirstName, LastName=@LastName, Address=@Address, PhoneNum=@PhoneNum, Email=@Email " +
-                                                                     "WHERE ID = @ID AND Email = @Email", conn))
+                    await conn.OpenAsync();
+                    using (SqlCommand updateCommand = new SqlCommand(
+                        "UPDATE Customer SET FirstName = @FirstName, LastName = @LastName, Address = @Address, PhoneNum = @PhoneNum, Email = @Email WHERE ID = @ID", conn))
                     {
                         updateCommand.Parameters.AddWithValue("@ID", updateCustomer.ID);
-                        updateCommand.Parameters.AddWithValue("@Firstname", updateCustomer.FirstName);
-                        updateCommand.Parameters.AddWithValue("@Lastname", updateCustomer.LastName);
+                        updateCommand.Parameters.AddWithValue("@FirstName", updateCustomer.FirstName);
+                        updateCommand.Parameters.AddWithValue("@LastName", updateCustomer.LastName);
                         updateCommand.Parameters.AddWithValue("@Address", updateCustomer.Address);
-                        updateCommand.Parameters.AddWithValue("@Phonenum", updateCustomer.PhoneNum);
+                        updateCommand.Parameters.AddWithValue("@PhoneNum", updateCustomer.PhoneNum);
                         updateCommand.Parameters.AddWithValue("@Email", updateCustomer.Email);
 
-                        numberOfRowsUpdated = updateCommand.ExecuteNonQuery();
+                        rowsUpdated = await updateCommand.ExecuteNonQueryAsync();
                     }
-                    conn.Close();
                 }
-                catch (SqlException ex)
-                {
-                    Console.WriteLine($"SQL error occurred: {ex.Message}");
-                }
-                return numberOfRowsUpdated;
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error occurred while updating customer with ID {updateCustomer.ID}: {ex.Message}");
+            }
+            return rowsUpdated;
         }
 
-        // DTO VERSION
-        public int UpdateEntityDTO(CustomerViewModel updateCustomerDTO)
+        public async Task<bool> DeleteEntityAsync(int ID)
         {
-            int numberOfRowsUpdated = 0;
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            bool isDeleted = false;
+            try
             {
-                try
+                using (SqlConnection conn = new SqlConnection(_connectionString))
                 {
-                    conn.Open();
-                    using (SqlCommand updateCommand = new SqlCommand("UPDATE Customer " +
-                                                                     "SET FirstName=@FirstName, LastName=@LastName, Address=@Address, PhoneNum=@PhoneNum, Email=@Email " +
-                                                                     "WHERE ID = @ID AND Email = @Email", conn))
+                    await conn.OpenAsync();
+                    using (SqlCommand deleteCommand = new SqlCommand("DELETE FROM Customer WHERE ID = @ID", conn))
                     {
-                        updateCommand.Parameters.AddWithValue("@Firstname", updateCustomerDTO.FirstName);
-                        updateCommand.Parameters.AddWithValue("@Lastname", updateCustomerDTO.LastName);
-                        updateCommand.Parameters.AddWithValue("@Address", updateCustomerDTO.Address);
-                        updateCommand.Parameters.AddWithValue("@Phonenum", updateCustomerDTO.PhoneNum);
-                        updateCommand.Parameters.AddWithValue("@Email", updateCustomerDTO.Email);
-
-                        numberOfRowsUpdated = updateCommand.ExecuteNonQuery();
+                        deleteCommand.Parameters.AddWithValue("@ID", ID);
+                        isDeleted = await deleteCommand.ExecuteNonQueryAsync() == 1;
                     }
-                    conn.Close();
                 }
-                catch (SqlException ex)
-                {
-                    Console.WriteLine($"SQL error occurred: {ex.Message}");
-                }
-                return numberOfRowsUpdated;
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error occurred while deleting customer with ID {ID}: {ex.Message}");
+            }
+            return isDeleted;
         }
 
-        public bool DeleteEntity(int ID)
+        public async Task<bool> CustomerExistsAsync(int ID, string email)
         {
-            bool wasCustomerDeleted = false;
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            try
             {
-                conn.Open();
-                using (SqlCommand deleteCommand = new SqlCommand("DELETE from Customer WHERE ID = @ID", conn))
-                {
-                    deleteCommand.Parameters.AddWithValue("@ID", ID);
-                    int numberOfRowsAffectedByDeletion = deleteCommand.ExecuteNonQuery();
-                    wasCustomerDeleted = numberOfRowsAffectedByDeletion == 1;
-                }
-                conn.Close();
+                bool idExists = await _dbHelper.EntityExistsAsync("Customer", "ID", ID.ToString());
+                bool emailExists = await _dbHelper.EntityExistsAsync("Customer", "Email", email);
+                return idExists && emailExists;
             }
-            return wasCustomerDeleted;
-        }
-
-        internal bool CustomerExists(int ID, string email)
-        {
-            bool customerIdentifierExists = _dbHelper.EntityExists("Customer", "ID", ID.ToString());
-            bool customerEmailExists = _dbHelper.EntityExists("Customer", "Email", email);
-
-            bool customerExists = customerIdentifierExists && customerEmailExists;
-
-            if (!customerExists)
+            catch (Exception ex)
             {
+                Console.WriteLine($"Error occurred while checking if customer exists: {ex.Message}");
                 return false;
             }
+        }
 
-            return customerExists;
+        // Helper Method to Map Customer from SqlDataReader
+        private Customer MapCustomerFromReader(SqlDataReader reader)
+        {
+            return new Customer(
+                reader.GetInt32(reader.GetOrdinal("ID")),
+                reader.GetString(reader.GetOrdinal("FirstName")),
+                reader.GetString(reader.GetOrdinal("LastName")),
+                reader.GetString(reader.GetOrdinal("Address")),
+                reader.GetString(reader.GetOrdinal("PhoneNum")),
+                reader.GetString(reader.GetOrdinal("Email"))
+            );
         }
     }
 }
