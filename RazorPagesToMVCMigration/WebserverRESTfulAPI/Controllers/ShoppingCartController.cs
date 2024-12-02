@@ -31,31 +31,47 @@ namespace ServiceAPI.Controllers
         [HttpPost]
         public IActionResult AddToCart(int productID)
         {
-            var product = _dbProduct.GetByIdentifier(productID);
-            // Assuming _dbContext is injected to access your database
+            var product = _dbProduct.GetByIdentifier(productID); // Retrieve the product from the database
 
             if (product != null && product.ItemAvailable == true)
             {
                 var cart = HttpContext.Session.GetObjectFromJSON<ShoppingCart>(CartSessionKey) ?? new ShoppingCart();
 
-                // Check if product is already in cart
+                // Check if the product is already in the cart
                 var existingProduct = cart.Items.FirstOrDefault(i => i.ID == product.ID);
                 if (existingProduct == null)
                 {
                     cart.Items.Add(product); // Add product to cart
+
+                    // Update product availability
                     product.ItemAvailable = false;
-                    _dbProduct.UpdateEntity(product); // Update product availability in database
+
+                    // Convert Product to ProductViewModel for updating
+                    var productViewModel = new ProductViewModel
+                    {
+                        ID = product.ID,
+                        OEM = product.OEM,
+                        Price = product.Price,
+                        DateAvailable = product.DateAvailable,
+                        Condition = product.Condition,
+                        ItemDescription = product.ItemDescription,
+                        ItemAvailable = product.ItemAvailable
+                    };
+
+                    // Call UpdateEntity with the correct ViewModel
+                    _dbProduct.UpdateEntityDTO(productViewModel); // Update product availability in the database
                 }
 
-                // Update the total price
+                // Update the total price of the cart
                 cart.TotalPrice = cart.Items.Sum(i => i.Price);
 
-                // Save updated cart to session
+                // Save the updated cart to the session
                 HttpContext.Session.SetObjectAsJSON(CartSessionKey, cart);
             }
 
-            return RedirectToAction("Index", "ShoppingCart"); // Redirect to the cart page or wherever you need
+            return RedirectToAction("Index", "ShoppingCart"); // Redirect to the cart page
         }
+
 
 
         // Remove a product from the cart
