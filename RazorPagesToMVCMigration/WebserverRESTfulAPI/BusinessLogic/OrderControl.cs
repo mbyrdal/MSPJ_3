@@ -1,6 +1,6 @@
 ﻿namespace ServiceAPI.BusinessLogic
 {
-    public class CarControl
+    public class OrderControl
     {
     }
 }

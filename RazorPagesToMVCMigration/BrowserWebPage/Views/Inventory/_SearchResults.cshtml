@@ -1,14 +1,15 @@
-﻿@model List<ServiceAPI.Models.Product>
+﻿@model List<ServiceAPI.DTOs.ProductViewModel>
 
 <table>
     <thead>
         <tr>
+            <th>CarPartID</th>
+            <th>SaleID</th>
             <th>OEM</th>
             <th>Price</th>
             <th>DateAvailable</th>
             <th>Condition</th>
             <th>ItemDescription</th>
-            <th>Action</th> <!-- Add this column for the Add to Cart button -->
         </tr>
     </thead>
     <tbody>
@@ -17,27 +18,20 @@
             foreach (var product in Model)
             {
                 <tr>
+                    <td>@product.CarPartID</td>
+                    <td>@product.SaleID</td>
                     <td>@product.OEM</td>
                     <td>@product.Price</td>
                     <td>@product.DateAvailable</td>
                     <td>@product.Condition</td>
                     <td>@product.ItemDescription</td>
-                    <td>@product.ItemAvailable</td>
-
-                    <!-- Add to Cart Button -->
-                    <td>
-                        <form action="@Url.Action("AddToCart", "ShoppingCart")" method="post">
-                            <input type="hidden" name="productID" value="@product.ID" />
-                            <button type="submit">Add to Cart</button>
-                        </form>
-                    </td>
                 </tr>
             }
         }
         else
         {
             <tr>
-                <td colspan="6">No products found.</td> <!-- Adjusted colspan to 6 -->
+                <td colspan="7">No products found.</td>
             </tr>
         }
     </tbody>

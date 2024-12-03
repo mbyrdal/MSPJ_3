@@ -1,8 +1,6 @@
 using BrowserWebPage.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
-using ServiceAPI.BusinessLogic;
-using ServiceAPI.BusinessLogic.Interfaces;
 using ServiceAPI.DTOs;
 using ServiceAPI.Models;
 using ServiceAPI.Utilities;
@@ -15,16 +13,11 @@ namespace BrowserWebPage.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly DbHelper _dbHelper;
-        private string _connectionString;
-        private readonly IProductControl _productControl;
 
-        public HomeController(ILogger<HomeController> logger, IConfiguration configuration, IProductControl productControl)
+        public HomeController(ILogger<HomeController> logger, DbHelper dbHelper)
         {
             _logger = logger;
-            _dbHelper = new DbHelper(configuration);
-            ConnectionHelper helper = new ConnectionHelper(configuration);
-            _connectionString = helper.GetDBConnectionString();
-            _productControl = productControl;
+            _dbHelper = dbHelper;
         }
 
         public IActionResult Index()
@@ -35,19 +28,8 @@ namespace BrowserWebPage.Controllers
         public IActionResult Inventory()
         {
             // Initial list of products to display when the page loads (optional)
-            List<Product> productList = new List<Product>(); // Fetch actual data here
-            productList = _productControl.GetAllProducts();
-            return View("~/Views/Inventory/Inventory.cshtml", productList);
-        }
-
-        public IActionResult CreateAccount()
-        {
-            return View("~/Views/Account/CreateAccount.cshtml");
-        }
-
-        public IActionResult AccountDetails()
-        {
-            return View("~/Views/Account/Details.cshtml");
+            List<ProductViewModel> productViewModelList = new List<ProductViewModel>(); // Fetch actual data here
+            return View("~/Views/Inventory/Inventory.cshtml", productViewModelList);
         }
 
         // This method handles the AJAX request for searching spare parts

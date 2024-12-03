@@ -33,6 +33,7 @@
                 <li><a href="#">Dæk og fælge</a></li>
                 <li><a href="#">Andet</a></li>
                 <li><a href="#">Parts for Mads cybernetics implant</a></li>
+
             </ul>
         </aside>
 
@@ -66,90 +67,6 @@
                 <button type="submit">Søg</button>
             </form>
         </section>
-
-        <!-- Shopping Cart Section (New) -->
-        <section class="shopping-cart-section">
-            <h2>Din Kurv</h2>
-            <div id="cart-container">
-                @if (Model?.Items != null && Model.Items.Any())
-                {
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Produkt</th>
-                                <th>OEM</th>
-                                <th>Pris</th>
-                                <th>Condition</th>
-                                <th>Beskrivelse</th>
-                                <th>Handling</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Model.Items)
-                            {
-                                <tr>
-                                    <td>@item.OEM</td>
-                                    <td>@item.OEM</td>
-                                    <td>@item.Price.ToString("C")</td>
-                                    <td>@item.Condition</td>
-                                    <td>@item.ItemDescription</td>
-                                    <td>
-                                        <button onclick="removeFromCart(@item.ID)">Fjern</button>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-
-                    <h3>Total: @Model.TotalPrice.ToString("C")</h3>
-                    <button onclick="clearCart()">Ryd Kurv</button>
-                    <button onclick="checkout()">Gå til Checkout</button>
-                }
-                else
-                {
-                    <p>Din kurv er tom!</p>
-                }
-            </div>
-        </section>
-
     </main>
-
-    <script>
-        function addToCart(productId) {
-            const product = { ID: productId };
-            fetch('/ShoppingCart/AddToCart', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(product)
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) alert(data.message);
-                    else alert("Failed to add product.");
-                });
-        }
-
-        function removeFromCart(productId) {
-            fetch(`/ShoppingCart/RemoveFromCart?productID=${productId}`, {
-                method: 'DELETE'
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) location.reload();
-                    else alert("Failed to remove product.");
-                });
-        }
-
-        function clearCart() {
-            fetch('/ShoppingCart/ClearCart', { method: 'POST' })
-                .then(() => location.reload());
-        }
-
-        function checkout() {
-            fetch('/ShoppingCart/CheckOut', { method: 'POST' })
-                .then(() => location.href = '/ShoppingCart/OrderConfirmation');
-        }
-
-    </script>
 </body>
 </html>

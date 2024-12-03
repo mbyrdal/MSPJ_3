@@ -7,10 +7,6 @@ namespace ServiceAPI.Models
         [Key]
         public int ID { get; set; }
 
-        [Key]
-
-        public int ItemDesctiption { get; set; }
-
         [Required]
         public List<Product> Items { get; set; }
 

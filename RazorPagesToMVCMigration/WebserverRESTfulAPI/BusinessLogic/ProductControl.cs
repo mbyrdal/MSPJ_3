@@ -29,21 +29,6 @@ namespace ServiceAPI.BusinessLogic
             return productPlaceholder;
         }
 
-        public Product GetProductByOEM(string OEM)
-        {
-            Product productPlaceholder = null;
-            try
-            {
-                var productIDPlaceholder = _dbProductAccess.GetProductIDByOEM(OEM);
-                productPlaceholder = _dbProductAccess.GetByIdentifier(productIDPlaceholder);
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.Message);
-            }
-            return productPlaceholder;
-        }
-
         public List<Product> GetAllProducts()
         {
             List<Product> allProducts = new List<Product>();
@@ -59,33 +44,39 @@ namespace ServiceAPI.BusinessLogic
             return allProducts;
         }
 
-        public bool AddProduct(ProductViewModel product, string carPartName, string carVINNumber)
+        public bool AddProduct(Product product)
         {
             bool productExists = false;
-            bool carAndCarPartExists = false;
-            int carPartID;
-            int carID;
-
             bool wasProductInserted = false;
             int numberOfRowsInserted;
-
-
             try
             {
-                carAndCarPartExists = _dbProductAccess.CarAndCarPartExists(carPartName, carVINNumber);
-
-                if (!carAndCarPartExists) // CASE: Car or car part does not exist in DB.
+                productExists = _dbProductAccess.ProductExists(product.ID); // Product exists based on whether its ID number can be found in the Product table.
+                if(!productExists) // CASE: Product does not exist in DB.
                 {
-                    throw new Exception("Either car or car part does not exist");
+                    numberOfRowsInserted = _dbProductAccess.CreateEntity(product);
+                    wasProductInserted = (numberOfRowsInserted == 1); // If only one row was inserted, then we can determine that the product was added correctly.
                 }
+            }
+            catch(Exception ex)
+            {
+                product = null;
+                Debug.WriteLine(ex.Message);
+            }
+            return wasProductInserted;
+        }
 
-                carPartID = _dbProductAccess.GetCarPartIDByName(carPartName);
-                carID = _dbProductAccess.GetCarByVINNumber(carVINNumber);
-
+        public bool AddProductDTO(ProductViewModel product)
+        {
+            bool productExists = false;
+            bool wasProductInserted = false;
+            int numberOfRowsInserted;
+            try
+            {
                 productExists = _dbProductAccess.ProductExists(product.ID); // Product exists based on whether its ID number can be found in the Product table.
                 if (!productExists) // CASE: Product does not exist in DB.
                 {
-                    numberOfRowsInserted = _dbProductAccess.CreateEntityDTO(product, carPartID, carID);
+                    numberOfRowsInserted = _dbProductAccess.CreateEntityDTO(product);
                     wasProductInserted = (numberOfRowsInserted == 1); // If only one row was inserted, then we can determine that the product was added correctly.
                 }
             }
@@ -97,27 +88,38 @@ namespace ServiceAPI.BusinessLogic
             return wasProductInserted;
         }
 
-        public bool UpdateProduct(string OEM, ProductViewModel product, string carPartName, string carVINNumber)
+        public bool UpdateProduct(Product product)
         {
             bool productExists = false;
             bool wasProductUpdated = false;
-            int existingProductID = _dbProductAccess.GetProductIDByOEM(OEM);
             int numberOfRowsUpdated;
             try
             {
-                bool carAndCarPartExist = _dbProductAccess.CarAndCarPartExists(carPartName, carVINNumber);
-                if (!carAndCarPartExist)
+                productExists = _dbProductAccess.ProductExists(product.ID);
+                if(productExists) // CASE: Product does exist in DB.
                 {
-                    throw new ArgumentException($"We cannot find either a car with VIN {carVINNumber}, and/or car part {carPartName} with the given inputs.");
+                    numberOfRowsUpdated = _dbProductAccess.UpdateEntity(product);
+                    wasProductUpdated = (numberOfRowsUpdated == 1);
                 }
+            }
+            catch(Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+            }
+            return wasProductUpdated;
+        }
 
-                int carPartID = _dbProductAccess.GetCarPartIDByName(carPartName);
-                int carID = _dbProductAccess.GetCarByVINNumber(carVINNumber);
-                productExists = _dbProductAccess.ProductExists(existingProductID);
+        public bool UpdateProductDTO(ProductViewModel product)
+        {
+            bool productExists = false;
+            bool wasProductUpdated = false;
+            int numberOfRowsUpdated;
+            try
+            {
+                productExists = _dbProductAccess.ProductExists(product.ID);
                 if (productExists) // CASE: Product does exist in DB.
                 {
-                    var prodCarPartID = 
-                    numberOfRowsUpdated = _dbProductAccess.UpdateEntity(product, existingProductID, carPartID, carID);
+                    numberOfRowsUpdated = _dbProductAccess.UpdateEntityDTO(product);
                     wasProductUpdated = (numberOfRowsUpdated == 1);
                 }
             }
@@ -128,17 +130,16 @@ namespace ServiceAPI.BusinessLogic
             return wasProductUpdated;
         }
 
-        public bool DeleteProduct(string OEM)
+        public bool DeleteProduct(int ID)
         {
             bool productExists;
             bool wasProductDeleted = false;
             try
             {
-                int tempID = _dbProductAccess.GetProductIDByOEM(OEM);
-                productExists = _dbProductAccess.ProductExists(tempID);
+                productExists = _dbProductAccess.ProductExists(ID);
                 if(productExists) // CASE: Product does exist in DB.
                 {
-                    wasProductDeleted = _dbProductAccess.DeleteEntity(tempID);
+                    wasProductDeleted = _dbProductAccess.DeleteEntity(ID);
                 }
             }
             catch (Exception ex)

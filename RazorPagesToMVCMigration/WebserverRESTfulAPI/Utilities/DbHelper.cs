@@ -50,7 +50,7 @@ public class DbHelper
                         products.Add(new ProductViewModel
                         {
                             CarPartID = reader.GetInt32(0),
-                            CarID = reader.GetInt32(1),
+                            SaleID = reader.GetInt32(1),
                             OEM = reader.GetString(2),
                             Price = reader.GetDecimal(3),
                             DateAvailable = reader.GetDateTime(4),
