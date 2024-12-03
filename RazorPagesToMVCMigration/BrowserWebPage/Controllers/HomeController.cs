@@ -14,10 +14,10 @@ namespace BrowserWebPage.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly DbHelper _dbHelper;
 
-        public HomeController(ILogger<HomeController> logger, DbHelper dbHelper)
+        public HomeController(ILogger<HomeController> logger, IConfiguration configuration)
         {
             _logger = logger;
-            _dbHelper = dbHelper;
+            _dbHelper = new DbHelper(configuration);
         }
 
         public IActionResult Index()
