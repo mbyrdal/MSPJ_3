@@ -4,8 +4,9 @@ namespace ServiceAPI.BusinessLogic.Interfaces
 {
     public interface IProductControl
     {
-        Product GetProductByID(int ID);
-        Product GetProductByOEM(string OEM);
+        int GetProductID(string OEM);
+        Product GetProductByID(int productID);
+        Product GetProduct(string OEM, string carPartName, string carVINNumber);
         List<Product> GetAllProducts();
         bool AddProduct(ProductViewModel productViewModel, string carPartName, string carVINNumber);
         bool UpdateProduct(string OEM, ProductViewModel product,  string carPartName, string carVINNumber);

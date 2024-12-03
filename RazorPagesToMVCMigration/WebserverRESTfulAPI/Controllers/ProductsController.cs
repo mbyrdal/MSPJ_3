@@ -41,16 +41,33 @@ namespace ServiceAPI.Controllers
             return Ok(allProducts);
         }
 
-        // GET: https://localhost:7134/api/Products/OEM
+        // GET: https://localhost:7134/api/Products/OEM/carPartName/carVINNumber
         [HttpGet("{OEM}")]
-        public ActionResult<Product> GetProduct(string OEM)
+        public ActionResult<Product> GetProductUsingOEM(string OEM)
         {
-            var foundProduct = _productControl.GetProductByOEM(OEM);
+            int productID = _productControl.GetProductID(OEM);
+            var foundProduct = _productControl.GetProductByID(productID);
 
             if (foundProduct == null)
             {
                 // Return 404: No product found, null
                 return NotFound($"Product with OEM '{OEM}' not found.");
+            }
+
+            // Return 200: OK
+            return Ok(foundProduct);
+        }
+
+        // GET: https://localhost:7134/api/Products/OEM/carPartName/carVINNumber
+        [HttpGet("{OEM}/{carPartName}/{carVINNumber}")]
+        public ActionResult<Product> GetProduct(string OEM, string carPartName, string carVINNumber)
+        {
+            var foundProduct = _productControl.GetProduct(OEM, carPartName, carVINNumber);
+
+            if (foundProduct == null)
+            {
+                // Return 404: No product found, null
+                return NotFound($"Product with OEM '{OEM}', Name '{carPartName}' and VIN number '{carVINNumber}' not found.");
             }
 
             // Return 200: OK
@@ -87,8 +104,8 @@ namespace ServiceAPI.Controllers
 
         // TODO: trim and remove existingProduct logic since _productControl.UpdateProduct handles existing product issue already.
         // PUT: https://localhost:7134/api/Products/OEM
-        [HttpPut("{OEM}")]
-        public IActionResult UpdateProduct(string OEM, [FromBody] ProductViewModel updatedProduct, string carPartName, string carVINNumber)
+        [HttpPut("{OEM}/{carPartName}/{carVINNumber}")]
+        public IActionResult UpdateProduct(string OEM, string carPartName, string carVINNumber, [FromBody] ProductViewModel updatedProduct)
         {
             if (updatedProduct == null)
             {
@@ -96,7 +113,7 @@ namespace ServiceAPI.Controllers
                 return BadRequest("ERROR: Bad Product request body.");
             }
 
-            var existingProduct = _productControl.GetProductByOEM(OEM);
+            var existingProduct = _productControl.GetProduct(OEM, carPartName, carVINNumber);
 
             if(existingProduct == null)
             {
@@ -126,12 +143,13 @@ namespace ServiceAPI.Controllers
         [HttpDelete("{OEM}")]
         public IActionResult DeleteProduct(string OEM)
         {
-            var foundProduct = _productControl.GetProductByOEM(OEM);
+            int productID = _productControl.GetProductID(OEM);
+            var foundProduct = _productControl.GetProductByID(productID);
 
             if(foundProduct == null)
             {
                 // Return 404: no existing product found
-                return NotFound($"No existing Product with OEM '{foundProduct.OEM}' found.");
+                return NotFound($"No existing Product with OEM '{foundProduct}' found.");
             }
 
             var wasProductRemoved = _productControl.DeleteProduct(OEM);

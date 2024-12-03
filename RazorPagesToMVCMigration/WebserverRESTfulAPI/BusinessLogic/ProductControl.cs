@@ -15,42 +15,55 @@ namespace ServiceAPI.BusinessLogic
             _dbProductAccess = dbProductAccess;
         }
 
+        public int GetProductID(string OEM)
+        {
+            int placeholderID = 0;
+            try
+            {
+                placeholderID = _dbProductAccess.GetProductIDByOEM(OEM);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+            }
+            return placeholderID;
+        }
+
+        public Product GetProductByID(int id)
+        {
+            Product productPlaceholder = null;
+            try
+            {
+                productPlaceholder = _dbProductAccess.GetByIdentifier(id);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error: no Product exists with ID '{id}'...: {ex.Message}");
+            }
+            return productPlaceholder;
+        }
+
         public Product GetProduct(string OEM, string carPartName, string carVINNumber)
         {
             Product productPlaceholder = null;
             try
             {
-                bool canProductBeRequsted = _dbProductAccess.CarAndCarPartExists(carPartName, carVINNumber);
-                if(!canProductBeRequsted)
+                bool canProductBeRequested = _dbProductAccess.CarAndCarPartExists(carPartName, carVINNumber);
+                if(!canProductBeRequested)
                 {
                     throw new Exception("Either CarPart or Car does not exist.");
                 }
-                int productID = _dbProductAccess.GetProductIDByOEM(OEM);
+
+                int productID = GetProductID(OEM);
                 int carPartID = _dbProductAccess.GetCarPartIDByName(carPartName);
                 int carID = _dbProductAccess.GetCarByVINNumber(carVINNumber);
 
                 // Fetch product using inputs
-                productPlaceholder = _dbProductAccess.GetByIdentifier(productID, carPartID, carID);
+                productPlaceholder = _dbProductAccess.GetByInputs(productID, carPartID, carID);
             }
             catch (ArgumentException ex)
             {
-                Debug.WriteLine($"ArgumentException: The Product OEM number, its CarPart name or Car VIN number was incorrect or invalid.: {ex.Message}");
-            }
-            return productPlaceholder;
-        }
-
-        public Product GetProductByOEM(string OEM)
-        {
-            Product productPlaceholder = null;
-            try
-            {
-                int productID = _dbProductAccess.GetProductIDByOEM(OEM);
-                int carPartID = 
-                productPlaceholder = _dbProductAccess.GetByIdentifier(productID);
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.Message);
+                Debug.WriteLine($"ArgumentException: The Product OEM number '{productPlaceholder.OEM}', its CarPart name '{carPartName}' or Car VIN number '{carVINNumber}' was incorrect or invalid.: {ex.Message}");
             }
             return productPlaceholder;
         }
@@ -112,14 +125,14 @@ namespace ServiceAPI.BusinessLogic
         {
             bool productExists = false;
             bool wasProductUpdated = false;
-            int existingProductID = _dbProductAccess.GetProductIDByOEM(OEM);
+            int existingProductID = GetProductID(OEM);
             int numberOfRowsUpdated;
             try
             {
                 bool carAndCarPartExist = _dbProductAccess.CarAndCarPartExists(carPartName, carVINNumber);
                 if (!carAndCarPartExist)
                 {
-                    throw new ArgumentException($"We cannot find either a car with VIN {carVINNumber}, and/or car part {carPartName} with the given inputs.");
+                    throw new ArgumentException($"We cannot find either a car with VIN {carVINNumber} and/or car part {carPartName} with the given inputs.");
                 }
 
                 int carPartID = _dbProductAccess.GetCarPartIDByName(carPartName);
@@ -144,7 +157,7 @@ namespace ServiceAPI.BusinessLogic
             bool wasProductDeleted = false;
             try
             {
-                int tempID = _dbProductAccess.GetProductIDByOEM(OEM);
+                int tempID = GetProductID(OEM);
                 productExists = _dbProductAccess.ProductExists(tempID);
                 if(productExists) // CASE: Product does exist in DB.
                 {

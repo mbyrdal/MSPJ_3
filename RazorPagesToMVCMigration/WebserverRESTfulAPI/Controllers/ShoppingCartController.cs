@@ -47,7 +47,7 @@ namespace ServiceAPI.Controllers
                     product.ItemAvailable = false;
 
                     // Convert Product to ProductViewModel for updating
-                    var productViewModel = new Product
+                    var productViewModel = new ProductViewModel
                     {
                         ID = product.ID,
                         OEM = product.OEM,
@@ -59,7 +59,7 @@ namespace ServiceAPI.Controllers
                     };
 
                     // Call UpdateEntity with the correct ViewModel
-                    _dbProduct.UpdateEntity(productViewModel); // Update product availability in the database
+                    _dbProduct.UpdateEntity(productViewModel, productViewModel.ID, productViewModel.CarPartID, productViewModel.CarID); // Update product availability in the database
                 }
 
                 // Update the total price of the cart

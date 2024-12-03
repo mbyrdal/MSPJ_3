@@ -8,7 +8,7 @@ using System.Diagnostics;
 
 namespace ServiceAPI.DatabaseAccess
 {
-    public class DbProduct : ICRUD_DB<Product>
+    public class DbProduct : IDbProduct
     {
         // Configuration steps
         private string _connectionString;
@@ -54,7 +54,43 @@ namespace ServiceAPI.DatabaseAccess
             return products;
         }
 
-        public Product GetByIdentifier(int ID, int carPartID, int carID)
+        public Product GetByIdentifier(int ID)
+        {
+            Product product = null; // Set product to null initially
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                conn.Open();
+                using (SqlCommand readCommand = new SqlCommand("SELECT ID, CarPartID, CarID, OEM, Price, DateAvailable, " +
+                                                               "Condition, ItemDescription, ItemAvailable FROM Product " +
+                                                               "WHERE ID = @ID", conn))
+                {
+                    // Bind value from string input OEM to parameter OEM from Product in DB.
+                    readCommand.Parameters.AddWithValue("@ID", ID);
+                    using (SqlDataReader reader = readCommand.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            product = new Product
+                            {
+                                ID = reader.GetInt32(reader.GetOrdinal("ID")),
+                                CarPartID = reader.GetInt32(reader.GetOrdinal("CarPartID")),
+                                CarID = reader.GetInt32(reader.GetOrdinal("CarID")),
+                                OEM = reader.GetString(reader.GetOrdinal("OEM")),
+                                Price = reader.GetDecimal(reader.GetOrdinal("Price")),
+                                DateAvailable = reader.GetDateTime(reader.GetOrdinal("DateAvailable")),
+                                Condition = reader.GetString(reader.GetOrdinal("Condition")),
+                                ItemDescription = reader.GetString(reader.GetOrdinal("ItemDescription")),
+                                ItemAvailable = reader.GetBoolean(reader.GetOrdinal("ItemAvailable"))
+                            };
+                        }
+                    }
+                }
+                conn.Close();
+            }
+            return product;
+        }
+
+        public Product GetByInputs(int ID, int carPartID, int carID)
         {
             Product product = null; // Set product to null initially
             using (SqlConnection conn = new SqlConnection(_connectionString))
