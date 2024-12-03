@@ -1,4 +1,12 @@
+using Moq;
+using Xunit;
+using ServiceAPI.BusinessLogic;
+using ServiceAPI.DatabaseAccess;
+using ServiceAPI.DTOs;
 using ServiceAPI.Models;
+using Microsoft.AspNetCore.Mvc;
+using ServiceAPI.BusinessLogic.Interfaces;
+using ServiceAPI.Controllers;
 
 namespace MSPJ.TestingEnvironment.ModelSuites
 {
@@ -61,5 +69,213 @@ namespace MSPJ.TestingEnvironment.ModelSuites
             Assert.Equal(dateAvailable, myProduct.DateAvailable); // Expected value is "30/5/2024"
             Assert.Equal(notes, myProduct.Notes); // Expected value is "None"
         }
+
+        /// <summary>
+        /// Ensures the DeleteProduct endpoint returns a NotFound response when the product does not exist.
+        /// </summary>
+        [Fact]
+        public void ProductsController_DeleteProduct_ReturnsNotFound_WhenProductDoesNotExist()
+        {
+            // Arrange
+            var mockProductControl = new Mock<IProductControl>();
+            mockProductControl.Setup(pc => pc.GetProductByOEM(It.IsAny<string>())).Returns((Product)null); // Simulate product not found
+            var controller = new ProductsController(mockProductControl.Object);
+
+            // Act
+            var result = controller.DeleteProduct("OEM123");
+
+            // Assert
+            var actionResult = Assert.IsType<NotFoundObjectResult>(result); // Expected: NotFound response
+            Assert.Equal("No existing Product with OEM 'OEM123' found.", actionResult.Value); // Expected message
+        }
+
+        /// <summary>
+        /// Ensures the DeleteProduct endpoint returns a NoContent response when the product exists and is deleted successfully.
+        /// </summary>
+        [Fact]
+        public void ProductsController_DeleteProduct_ReturnsNoContent_WhenProductExists()
+        {
+            // Arrange
+            var mockProductControl = new Mock<IProductControl>();
+            var mockProduct = new Product { OEM = "OEM123" };
+            mockProductControl.Setup(pc => pc.GetProductByOEM(It.IsAny<string>())).Returns(mockProduct);
+            mockProductControl.Setup(pc => pc.DeleteProduct(It.IsAny<string>())).Returns(true);
+            var controller = new ProductsController(mockProductControl.Object);
+
+            // Act
+            var result = controller.DeleteProduct("OEM123");
+
+            // Assert
+            Assert.IsType<NoContentResult>(result); // Expected: NoContent (204) response
+        }
+
+        /// <summary>
+        /// Ensures the GetProduct endpoint returns the requested product when it exists.
+        /// </summary>
+        [Fact]
+        public void ProductsController_GetProduct_ReturnsProduct_WhenProductExists()
+        {
+            // Arrange
+            var mockProductControl = new Mock<IProductControl>();
+            var mockProduct = new Product { ID = 1, OEM = "OEM123" };
+            mockProductControl.Setup(pc => pc.GetProductByOEM(It.IsAny<string>())).Returns(mockProduct);
+            var controller = new ProductsController(mockProductControl.Object);
+
+            // Act
+            var result = controller.GetProduct("OEM123");
+
+            // Assert
+            var actionResult = Assert.IsType<OkObjectResult>(result); // Expected: OK response
+            var returnedProduct = Assert.IsType<Product>(actionResult.Value);
+            Assert.Equal(mockProduct.ID, returnedProduct.ID);
+            Assert.Equal(mockProduct.OEM, returnedProduct.OEM);
+        }
+
+        /// <summary>
+        /// Ensures the AddProduct endpoint returns a Conflict response when the related car or car part does not exist.
+        /// </summary>
+        [Fact]
+        public void ProductsController_AddProduct_ReturnsBadRequest_WhenCarOrCarPartDoesNotExist()
+        {
+            // Arrange
+            var mockProductControl = new Mock<IProductControl>();
+            mockProductControl.Setup(pc => pc.AddProduct(It.IsAny<ProductViewModel>(), It.IsAny<string>(), It.IsAny<string>())).Returns(false);
+            var controller = new ProductsController(mockProductControl.Object);
+            var productViewModel = new ProductViewModel { ID = 1, OEM = "OEM123" };
+
+            // Act
+            var result = controller.CreateProduct(productViewModel, "PartName", "VIN123");
+
+            // Assert
+            var actionResult = Assert.IsType<ConflictObjectResult>(result); // Expected: Conflict (409)
+        }
+
+        /// <summary>
+        /// Ensures the AddProduct endpoint returns a Created response when the product is successfully added.
+        /// </summary>
+        [Fact]
+        public void ProductsController_AddProduct_ReturnsCreated_WhenCarAndCarPartExist()
+        {
+            // Arrange
+            var mockProductControl = new Mock<IProductControl>();
+            mockProductControl.Setup(pc => pc.AddProduct(It.IsAny<ProductViewModel>(), It.IsAny<string>(), It.IsAny<string>())).Returns(true);
+            var controller = new ProductsController(mockProductControl.Object);
+            var productViewModel = new ProductViewModel { ID = 1, OEM = "OEM123" };
+
+            // Act
+            var result = controller.CreateProduct(productViewModel, "PartName", "VIN123");
+
+            // Assert
+            var actionResult = Assert.IsType<CreatedAtActionResult>(result); // Expected: Created response
+            Assert.Equal(productViewModel, actionResult.Value);
+        }
+
+        /// <summary>
+        /// Ensures the AddProduct endpoint returns a Conflict response when the product already exists.
+        /// </summary>
+        [Fact]
+        public void ProductsController_AddProduct_ReturnsConflict_WhenProductAlreadyExists()
+        {
+            // Arrange
+            var mockProductControl = new Mock<IProductControl>();
+            mockProductControl.Setup(pc => pc.AddProduct(It.IsAny<ProductViewModel>(), It.IsAny<string>(), It.IsAny<string>())).Returns(false);
+            var controller = new ProductsController(mockProductControl.Object);
+            var productViewModel = new ProductViewModel { ID = 1, OEM = "OEM123" };
+
+            // Act
+            var result = controller.CreateProduct(productViewModel, "PartName", "VIN123");
+
+            // Assert
+            var actionResult = Assert.IsType<ConflictObjectResult>(result); // Expected: Conflict response
+        }
+
+        /// <summary>
+        /// Ensures the DeleteProduct endpoint throws an exception when a database error occurs.
+        /// </summary>
+        [Fact]
+        public void ProductsController_DeleteProduct_ThrowsException_WhenDatabaseErrorOccurs()
+        {
+            // Arrange
+            var mockProductControl = new Mock<IProductControl>();
+            mockProductControl.Setup(pc => pc.GetProductByOEM(It.IsAny<string>())).Throws(new Exception("Database error"));
+            var controller = new ProductsController(mockProductControl.Object);
+
+            // Act & Assert
+            var exception = Assert.Throws<Exception>(() => controller.DeleteProduct("OEM123"));
+            Assert.Equal("Database error", exception.Message);
+        }
+
+        /// <summary>
+        /// Ensures the GetProducts endpoint returns a list of products when they exist.
+        /// </summary>
+        [Fact]
+        public void ProductsController_GetProducts_ReturnsListOfProducts_WhenProductsExist()
+        {
+            // Arrange
+            var mockProductControl = new Mock<IProductControl>();
+            var products = new List<Product>
+    {
+        new Product { ID = 1, OEM = "OEM123" },
+        new Product { ID = 2, OEM = "OEM456" }
+    };
+            mockProductControl.Setup(pc => pc.GetAllProducts()).Returns(products);
+            var controller = new ProductsController(mockProductControl.Object);
+
+            // Act
+            var result = controller.GetProducts();
+
+            // Assert
+            var actionResult = Assert.IsType<OkObjectResult>(result); // Expected: OK response
+            var returnedProducts = Assert.IsType<List<Product>>(actionResult.Value);
+            Assert.Equal(2, returnedProducts.Count);
+        }
+
+        /// <summary>
+        /// Ensures the UpdateProduct endpoint returns a NoContent response when the update is successful.
+        /// </summary>
+        [Fact]
+        public void ProductsController_UpdateProduct_ReturnsNoContent_WhenUpdateSucceeds()
+        {
+            // Arrange
+            var mockProductControl = new Mock<IProductControl>();
+            var mockProduct = new Product { OEM = "OEM123" };
+            mockProductControl.Setup(pc => pc.GetProductByOEM(It.IsAny<string>())).Returns(mockProduct);
+            mockProductControl.Setup(pc => pc.UpdateProduct(It.IsAny<string>(), It.IsAny<ProductViewModel>(), It.IsAny<string>(), It.IsAny<string>())).Returns(true);
+            var controller = new ProductsController(mockProductControl.Object);
+            var productViewModel = new ProductViewModel { OEM = "OEM123" };
+
+            // Act
+            var result = controller.UpdateProduct("OEM123", productViewModel, "PartName", "VIN123");
+
+            // Assert
+            Assert.IsType<NoContentResult>(result); // Expected: NoContent (204)
+        }
+
+        /// <summary>
+        /// Verifies that the Product custom constructor handles null and empty values properly.
+        /// </summary>
+        [Fact]
+        public void Product_CustomConstructor_HandlesEmptyStringsAndNullValues()
+        {
+            // Arrange
+            string oem = null;
+            string vinnumber = string.Empty;
+            string name = null;
+            decimal price = 0;
+            DateTime dateAvailable = default;
+            string notes = string.Empty;
+
+            // Act
+            var myProduct = new Product(oem, vinnumber, name, price, dateAvailable, notes);
+
+            // Assert
+            Assert.Null(myProduct.OEM);
+            Assert.Equal(string.Empty, myProduct.VINNumber);
+            Assert.Null(myProduct.Name);
+            Assert.Equal(0, myProduct.Price);
+            Assert.Equal(default, myProduct.DateAvailable);
+            Assert.Equal(string.Empty, myProduct.Notes);
+        }
+
     }
 }
