@@ -41,7 +41,7 @@ namespace ServiceAPI.Controllers
             return Ok(allProducts);
         }
 
-        // GET: https://localhost:7134/api/Products/OEM/carPartName/carVINNumber
+        // GET: https://localhost:7134/api/Products/OEM/
         [HttpGet("{OEM}")]
         public ActionResult<Product> GetProductUsingOEM(string OEM)
         {
@@ -76,7 +76,7 @@ namespace ServiceAPI.Controllers
 
         // POST: https://localhost:7134/api/Products
         [HttpPost]
-        public ActionResult<ProductViewModel> CreateProduct([FromBody] ProductViewModel newProduct, string name, string vinNumber)
+        public ActionResult<ProductViewModel> CreateProduct(string carPartName, string carVINNumber, [FromBody] ProductViewModel newProduct)
         {
             if (newProduct == null)
             {
@@ -84,7 +84,7 @@ namespace ServiceAPI.Controllers
                 return BadRequest("ERROR: Bad Product request body.");
             }
 
-            var wasProductCreated = _productControl.AddProduct(newProduct, name, vinNumber);
+            var wasProductCreated = _productControl.AddProduct(newProduct, carPartName, carVINNumber);
 
             if (wasProductCreated)
             {
@@ -103,7 +103,7 @@ namespace ServiceAPI.Controllers
         }
 
         // TODO: trim and remove existingProduct logic since _productControl.UpdateProduct handles existing product issue already.
-        // PUT: https://localhost:7134/api/Products/OEM
+        // PUT: https://localhost:7134/api/Products/OEM/carPartName/carVINNumber
         [HttpPut("{OEM}/{carPartName}/{carVINNumber}")]
         public IActionResult UpdateProduct(string OEM, string carPartName, string carVINNumber, [FromBody] ProductViewModel updatedProduct)
         {
