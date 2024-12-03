@@ -18,12 +18,6 @@ namespace BrowserWebPage.Controllers
         private string _connectionString;
         private readonly IProductControl _productControl;
 
-<<<<<<< HEAD
-        public HomeController(ILogger<HomeController> logger, IConfiguration configuration)
-        {
-            _logger = logger;
-            _dbHelper = new DbHelper(configuration);
-=======
         public HomeController(ILogger<HomeController> logger, IConfiguration configuration, IProductControl productControl)
         {
             _logger = logger;
@@ -31,7 +25,6 @@ namespace BrowserWebPage.Controllers
             ConnectionHelper helper = new ConnectionHelper(configuration);
             _connectionString = helper.GetDBConnectionString();
             _productControl = productControl;
->>>>>>> parent of 0860232 (Revert "Merge branch 'API-organize' of https://github.com/mbyrdal/MSPJ_3 into API-organize")
         }
 
         public IActionResult Index()

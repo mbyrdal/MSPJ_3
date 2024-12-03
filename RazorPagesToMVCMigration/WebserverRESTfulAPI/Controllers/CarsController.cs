@@ -18,9 +18,9 @@ namespace ServiceAPI.Controllers
 
         // GET https://localhost:7134/api/cars
         [HttpGet]
-        public async Task<ActionResult<List<Car>>> GetCars()
+        public ActionResult<List<Car>> GetCars()
         {
-            var allCars = await _carControl.GetAllCarsAsync();
+            var allCars = _carControl.GetAllCars();
 
             if (allCars == null)
             {
@@ -37,9 +37,9 @@ namespace ServiceAPI.Controllers
 
         // GET https://localhost:7134/api/cars/ID
         [HttpGet("{ID:int}")]
-        public async Task<ActionResult<Car>> GetCar(int ID)
+        public ActionResult<Car> GetCar(int ID)
         {
-            var foundCar = await _carControl.GetCarByIDAsync(ID);
+            var foundCar = _carControl.GetCarByID(ID);
 
             if (foundCar == null)
             {
@@ -51,14 +51,14 @@ namespace ServiceAPI.Controllers
 
         // POST https://localhost:7134/api/cars
         [HttpPost]
-        public async Task<ActionResult<Car>> CreateCar([FromBody] Car newCar)
+        public ActionResult<Car> CreateCar([FromBody] Car newCar)
         {
             if (newCar == null)
             {
                 return BadRequest("ERROR: Bad Car request body.");
             }
 
-            var wasCarCreated = await _carControl.AddCarAsync(newCar);
+            var wasCarCreated = _carControl.AddCar(newCar);
 
             if (wasCarCreated)
             {
@@ -73,14 +73,14 @@ namespace ServiceAPI.Controllers
 
         // POST https://localhost:7134/api/dto/cars
         [HttpPost("dto")]
-        public async Task<ActionResult<CarViewModel>> CreateCarDTO([FromBody] CarViewModel newCar)
+        public ActionResult<CarViewModel> CreateCarDTO([FromBody] CarViewModel newCar)
         {
             if (newCar == null)
             {
                 return BadRequest("ERROR: Bad Car request body.");
             }
 
-            var wasCarCreated = await _carControl.AddCarDTOAsync(newCar);
+            var wasCarCreated = _carControl.AddCarDTO(newCar);
 
             if (wasCarCreated)
             {
@@ -95,14 +95,14 @@ namespace ServiceAPI.Controllers
 
         // PUT https://localhost:7134/api/dto/cars/ID
         [HttpPut("{ID:int}")]
-        public async Task<IActionResult> UpdateCar(int ID, [FromBody] Car updatedCar)
+        public IActionResult UpdateCar(int ID, [FromBody] Car updatedCar)
         {
             if (updatedCar == null)
             {
                 return BadRequest("ERROR: Bad Car request body.");
             }
 
-            var existingCar = await _carControl.GetCarByIDAsync(ID);
+            var existingCar = _carControl.GetCarByID(ID);
 
             if (existingCar == null)
             {
@@ -114,7 +114,7 @@ namespace ServiceAPI.Controllers
                 return Conflict($"Found Car with ID '{existingCar.ID}' does not match ID in request body '{updatedCar.ID}'.");
             }
 
-            var wasCarUpdated = await _carControl.UpdateCarAsync(updatedCar);
+            var wasCarUpdated = _carControl.UpdateCar(updatedCar);
 
             if (!wasCarUpdated)
             {
@@ -126,14 +126,14 @@ namespace ServiceAPI.Controllers
 
         // PUT https://localhost:7134/api/dto/cars/dto/ID
         [HttpPut("dto/{ID:int}")]
-        public async Task<IActionResult> UpdateCarDTO(int ID, [FromBody] CarViewModel updatedCar)
+        public IActionResult UpdateCarDTO(int ID, [FromBody] CarViewModel updatedCar)
         {
             if (updatedCar == null)
             {
                 return BadRequest("ERROR: Bad Car request body.");
             }
 
-            var existingCar = await _carControl.GetCarByIDAsync(ID);
+            var existingCar = _carControl.GetCarByID(ID);
 
             if (existingCar == null)
             {
@@ -145,7 +145,7 @@ namespace ServiceAPI.Controllers
                 return Conflict($"Found Car with ID '{existingCar.ID}' does not match ID in request body '{updatedCar.ID}'.");
             }
 
-            var wasCarUpdated = await _carControl.UpdateCarDTOAsync(updatedCar);
+            var wasCarUpdated = _carControl.UpdateCarDTO(updatedCar);
 
             if (!wasCarUpdated)
             {
@@ -157,16 +157,16 @@ namespace ServiceAPI.Controllers
 
         // DELETE: https://localhost:7134/api/cars/ID
         [HttpDelete("{ID:int}")]
-        public async Task<IActionResult> DeleteCar(int ID)
+        public IActionResult DeleteCar(int ID)
         {
-            var foundCar = await _carControl.GetCarByIDAsync(ID);
+            var foundCar = _carControl.GetCarByID(ID);
 
             if (foundCar == null)
             {
                 return NotFound($"No existing Car with ID '{ID}' found.");
             }
 
-            var wasCarRemoved = await _carControl.DeleteCarAsync(ID);
+            var wasCarRemoved = _carControl.AddCar(foundCar);
 
             if (!wasCarRemoved)
             {
