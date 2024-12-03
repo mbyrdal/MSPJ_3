@@ -1,14 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
-namespace ServiceAPI.Models
+namespace ServiceAPI.DTOs
 {
-    public class CartPart
+    public class CarPartViewModel
     {
         [Key]
         public int ID { get; set; }
 
         [Required]
-        public int CarModelID { get; set; }
+        public int CarID { get; set; }
 
         [Required]
         [StringLength(30)]
@@ -21,12 +22,12 @@ namespace ServiceAPI.Models
         // [ForeignKey("CarModelID")]
         // public CarModel CarModel { get; set; }
 
-        public CartPart() { }
+        public CarPartViewModel() { }
 
-        public CartPart(int ID, int carModelID, string name, string notes)
+        public CarPartViewModel(int ID, int carID, string name, string notes)
         {
             this.ID = ID;
-            CarModelID = carModelID;
+            CarID = carID;
             Name = name;
             Notes = notes;
         }

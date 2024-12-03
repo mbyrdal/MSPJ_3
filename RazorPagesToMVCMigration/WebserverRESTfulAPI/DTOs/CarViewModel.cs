@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace ServiceAPI.DTOs
 {
-    public class CarModelViewModel
+    public class CarViewModel
     {
         [Key]
         [JsonIgnore]
@@ -26,9 +26,9 @@ namespace ServiceAPI.DTOs
         // [ForeignKey("CarTemplate")]
         // public CarTemplate CarTemplate { get; set; }
 
-        public CarModelViewModel() { }
+        public CarViewModel() { }
 
-        public CarModelViewModel(int ID, int carTemplateID, string vin, DateTime py, int mileage)
+        public CarViewModel(int ID, int carTemplateID, string vin, DateTime py, int mileage)
         {
             this.ID = ID;
             CarTemplateID = carTemplateID;

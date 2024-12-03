@@ -6,61 +6,61 @@ using ServiceAPI.Utilities;
 
 namespace ServiceAPI.DatabaseAccess
 {
-    public class DbCarModel : ICRUD_DB<CarModel>
+    public class DbCar : ICRUD_DB<Car>
     {
         // Configuration steps
         private string _connectionString;
         private readonly DbHelper _dbHelper;
 
-        public DbCarModel(IConfiguration configuration)
+        public DbCar(IConfiguration configuration)
         {
             _dbHelper = new DbHelper(configuration);
             ConnectionHelper helper = new ConnectionHelper(configuration);
             _connectionString = helper.GetDBConnectionString();
         }
 
-        public List<CarModel> GetAllEntities()
+        public List<Car> GetAllEntities()
         {
-            List<CarModel> carModels = new List<CarModel>();
+            List<Car> cars = new List<Car>();
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
-                using (SqlCommand readAllCommand = new SqlCommand("SELECT * FROM CarModel", conn))
+                using (SqlCommand readAllCommand = new SqlCommand("SELECT * FROM Car", conn))
                 {
                     using (SqlDataReader reader = readAllCommand.ExecuteReader())
                     {
                         while (reader.Read())
                         {
-                            CarModel carModelsInTable = new CarModel(
+                            Car carsInTable = new Car(
                                 reader.GetInt32(reader.GetOrdinal("ID")),
                                 reader.GetInt32(reader.GetOrdinal("CarTemplateID")),
                                 reader.GetString(reader.GetOrdinal("VINNumber")),
                                 reader.GetDateTime(reader.GetOrdinal("ProductionYear")),
                                 reader.GetInt32(reader.GetOrdinal("Mileage")));
 
-                            carModels.Add(carModelsInTable);
+                            cars.Add(carsInTable);
                         }
                     }
                 }
                 conn.Close();
             }
-            return carModels;
+            return cars;
         }
 
-        public CarModel GetByIdentifier(int ID)
+        public Car GetByIdentifier(int ID)
         {
-            CarModel carModel = null;
+            Car car = null;
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
-                using(SqlCommand readCommand = new SqlCommand("SELECT ID, CarTemplateID, VINNumber, ProductionYear, Mileage FROM CarModel WHERE ID = @ID", conn))
+                using(SqlCommand readCommand = new SqlCommand("SELECT ID, CarTemplateID, VINNumber, ProductionYear, Mileage FROM Car WHERE ID = @ID", conn))
                 {
                     readCommand.Parameters.AddWithValue("@ID", ID);
                     using(SqlDataReader reader = readCommand.ExecuteReader())
                     {
                         if(reader.Read())
                         {
-                            carModel = new CarModel(
+                            car = new Car(
                                 reader.GetInt32(reader.GetOrdinal("ID")),
                                 reader.GetInt32(reader.GetOrdinal("CarTemplateID")),
                                 reader.GetString(reader.GetOrdinal("VINNumber")),
@@ -71,24 +71,24 @@ namespace ServiceAPI.DatabaseAccess
                 }
                 conn.Close();
             }
-            return carModel;
+            return car;
         }
 
-        public int CreateEntity(CarModel newCarModel)
+        public int CreateEntity(Car newCar)
         {
             int numberOfRowsInserted;
             using(SqlConnection conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
                 using(SqlCommand createCommand = new SqlCommand(
-                    "INSERT INTO CarModel (ID, CarTemplateID, VINNumber, ProductionYear, Mileage " +
+                    "INSERT INTO Car (ID, CarTemplateID, VINNumber, ProductionYear, Mileage " +
                     "VALUES (@ID, @CarTemplateID, @VINNumber, @ProductionYear, @Mileage)", conn))
                 {
-                    createCommand.Parameters.AddWithValue("@ID", newCarModel.ID);
-                    createCommand.Parameters.AddWithValue("@CarTemplateID", newCarModel.CarTemplateID);
-                    createCommand.Parameters.AddWithValue("@VINNumber", newCarModel.VINNumber);
-                    createCommand.Parameters.AddWithValue("@ProductionYear", newCarModel.ProductionYear);
-                    createCommand.Parameters.AddWithValue("@Mileage", newCarModel.Mileage);
+                    createCommand.Parameters.AddWithValue("@ID", newCar.ID);
+                    createCommand.Parameters.AddWithValue("@CarTemplateID", newCar.CarTemplateID);
+                    createCommand.Parameters.AddWithValue("@VINNumber", newCar.VINNumber);
+                    createCommand.Parameters.AddWithValue("@ProductionYear", newCar.ProductionYear);
+                    createCommand.Parameters.AddWithValue("@Mileage", newCar.Mileage);
                     numberOfRowsInserted = createCommand.ExecuteNonQuery();
                 }
                 conn.Close();
@@ -96,20 +96,20 @@ namespace ServiceAPI.DatabaseAccess
             return numberOfRowsInserted;
         }
 
-        public int CreateEntityDTO(CarModelViewModel newCarModel)
+        public int CreateEntityDTO(CarViewModel newCar)
         {
             int numberOfRowsInserted;
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
                 using (SqlCommand createCommand = new SqlCommand(
-                    "INSERT INTO CarModel (CarTemplateID, VINNumber, ProductionYear, Mileage " +
+                    "INSERT INTO Car (CarTemplateID, VINNumber, ProductionYear, Mileage " +
                     "VALUES (@CarTemplateID, @VINNumber, @ProductionYear, @Mileage)", conn))
                 {
-                    createCommand.Parameters.AddWithValue("@CarTemplateID", newCarModel.CarTemplateID);
-                    createCommand.Parameters.AddWithValue("@VINNumber", newCarModel.VINNumber);
-                    createCommand.Parameters.AddWithValue("@ProductionYear", newCarModel.ProductionYear);
-                    createCommand.Parameters.AddWithValue("@Mileage", newCarModel.Mileage);
+                    createCommand.Parameters.AddWithValue("@CarTemplateID", newCar.CarTemplateID);
+                    createCommand.Parameters.AddWithValue("@VINNumber", newCar.VINNumber);
+                    createCommand.Parameters.AddWithValue("@ProductionYear", newCar.ProductionYear);
+                    createCommand.Parameters.AddWithValue("@Mileage", newCar.Mileage);
                     numberOfRowsInserted = createCommand.ExecuteNonQuery();
                 }
                 conn.Close();
@@ -117,7 +117,7 @@ namespace ServiceAPI.DatabaseAccess
             return numberOfRowsInserted;
         }
 
-        public int UpdateEntity(CarModel updateCarModel)
+        public int UpdateEntity(Car updateCar)
         {
             int numberOfRowsUpdated = 0;
             using (SqlConnection conn = new SqlConnection(_connectionString))
@@ -125,16 +125,16 @@ namespace ServiceAPI.DatabaseAccess
                 try
                 {
                     conn.Open();
-                    using (SqlCommand updateCommand = new SqlCommand("UPDATE CarModel " +
+                    using (SqlCommand updateCommand = new SqlCommand("UPDATE Car " +
                                                                      "SET ID=@ID, CarTemplateID=@CarTemplateID, VINNumber=@VINNumber, " +
                                                                      "ProductionYear=@ProductionYear, Mileage=@Mileage " +
                                                                      "WHERE ID = @ID", conn))
                     {
-                        updateCommand.Parameters.AddWithValue("@ID", updateCarModel.ID);
-                        updateCommand.Parameters.AddWithValue("@CarTemplateID", updateCarModel.CarTemplateID);
-                        updateCommand.Parameters.AddWithValue("@VINNumber", updateCarModel.VINNumber);
-                        updateCommand.Parameters.AddWithValue("@ProductionYear", updateCarModel.ProductionYear);
-                        updateCommand.Parameters.AddWithValue("@Mileage", updateCarModel.Mileage);
+                        updateCommand.Parameters.AddWithValue("@ID", updateCar.ID);
+                        updateCommand.Parameters.AddWithValue("@CarTemplateID", updateCar.CarTemplateID);
+                        updateCommand.Parameters.AddWithValue("@VINNumber", updateCar.VINNumber);
+                        updateCommand.Parameters.AddWithValue("@ProductionYear", updateCar.ProductionYear);
+                        updateCommand.Parameters.AddWithValue("@Mileage", updateCar.Mileage);
 
                         numberOfRowsUpdated = updateCommand.ExecuteNonQuery();
                     }
@@ -148,7 +148,7 @@ namespace ServiceAPI.DatabaseAccess
             }
         }
 
-        public int UpdateEntityDTO(CarModelViewModel updateCarModel)
+        public int UpdateEntityDTO(CarViewModel updateCar)
         {
             int numberOfRowsUpdated = 0;
             using (SqlConnection conn = new SqlConnection(_connectionString))
@@ -156,15 +156,15 @@ namespace ServiceAPI.DatabaseAccess
                 try
                 {
                     conn.Open();
-                    using (SqlCommand updateCommand = new SqlCommand("UPDATE CarModel " +
+                    using (SqlCommand updateCommand = new SqlCommand("UPDATE Car " +
                                                                      "SET VINNumber=@VINNumber, " +
                                                                      "ProductionYear=@ProductionYear, Mileage=@Mileage " +
                                                                      "WHERE ID = @ID", conn))
                     {
-                        updateCommand.Parameters.AddWithValue("@ID", updateCarModel.ID);
-                        updateCommand.Parameters.AddWithValue("@VINNumber", updateCarModel.VINNumber);
-                        updateCommand.Parameters.AddWithValue("@ProductionYear", updateCarModel.ProductionYear);
-                        updateCommand.Parameters.AddWithValue("@Mileage", updateCarModel.Mileage);
+                        updateCommand.Parameters.AddWithValue("@ID", updateCar.ID);
+                        updateCommand.Parameters.AddWithValue("@VINNumber", updateCar.VINNumber);
+                        updateCommand.Parameters.AddWithValue("@ProductionYear", updateCar.ProductionYear);
+                        updateCommand.Parameters.AddWithValue("@Mileage", updateCar.Mileage);
 
                         numberOfRowsUpdated = updateCommand.ExecuteNonQuery();
                     }
@@ -180,34 +180,34 @@ namespace ServiceAPI.DatabaseAccess
 
         public bool DeleteEntity(int ID)
         {
-            bool wasCarModelDeleted = false;
+            bool wasCarDeleted = false;
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
-                using (SqlCommand deleteCommand = new SqlCommand("DELETE from CarModel WHERE ID = @ID", conn))
+                using (SqlCommand deleteCommand = new SqlCommand("DELETE from Car WHERE ID = @ID", conn))
                 {
                     deleteCommand.Parameters.AddWithValue("@ID", ID);
                     int numberOfRowsAffectedByDeletion = deleteCommand.ExecuteNonQuery();
-                    wasCarModelDeleted = numberOfRowsAffectedByDeletion == 1;
+                    wasCarDeleted = numberOfRowsAffectedByDeletion == 1;
                 }
                 conn.Close();
             }
-            return wasCarModelDeleted;
+            return wasCarDeleted;
         }
 
-        internal bool CarModelExists(int ID, string VINNumber)
+        internal bool CarExists(int ID, string VINNumber)
         {
-            bool carModelExistsIdentifierExists = _dbHelper.EntityExists("CarModel", "ID", ID.ToString());
-            bool carModelVinExists = _dbHelper.EntityExists("CarModel", "VINNumber", VINNumber);
+            bool carExistsIdentifierExists = _dbHelper.EntityExists("Car", "ID", ID.ToString());
+            bool carVinExists = _dbHelper.EntityExists("Car", "VINNumber", VINNumber);
 
-            bool carModelExists = carModelExistsIdentifierExists && carModelVinExists;
+            bool carExists = carExistsIdentifierExists && carVinExists;
 
-            if (!carModelExists)
+            if (!carExists)
             {
                 return false;
             }
 
-            return carModelExists;
+            return carExists;
         }
     }
 }
