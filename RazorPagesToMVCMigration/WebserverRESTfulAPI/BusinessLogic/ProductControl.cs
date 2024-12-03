@@ -39,22 +39,6 @@ namespace ServiceAPI.BusinessLogic
             return productPlaceholder;
         }
 
-        public Product GetProductByID(int ID)
-        {
-            Product productPlaceholder = null;
-            try
-            {
-                int carPartID = _dbProductAccess.GetCarPartIDByName();
-                int carID = 
-                productPlaceholder = _dbProductAccess.GetByIdentifier(ID, carPartID, carID);
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.Message);
-            }
-            return productPlaceholder;
-        }
-
         public Product GetProductByOEM(string OEM)
         {
             Product productPlaceholder = null;
