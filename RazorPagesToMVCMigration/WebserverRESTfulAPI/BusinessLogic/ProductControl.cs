@@ -140,6 +140,11 @@ namespace ServiceAPI.BusinessLogic
                 productExists = _dbProductAccess.ProductExists(existingProductID);
                 if (productExists) // CASE: Product does exist in DB.
                 {
+                    var myProduct = _dbProductAccess.GetByIdentifier(existingProductID);
+                    if (myProduct.ItemAvailable == false)
+                    {
+                        throw new Exception("Product isnt for sale anymore");
+                    }
                     numberOfRowsUpdated = _dbProductAccess.UpdateEntity(product, existingProductID, carPartID, carID);
                     wasProductUpdated = (numberOfRowsUpdated == 1); // RETURNS TRUE ONLY IF NUMBER OF ROWS UPDATED IS EQUAL TO EXACTLY 1
                 }
