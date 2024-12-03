@@ -143,7 +143,7 @@ namespace ServiceAPI.BusinessLogic
                     var myProduct = _dbProductAccess.GetByIdentifier(existingProductID);
                     if (myProduct.ItemAvailable == false)
                     {
-                        throw new Exception("Product isnt for sale anymore");
+                        throw new Exception("The Product is either sold out or no long available!");
                     }
                     numberOfRowsUpdated = _dbProductAccess.UpdateEntity(product, existingProductID, carPartID, carID);
                     wasProductUpdated = (numberOfRowsUpdated == 1); // RETURNS TRUE ONLY IF NUMBER OF ROWS UPDATED IS EQUAL TO EXACTLY 1
