@@ -15,12 +15,38 @@ namespace ServiceAPI.BusinessLogic
             _dbProductAccess = dbProductAccess;
         }
 
+        public Product GetProduct(string OEM, string carPartName, string carVINNumber)
+        {
+            Product productPlaceholder = null;
+            try
+            {
+                bool canProductBeRequsted = _dbProductAccess.CarAndCarPartExists(carPartName, carVINNumber);
+                if(!canProductBeRequsted)
+                {
+                    throw new Exception("Either CarPart or Car does not exist.");
+                }
+                int productID = _dbProductAccess.GetProductIDByOEM(OEM);
+                int carPartID = _dbProductAccess.GetCarPartIDByName(carPartName);
+                int carID = _dbProductAccess.GetCarByVINNumber(carVINNumber);
+
+                // Fetch product using inputs
+                productPlaceholder = _dbProductAccess.GetByIdentifier(productID, carPartID, carID);
+            }
+            catch (ArgumentException ex)
+            {
+                Debug.WriteLine($"ArgumentException: The Product OEM number, its CarPart name or Car VIN number was incorrect or invalid.: {ex.Message}");
+            }
+            return productPlaceholder;
+        }
+
         public Product GetProductByID(int ID)
         {
             Product productPlaceholder = null;
             try
             {
-                productPlaceholder = _dbProductAccess.GetByIdentifier(ID);
+                int carPartID = _dbProductAccess.GetCarPartIDByName();
+                int carID = 
+                productPlaceholder = _dbProductAccess.GetByIdentifier(ID, carPartID, carID);
             }
             catch (Exception ex)
             {
@@ -34,8 +60,9 @@ namespace ServiceAPI.BusinessLogic
             Product productPlaceholder = null;
             try
             {
-                var productIDPlaceholder = _dbProductAccess.GetProductIDByOEM(OEM);
-                productPlaceholder = _dbProductAccess.GetByIdentifier(productIDPlaceholder);
+                int productID = _dbProductAccess.GetProductIDByOEM(OEM);
+                int carPartID = 
+                productPlaceholder = _dbProductAccess.GetByIdentifier(productID);
             }
             catch (Exception ex)
             {
@@ -85,7 +112,7 @@ namespace ServiceAPI.BusinessLogic
                 productExists = _dbProductAccess.ProductExists(product.ID); // Product exists based on whether its ID number can be found in the Product table.
                 if (!productExists) // CASE: Product does not exist in DB.
                 {
-                    numberOfRowsInserted = _dbProductAccess.CreateEntityDTO(product, carPartID, carID);
+                    numberOfRowsInserted = _dbProductAccess.CreateEntity(product, carPartID, carID);
                     wasProductInserted = (numberOfRowsInserted == 1); // If only one row was inserted, then we can determine that the product was added correctly.
                 }
             }
@@ -116,9 +143,8 @@ namespace ServiceAPI.BusinessLogic
                 productExists = _dbProductAccess.ProductExists(existingProductID);
                 if (productExists) // CASE: Product does exist in DB.
                 {
-                    var prodCarPartID = 
                     numberOfRowsUpdated = _dbProductAccess.UpdateEntity(product, existingProductID, carPartID, carID);
-                    wasProductUpdated = (numberOfRowsUpdated == 1);
+                    wasProductUpdated = (numberOfRowsUpdated == 1); // RETURNS TRUE ONLY IF NUMBER OF ROWS UPDATED IS EQUAL TO EXACTLY 1
                 }
             }
             catch (Exception ex)
