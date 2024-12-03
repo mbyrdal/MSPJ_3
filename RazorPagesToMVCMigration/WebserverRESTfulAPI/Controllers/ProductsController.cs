@@ -132,7 +132,7 @@ namespace ServiceAPI.Controllers
             if(!wasProductUpdated)
             {
                 // Return 500: Internal Server Error if the update fails
-                return StatusCode(500, $"ERROR: Unable to update Product with OEM '{OEM}' in the database.");
+                return StatusCode(500, $"ERROR: The Product '{carPartName}' with the OEM '{OEM}' is sold out or no longer available");
             }
 
             // Return 204: No Content (Successful update)
