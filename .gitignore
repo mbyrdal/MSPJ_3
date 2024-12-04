@@ -398,3 +398,4 @@ FodyWeavers.xsd
 *.sln.iml
 /RazorPagesToMVCMigration/BrowserWebPage/bin
 /RazorPagesToMVCMigration/BrowserWebPage/bin
+/RazorPagesToMVCMigration/WebserverRESTfulAPI/bin
