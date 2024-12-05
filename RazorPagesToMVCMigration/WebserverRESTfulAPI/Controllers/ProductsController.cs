@@ -94,7 +94,7 @@ namespace ServiceAPI.Controllers
                 // nameof(...) determines action method to be used
                 // new {...} determines input parameters
                 // newProduct is response object
-                return CreatedAtAction(nameof(GetProduct), new { ID = newProduct.ID }, newProduct);
+                return CreatedAtAction(nameof(GetProduct), new { OEM = newProduct.OEM }, newProduct);
             }
 
             // Return 409: Conflict by already existing OEM (ProductViewModel) or insertion fail
