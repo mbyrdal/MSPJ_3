@@ -169,7 +169,7 @@ namespace ServiceAPI.DatabaseAccess
                                                                      "SET OEM=@OEM, " +
                                                                      "Price=@Price, DateAvailable=@DateAvailable, Condition=@Condition, " +
                                                                      "ItemDescription=@ItemDescription, ItemAvailable=@ItemAvailable " +
-                                                                     "WHERE ID = @ID AND CarPartID = @CarPartID AND CarID = @CarID", conn))
+                                                                     "WHERE ID = @ID AND CarPartID = @CarPartID AND CarID = @CarID AND ItemAvailable = True", conn))
                     {
                         // Mapping method input values to sql query input values
                         updateCommand.Parameters.AddWithValue("@ID", productID);
