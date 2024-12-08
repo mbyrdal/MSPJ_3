@@ -1,6 +1,9 @@
 using ServiceAPI.BusinessLogic.Interfaces;
 using ServiceAPI.BusinessLogic;
 using ServiceAPI.DatabaseAccess;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Text;
+using ServiceAPI.Utilities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,10 +24,26 @@ builder.Services.AddSession(options =>
 builder.Services.AddScoped<DbProduct>();
 builder.Services.AddScoped<IProductControl, ProductControl>();
 
+// Add JWT configuration
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
+
+
 // Add Authentication services with JWT bearer token support
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
 {
-    options.
+    var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtSettings>();
+    options.RequireHttpsMetadata = false; // set to true in prod
+    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtSettings.Issuer,
+        ValidAudience = jwtSettings.Audience,
+        IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey))
+    };
 });
 
 var app = builder.Build();
@@ -48,6 +67,7 @@ app.UseRouting();
 // Enable session middleware
 app.UseSession();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(

@@ -1,74 +1,9 @@
-/*using ServiceAPI.BusinessLogic;
-using ServiceAPI.BusinessLogic.Interfaces;
-using ServiceAPI.DatabaseAccess;
-using ServiceAPI.DatabaseAccess.Interfaces;
-using ServiceAPI.Models;
-
-var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-
-// Allows for CF objects to access DbAccess objects through DI Container
-// builder.Services.AddScoped<ICRUD_DB<Product>, DbProduct>(); ??
-builder.Services.AddScoped<DbProduct>();
-// builder.Services.AddScoped<DbCarPart>();
-builder.Services.AddScoped<DbCustomer>();
-builder.Services.AddScoped<DbCar>();
-builder.Services.AddScoped<DbCarTemplate>();
-
-// Allows for Controllers to access CF objects through DI Container
-builder.Services.AddScoped<IProductControl, ProductControl>();
-// builder.Services.AddScoped<ICarPartControl, CarPartControl>();
-builder.Services.AddScoped<ICustomerControl, CustomerControl>();
-builder.Services.AddScoped<ICarControl, CarControl>();
-builder.Services.AddScoped<ICarTemplateControl, CarTemplateControl>();
-
-// Configure Session state to store ShoppingCart (customer specific)
-builder.Services.AddDistributedMemoryCache(); // For session storage
-builder.Services.AddSession(options =>
-{
-    options.IdleTimeout = TimeSpan.FromMinutes(5);
-    options.Cookie.HttpOnly = true;
-    options.Cookie.IsEssential = true;
-});
-
-
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.AddScoped<DbProduct>();
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.UseSession(); // Enable session
-
-app.MapControllers();
-
-
-/*
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Products}/{action=GetProducts}/{id?}");
-
-app.Run();
-
-*/
-
 using ServiceAPI.BusinessLogic.Interfaces;
 using ServiceAPI.BusinessLogic;
 using ServiceAPI.DatabaseAccess;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using ServiceAPI.Utilities;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -82,6 +17,28 @@ builder.Services.AddScoped<IProductControl, ProductControl>();
 builder.Services.AddScoped<ICustomerControl, CustomerControl>();
 builder.Services.AddScoped<ICarControl, CarControl>();
 builder.Services.AddScoped<ICarTemplateControl, CarTemplateControl>();
+
+// Add JWT configuration
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
+
+
+// Add Authentication services with JWT bearer token support
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtSettings>();
+        options.RequireHttpsMetadata = false; // set to true in prod
+        options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtSettings.Issuer,
+            ValidAudience = jwtSettings.Audience,
+            IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey))
+        };
+    });
 
 // Configure session state to store ShoppingCart (customer specific)
 builder.Services.AddDistributedMemoryCache(); // For session storage
