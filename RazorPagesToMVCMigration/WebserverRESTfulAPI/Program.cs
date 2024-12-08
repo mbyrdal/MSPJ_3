@@ -1,74 +1,10 @@
-/*using ServiceAPI.BusinessLogic;
-using ServiceAPI.BusinessLogic.Interfaces;
-using ServiceAPI.DatabaseAccess;
-using ServiceAPI.DatabaseAccess.Interfaces;
-using ServiceAPI.Models;
-
-var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-
-// Allows for CF objects to access DbAccess objects through DI Container
-// builder.Services.AddScoped<ICRUD_DB<Product>, DbProduct>(); ??
-builder.Services.AddScoped<DbProduct>();
-// builder.Services.AddScoped<DbCarPart>();
-builder.Services.AddScoped<DbCustomer>();
-builder.Services.AddScoped<DbCar>();
-builder.Services.AddScoped<DbCarTemplate>();
-
-// Allows for Controllers to access CF objects through DI Container
-builder.Services.AddScoped<IProductControl, ProductControl>();
-// builder.Services.AddScoped<ICarPartControl, CarPartControl>();
-builder.Services.AddScoped<ICustomerControl, CustomerControl>();
-builder.Services.AddScoped<ICarControl, CarControl>();
-builder.Services.AddScoped<ICarTemplateControl, CarTemplateControl>();
-
-// Configure Session state to store ShoppingCart (customer specific)
-builder.Services.AddDistributedMemoryCache(); // For session storage
-builder.Services.AddSession(options =>
-{
-    options.IdleTimeout = TimeSpan.FromMinutes(5);
-    options.Cookie.HttpOnly = true;
-    options.Cookie.IsEssential = true;
-});
-
-
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.AddScoped<DbProduct>();
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.UseSession(); // Enable session
-
-app.MapControllers();
-
-
-/*
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Products}/{action=GetProducts}/{id?}");
-
-app.Run();
-
-*/
-
 using ServiceAPI.BusinessLogic.Interfaces;
 using ServiceAPI.BusinessLogic;
 using ServiceAPI.DatabaseAccess;
+using ServiceAPI.Models;
+using Microsoft.AspNetCore.Identity;
+using System.Text.Json;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -96,6 +32,72 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Configure Identity in our System (ASP.NET Identity)
+builder.Services.AddIdentityCore<ApplicationUser>(options =>
+{
+    // Password policies...
+    options.Password.RequireDigit = true;
+    options.Password.RequiredLength = 8;
+    options.Password.RequireNonAlphanumeric = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireLowercase = true;
+}).AddUserStore<DbUserStore>() // Custom user store (CRUD)
+  .AddSignInManager<SignInManager<ApplicationUser>>() // SignInManager enables login/logout functionality for our ApplicationUser
+  .AddDefaultTokenProviders(); // Default token provider ensures email confirmation, password reset, 2FA etc.
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Account/Login"; // Path to the login page
+    options.LogoutPath = "/Account/Logout"; // Path to logout
+    options.AccessDeniedPath = "/Account/AccessDenied"; // Access denied path
+    options.SlidingExpiration = true; // Extend the expiration on activity
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(10); // Cookie expiration
+});
+
+// Configure Authentication with OAuth2 support (!)
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = IdentityConstants.ApplicationScheme; // Default cookie scheme
+    options.DefaultChallengeScheme = IdentityConstants.ApplicationScheme; // Default challenge scheme
+    options.DefaultSignInScheme = IdentityConstants.ExternalScheme; // Scheme for external logins
+})
+    .AddCookie(IdentityConstants.ApplicationScheme) // Application cookie
+    .AddCookie(IdentityConstants.ExternalScheme) // External login cookie
+    .AddOAuth("OAuth2Provider", options =>
+    {
+        options.ClientId = builder.Configuration["OAuth2:ClientId"]; // From appsettings.json
+        options.ClientSecret = builder.Configuration["OAuth2:ClientSecret"]; // From appsettings.json
+        options.CallbackPath = "/signin-google"; // OAuth2 callback path
+
+        options.AuthorizationEndpoint = builder.Configuration["OAuth2:AuthorizationEndpoint"];
+        options.TokenEndpoint = builder.Configuration["OAuth2:TokenEndpoint"];
+        options.UserInformationEndpoint = builder.Configuration["OAuth2:UserInformationEndpoint"];
+
+        options.SaveTokens = true; // Persist tokens
+        options.Scope.Add("profile");
+        options.Scope.Add("email");
+
+        options.Events = new Microsoft.AspNetCore.Authentication.OAuth.OAuthEvents
+        {
+            OnCreatingTicket = async context => // Event handles mapping OAuth2 user information (ID, Name, Email etc.) to identity claims
+            {
+                var userInfo = await context.Backchannel.GetAsync(context.Options.UserInformationEndpoint);
+                userInfo.EnsureSuccessStatusCode();
+                var user = JsonDocument.Parse(await userInfo.Content.ReadAsStringAsync());
+                var userJson = user.RootElement;
+
+                context.Identity?.AddClaim(new Claim(ClaimTypes.NameIdentifier, userJson.GetProperty("id").GetString()));
+                context.Identity?.AddClaim(new Claim(ClaimTypes.Name, userJson.GetProperty("name").GetString()));
+                context.Identity?.AddClaim(new Claim(ClaimTypes.Email, userJson.GetProperty("email").GetString()));
+            }
+        };
+    });
+
+// Register the custom user store (DbUserStore)
+builder.Services.AddScoped<IUserStore<ApplicationUser>, DbUserStore>();
+builder.Services.AddScoped<UserManager<ApplicationUser>>();
+builder.Services.AddScoped<SignInManager<ApplicationUser>>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -107,6 +109,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// Enable Authentication and authorizarion middleware pipeline...
+app.UseAuthentication();
 app.UseAuthorization();
 
 // Enable session middleware
