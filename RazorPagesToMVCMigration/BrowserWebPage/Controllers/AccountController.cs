@@ -46,10 +46,66 @@ namespace BrowserWebPage.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
+
             var email = info.Principal.FindFirstValue(ClaimTypes.Email);
 
             // Example: Redirect to a registration page with pre-filled information
             return RedirectToAction("RegisterExternal", new { email });
+        }
+
+        // RegisterExternal: Handles registration when the user logs in via an external provider (Google)
+        [HttpGet]
+        public IActionResult RegisterExternal(string email)
+        {
+            var model = new RegisterExternalViewModel
+            {
+                Email = email
+            };
+
+            return View(model);
+        }
+
+        // Post method for registering an external user
+        [HttpPost]
+        public async Task<IActionResult> RegisterExternal(RegisterExternalViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = new ApplicationUser
+                {
+                    Id = "1",
+                    Username = model.Email,
+                    Email = model.Email
+                };
+
+                var result = await _userManager.CreateAsync(user);
+
+                if (result.Succeeded)
+                {
+                    // Link the external login to the newly created user
+                    var info = await _signInManager.GetExternalLoginInfoAsync();
+                    if (info != null)
+                    {
+                        var loginResult = await _userManager.AddLoginAsync(user, info);
+                        if (loginResult.Succeeded)
+                        {
+                            await _signInManager.SignInAsync(user, isPersistent: false);
+                            return RedirectToAction("Index", "Home");
+                        }
+                        else
+                        {
+                            ModelState.AddModelError(string.Empty, "External login failed.");
+                        }
+                    }
+                }
+
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+            }
+
+            return View(model);
         }
 
         public async Task<IActionResult> Login(LoginViewModel model)
