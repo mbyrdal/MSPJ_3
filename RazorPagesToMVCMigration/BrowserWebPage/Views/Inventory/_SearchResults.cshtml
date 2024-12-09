@@ -1,4 +1,5 @@
-﻿@model List<ServiceAPI.Models.Product>
+﻿@using ServiceAPI.DatabaseAccess
+@model List<ServiceAPI.Models.Product>
 
 <table>
     <thead>
@@ -14,6 +15,7 @@
     <tbody>
         @if (Model != null && Model.Any())
         {
+            //DbCarPart carPart = new DbCarPart;
             foreach (var product in Model)
             {
                 <tr>
