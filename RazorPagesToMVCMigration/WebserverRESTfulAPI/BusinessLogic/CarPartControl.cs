@@ -16,7 +16,7 @@ namespace ServiceAPI.BusinessLogic
             _dbCarPartAccess = dbCarPartAccess;
         }
 
-        public bool AddCarPart(Model model)
+        public bool AddCarPart(CarPart carPart)
         {
             bool carPartExists = false;
             bool wasCarPartInserted = false;
@@ -26,7 +26,7 @@ namespace ServiceAPI.BusinessLogic
                 carPartExists = _dbCarPartAccess.CarPartExists(carPart.ID);
                 if (carPartExists) // CASE: CarPart does exist in DB --> Cannot be created
                 {
-                    throw new InvalidOperationException($"A car part with the ID '{carPart.ID}' and OEM Number '{carPart.OEM}' already exists in the CarModel table.");
+                    throw new InvalidOperationException($"A car part with the ID '{carPart.ID}' and name '{carPart.Name}' already exists in the CarModel table.");
                 }
 
                 // Customer does not exist
@@ -41,17 +41,17 @@ namespace ServiceAPI.BusinessLogic
             return wasCarPartInserted;
         }
 
-        public bool AddCarPartDTO(CarPartViewModel model)
+        public bool AddCarPartDTO(CarPartViewModel carPart)
         {
             bool carPartExists = false;
             bool wasCarPartInserted = false;
             int numberOfRowsInserted;
             try
             {
-                carPartExists = _dbCarPartAccess.CarExists(carPart.ID, carPart.OEM);
+                carPartExists = _dbCarPartAccess.CarPartExists(carPart.ID);
                 if (carPartExists) // CASE: CarPart does exist in DB --> Cannot be created
                 {
-                    throw new InvalidOperationException($"A car part with the ID '{carPart.ID}' and OEM Number '{carPart.OEM}' already exists in the CarModel table.");
+                    throw new InvalidOperationException($"A car part with the ID '{carPart.ID}' and name '{carPart.Name}' already exists in the CarModel table.");
                 }
 
                 // Car does not exist
@@ -64,30 +64,6 @@ namespace ServiceAPI.BusinessLogic
                 Debug.WriteLine(ex.Message);
             }
             return wasCarPartInserted;
-        }
-
-        public bool DeleteCarPart(int ID)
-        {
-            bool carPartExists;
-            bool wasCarPartDeleted = false;
-            try
-            {
-                string carPartVinNumber = GetCarPartByID(ID).OEM;
-                carPartExists = _dbCarPartAccess.CarPartExists(ID, carPartVinNumber);
-                if (!carPartExists)
-                {
-                    throw new InvalidOperationException($"A car part with the ID '{carPart.ID}' and OEM Number '{carPart.OEM}' already exists in the CarModel table.");
-                }
-
-                // CASE: Car does exist in DB
-                wasCarPartDeleted = _dbCarPartAccess.DeleteEntity(ID);
-            }
-            catch (Exception ex)
-            {
-                wasCarPartDeleted = false;
-                Debug.WriteLine(ex.Message);
-            }
-            return wasCarPartDeleted;
         }
 
         public List<CarPart> GetAllCarParts()
@@ -119,17 +95,17 @@ namespace ServiceAPI.BusinessLogic
             return carPartPlaceholder;
         }
 
-        public bool UpdateCarPart(CarPart model)
+        public bool UpdateCarPart(CarPart carPart)
         {
             bool carPartExists = false;
             bool wasCarPartUpdated = false;
             int numberOfRowsUpdated;
             try
             {
-                carPartExists = _dbCarPartAccess.CarPartExists(carPart.ID, carPart.OEM);
+                carPartExists = _dbCarPartAccess.CarPartExists(carPart.ID);
                 if (!carPartExists) // CASE: Car does not exist in DB --> Cannot be updated
                 {
-                    throw new InvalidOperationException($"A car part with the ID '{carPart.ID}' and OEM Number '{carPart.OEM}' does not exist in the Customer table.");
+                    throw new InvalidOperationException($"A car part with the ID '{carPart.ID}' does not exist in the Customer table.");
                 }
 
                 // CarModel does exist
@@ -143,21 +119,21 @@ namespace ServiceAPI.BusinessLogic
             return wasCarPartUpdated;
         }
 
-        public bool UpdateCarPartDTO(CarPartViewModel model)
+        public bool UpdateCarPartDTO(CarPartViewModel carPart)
         {
             bool carPartExists = false;
             bool wasCarPartUpdated = false;
             int numberOfRowsUpdated;
             try
             {
-                carPartExists = _dbCarPartAccess.CarPartExists(carPart.ID, carPart.OEM);
+                carPartExists = _dbCarPartAccess.CarPartExists(carPart.ID);
                 if (!carPartExists) // CASE: Car does not exist in DB --> Cannot be updated
                 {
-                    throw new InvalidOperationException($"A car part with the ID '{carPart.ID}' and OEM Number '{carPart.OEM}' does not exist in the Customer table.");
+                    throw new InvalidOperationException($"A car part with the ID '{carPart.ID}' does not exist in the CarPart table.");
                 }
 
                 // CarModel does exist
-                numberOfRowsUpdated = _dbCarPartAccess.UpdateEntity(carPart);
+                numberOfRowsUpdated = _dbCarPartAccess.UpdateEntityDTO(carPart);
                 wasCarPartUpdated = (numberOfRowsUpdated == 1);
             }
             catch (Exception ex)
@@ -166,5 +142,30 @@ namespace ServiceAPI.BusinessLogic
             }
             return wasCarPartUpdated;
         }
+
+        public bool DeleteCarPart(int ID)
+        {
+            bool carPartExists;
+            bool wasCarPartDeleted = false;
+            try
+            {
+                string carPartVinNumber = GetCarPartByID(ID).Name;
+                carPartExists = _dbCarPartAccess.CarPartExists(ID);
+                if (!carPartExists)
+                {
+                    throw new InvalidOperationException($"A car part with the ID '{ID}' does not exist in the CarPart table.");
+                }
+
+                // CASE: Car does exist in DB
+                wasCarPartDeleted = _dbCarPartAccess.DeleteEntity(ID);
+            }
+            catch (Exception ex)
+            {
+                wasCarPartDeleted = false;
+                Debug.WriteLine(ex.Message);
+            }
+            return wasCarPartDeleted;
+        }
+
     }
 }

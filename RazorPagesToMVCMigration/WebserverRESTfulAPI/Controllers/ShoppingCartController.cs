@@ -129,9 +129,9 @@ namespace ServiceAPI.Controllers
                         };
 
                         // Construct endpoint URL 
-                        var endpoint = $"{product.OEM}/{product.CarPartName}/{product.CarVINNumber}";
+                        var endpoint = $"{product.OEM}/{product.CarPartID}/{product.CarID}";
                         // https://localhost:7134/api/Products/OEM/carPartName/carVINNumber
-                        var response = await client.PutAsJsonAsync($"{product.OEM}/{product.CarPartName}/{product.CarVINNumber}", productViewModel);
+                        var response = await client.PutAsJsonAsync($"{product.OEM}/{product.CarPartID}/{product.CarID}", productViewModel);
 
                     }
                 }

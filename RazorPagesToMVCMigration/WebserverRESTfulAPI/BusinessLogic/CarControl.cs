@@ -15,34 +15,6 @@ namespace ServiceAPI.BusinessLogic
             _dbCarAccess = dbCarAccess;
         }
 
-        public List<Car> GetAllCars()
-        {
-            List<Car> allCars = new List<Car>();
-            try
-            {
-                allCars = _dbCarAccess.GetAllEntities();
-            }
-            catch (Exception ex)
-            {
-                allCars = null;
-                Debug.WriteLine(ex.Message);
-            }
-            return allCars;
-        }
-
-        public Car GetCarByID(int ID)
-        {
-            Car carPlaceholder = null;
-            try
-            {
-                carPlaceholder = _dbCarAccess.GetByIdentifier(ID);
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.Message);
-            }
-            return carPlaceholder;
-        }
 
         public bool AddCar(Car car)
         {
@@ -92,6 +64,35 @@ namespace ServiceAPI.BusinessLogic
                 Debug.WriteLine(ex.Message);
             }
             return wasCarInserted;
+        }
+
+        public List<Car> GetAllCars()
+        {
+            List<Car> allCars = new List<Car>();
+            try
+            {
+                allCars = _dbCarAccess.GetAllEntities();
+            }
+            catch (Exception ex)
+            {
+                allCars = null;
+                Debug.WriteLine(ex.Message);
+            }
+            return allCars;
+        }
+
+        public Car GetCarByID(int ID)
+        {
+            Car carPlaceholder = null;
+            try
+            {
+                carPlaceholder = _dbCarAccess.GetByIdentifier(ID);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+            }
+            return carPlaceholder;
         }
 
         public bool UpdateCar(Car car)
