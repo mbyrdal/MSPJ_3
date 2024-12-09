@@ -17,14 +17,16 @@ namespace BrowserWebPage.Controllers
         private readonly DbHelper _dbHelper;
         private string _connectionString;
         private readonly IProductControl _productControl;
+        private readonly ICarPartControl _carPartControl;
 
-        public HomeController(ILogger<HomeController> logger, IConfiguration configuration, IProductControl productControl)
+        public HomeController(ILogger<HomeController> logger, IConfiguration configuration, IProductControl productControl, ICarPartControl carPartControl)
         {
             _logger = logger;
             _dbHelper = new DbHelper(configuration);
             ConnectionHelper helper = new ConnectionHelper(configuration);
             _connectionString = helper.GetDBConnectionString();
             _productControl = productControl;
+            _carPartControl = carPartControl;
         }
 
         public IActionResult Index()
@@ -37,7 +39,21 @@ namespace BrowserWebPage.Controllers
             // Initial list of products to display when the page loads (optional)
             List<Product> productList = new List<Product>(); // Fetch actual data here
             productList = _productControl.GetAllProducts();
-            return View("~/Views/Inventory/Inventory.cshtml", productList);
+
+            List<ProductInventoryViewModel> products = new List<ProductInventoryViewModel>();
+            products = productList.Select(product => new ProductInventoryViewModel
+            {
+                ID = product.ID,
+                Name = _carPartControl.GetCarPartName(product.CarPartID),
+                OEM = product.OEM,
+                Price = product.Price,
+                Condition = product.Condition,
+                ItemDescription = product.ItemDescription,
+                ItemAvailable = product.ItemAvailable
+            }).ToList();
+
+
+            return View("~/Views/Inventory/Inventory.cshtml", products);
         }
 
         public IActionResult CreateAccount()

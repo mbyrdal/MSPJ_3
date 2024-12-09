@@ -10,10 +10,12 @@ namespace ServiceAPI.BusinessLogic
     public class CarPartControl : ICarPartControl
     {
         private readonly DbCarPart _dbCarPartAccess;
+        private readonly DbProduct _dbProductAccess;
 
-        public CarPartControl(DbCarPart dbCarPartAccess)
+        public CarPartControl(DbCarPart dbCarPartAccess, DbProduct dbProductAccess)
         {
             _dbCarPartAccess = dbCarPartAccess;
+            _dbProductAccess = dbProductAccess;
         }
 
         public bool AddCarPart(CarPart carPart)
@@ -51,7 +53,7 @@ namespace ServiceAPI.BusinessLogic
                 carPartExists = _dbCarPartAccess.CarPartExists(carPart.ID);
                 if (carPartExists) // CASE: CarPart does exist in DB --> Cannot be created
                 {
-                    throw new InvalidOperationException($"A car part with the ID '{carPart.ID}' and name '{carPart.Name}' already exists in the CarModel table.");
+                    throw new InvalidOperationException($"A car part with the ID '{carPart.ID}' and already exists in the CarPart table.");
                 }
 
                 // Car does not exist
@@ -95,6 +97,20 @@ namespace ServiceAPI.BusinessLogic
             return carPartPlaceholder;
         }
 
+        public string GetCarPartName(int ID)
+        {
+            string tempName = "";
+            try
+            {
+                tempName = _dbProductAccess.GetProductNameByID(ID);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine (ex.Message);
+            }
+            return tempName;
+        }
+
         public bool UpdateCarPart(CarPart carPart)
         {
             bool carPartExists = false;
@@ -105,7 +121,7 @@ namespace ServiceAPI.BusinessLogic
                 carPartExists = _dbCarPartAccess.CarPartExists(carPart.ID);
                 if (!carPartExists) // CASE: Car does not exist in DB --> Cannot be updated
                 {
-                    throw new InvalidOperationException($"A car part with the ID '{carPart.ID}' does not exist in the Customer table.");
+                    throw new InvalidOperationException($"A car part with the ID '{carPart.ID}' does not exist in the CarPart table.");
                 }
 
                 // CarModel does exist

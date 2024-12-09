@@ -153,11 +153,11 @@ namespace ServiceAPI.DatabaseAccess
                     conn.Open();
                     using (SqlCommand updateCommand = new SqlCommand(
                         "UPDATE CarPart " +
-                        "SET ID=@ID, CarID=@CarID, Name=@Name, Notes=@Notes " +
-                        "WHERE ID=@ID", conn))
+                        "SET Name=@Name, Notes=@Notes " +
+                        "WHERE ID=@ID AND CarTemplateID = @CarTemplateID", conn))
                     {
                         updateCommand.Parameters.AddWithValue("@ID", updateCarPart.ID);
-                        updateCommand.Parameters.AddWithValue("@CarID", updateCarPart.CarID);
+                        updateCommand.Parameters.AddWithValue("@CarTemplateID", updateCarPart.CarID);
                         updateCommand.Parameters.AddWithValue("@Name", updateCarPart.Name);
                         updateCommand.Parameters.AddWithValue("@Notes", updateCarPart.Notes);
 
