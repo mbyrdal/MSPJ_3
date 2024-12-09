@@ -18,21 +18,30 @@
         <tbody>
             @foreach (var item in Model.Items)
             {
-                <tr>                    
+                <tr>
+                    <td>@item.CarPartID</td>
                     <td>@item.OEM</td>
                     <td>@item.Price.ToString("C")</td>
                     <td>@item.Condition</td>
                     <td>@item.ItemDescription</td>
                     <td>
-                        <button onclick="removeFromCart(@item.ID)">Remove</button>
+                        <form method="post" asp-action="RemoveFromCart" asp-route-productId="@item.ID">
+                            <button type="submit" class="btn btn-danger">Remove</button>
+                        </form>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
     <h2>Total: @Model.TotalPrice.ToString("C")</h2>
-    <button onclick="clearCart()">Clear Cart</button>
-    <button onclick="checkout()">Check Out</button>
+
+    <form method="post" asp-action="ClearCart">
+        <button type="submit" class="btn btn-secondary">Clear Cart</button>
+    </form>
+
+    <form method="post" asp-action="CheckOut">
+        <button type="submit" class="btn btn-primary">Check Out</button>
+    </form>
 }
 else
 {
