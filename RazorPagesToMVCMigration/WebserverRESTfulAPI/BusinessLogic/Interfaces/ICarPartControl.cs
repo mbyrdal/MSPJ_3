@@ -7,10 +7,11 @@ namespace ServiceAPI.BusinessLogic.Interfaces
     {
         CarPart GetCarPartByID(int ID);
         List<CarPart> GetAllCarParts();
-        bool AddCarPart(CarPart model);
-        bool AddCarPartDTO(CarPartViewModel model);
-        bool UpdateCarPart(CarPart model);
-        bool UpdateCarPartDTO(CarPartViewModel model);
+        bool AddCarPart(CarPart carPart);
+        bool AddCarPartDTO(CarPartViewModel carPart);
+        bool UpdateCarPart(CarPart carPart);
+        bool UpdateCarPartDTO(CarPartViewModel carPart);
         bool DeleteCarPart(int ID);
+        string GetCarPartName(int ID);
     }
 }

@@ -321,5 +321,59 @@ namespace ServiceAPI.DatabaseAccess
             }
             return 0; // Only returns 0 if there does not exist a product with the given OEM
         }
+
+        internal string GetProductNameByID(int id)
+        {
+            try
+            {
+                using(SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    string nameSelectorQuery = $"SELECT Name FROM CarPart WHERE ID = @CarPartID";
+                    using(SqlCommand getNameCommand = new SqlCommand(nameSelectorQuery, conn))
+                    {
+                        getNameCommand.Parameters.AddWithValue("@CarPartID", id);
+                        var tempName = getNameCommand.ExecuteScalar();
+                        if(tempName != null && !string.IsNullOrWhiteSpace(tempName.ToString()))
+                        {
+                            return tempName.ToString();
+                        }
+                    }
+                    conn.Close();
+                }
+            }
+            catch (SqlException ex)
+            {
+                Debug.WriteLine($"An SQL error has likely occurred: {ex.Message}.");
+            }
+            return "";
+        }
+
+        internal string GetProductVINNumberByID(int id)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    string vinSelectorQuery = $"SELECT VINNumber FROM Car WHERE ID = @CarID";
+                    using (SqlCommand getVinCommand = new SqlCommand(vinSelectorQuery, conn))
+                    {
+                        getVinCommand.Parameters.AddWithValue("@CarID", id);
+                        var tempVin = getVinCommand.ExecuteScalar();
+                        if (tempVin != null && !string.IsNullOrWhiteSpace(tempVin.ToString()))
+                        {
+                            return tempVin.ToString();
+                        }
+                    }
+                    conn.Close();
+                }
+            }
+            catch (SqlException ex)
+            {
+                Debug.WriteLine($"An SQL error has likely occurred: {ex.Message}.");
+            }
+            return "";
+        }
     }
 }

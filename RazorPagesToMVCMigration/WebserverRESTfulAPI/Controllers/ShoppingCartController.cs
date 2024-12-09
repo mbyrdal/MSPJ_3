@@ -119,7 +119,8 @@ namespace ServiceAPI.Controllers
 
                     foreach (var product in cart.Items)
                     {
-                        var carPartName = _productControl;
+                        var productName = _dbProduct.GetProductNameByID(product.ID);
+                        var productVin = _dbProduct.GetProductVINNumberByID(product.ID);
 
                         // Prepare the payload
                         var productViewModel = new ProductViewModel
@@ -129,10 +130,8 @@ namespace ServiceAPI.Controllers
                         };
 
                         // Construct endpoint URL 
-                        var endpoint = $"{product.OEM}/{product.CarPartName}/{product.CarVINNumber}";
-                        // https://localhost:7134/api/Products/OEM/carPartName/carVINNumber
-                        var response = await client.PutAsJsonAsync($"{product.OEM}/{product.CarPartName}/{product.CarVINNumber}", productViewModel);
-
+                        var endpoint = $"{product.OEM}/{productName}/{productVin}";
+                        var response = await client.PutAsJsonAsync($"{product.OEM}/{productName}/{productVin}", productViewModel);
                     }
                 }
                 // After processing, clear the cart

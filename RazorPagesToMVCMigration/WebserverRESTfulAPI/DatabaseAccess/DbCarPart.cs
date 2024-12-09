@@ -94,6 +94,26 @@ namespace ServiceAPI.DatabaseAccess
             return numberOfRowsInserted;
         }
 
+        public int CreateEntityDTO(CarPartViewModel newCarPart)
+        {
+            int numberOfRowsInserted;
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                conn.Open();
+                using (SqlCommand createCommand = new SqlCommand(
+                    "INSERT INTO CarPart (CarID, Name, Notes) " +
+                    "VALUES (@CarID, @Name, @Notes)", conn))
+                {
+                    createCommand.Parameters.AddWithValue("@CarID", newCarPart.CarID);
+                    createCommand.Parameters.AddWithValue("@Model", newCarPart.Name);
+                    createCommand.Parameters.AddWithValue("@CarType", newCarPart.Notes);
+                    numberOfRowsInserted = createCommand.ExecuteNonQuery();
+                }
+                conn.Close();
+            }
+            return numberOfRowsInserted;
+        }
+
         public int UpdateEntity(CarPart updateCarPart)
         {
             int numberOfRowsUpdated = 0;
@@ -109,6 +129,35 @@ namespace ServiceAPI.DatabaseAccess
                     {
                         updateCommand.Parameters.AddWithValue("@ID", updateCarPart.ID);
                         updateCommand.Parameters.AddWithValue("@CarID", updateCarPart.CarID);
+                        updateCommand.Parameters.AddWithValue("@Name", updateCarPart.Name);
+                        updateCommand.Parameters.AddWithValue("@Notes", updateCarPart.Notes);
+
+                        numberOfRowsUpdated = updateCommand.ExecuteNonQuery();
+                    }
+                }
+                catch (SqlException ex)
+                {
+                    Console.WriteLine($"SQL error occurred: {ex.Message}");
+                }
+                return numberOfRowsUpdated;
+            }
+        }
+
+        public int UpdateEntityDTO(CarPartViewModel updateCarPart)
+        {
+            int numberOfRowsUpdated = 0;
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                try
+                {
+                    conn.Open();
+                    using (SqlCommand updateCommand = new SqlCommand(
+                        "UPDATE CarPart " +
+                        "SET Name=@Name, Notes=@Notes " +
+                        "WHERE ID=@ID AND CarTemplateID = @CarTemplateID", conn))
+                    {
+                        updateCommand.Parameters.AddWithValue("@ID", updateCarPart.ID);
+                        updateCommand.Parameters.AddWithValue("@CarTemplateID", updateCarPart.CarID);
                         updateCommand.Parameters.AddWithValue("@Name", updateCarPart.Name);
                         updateCommand.Parameters.AddWithValue("@Notes", updateCarPart.Notes);
 
