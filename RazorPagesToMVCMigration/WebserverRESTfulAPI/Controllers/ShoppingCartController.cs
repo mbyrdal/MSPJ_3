@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using ServiceAPI.BusinessLogic;
 using ServiceAPI.DatabaseAccess;
 using ServiceAPI.DTOs;
 using ServiceAPI.Models;
@@ -13,9 +14,12 @@ namespace ServiceAPI.Controllers
 
         private readonly DbProduct _dbProduct;
 
-        public ShoppingCartController(DbProduct dbProduct)
+        private readonly ProductControl _productControl;
+
+        public ShoppingCartController(DbProduct dbProduct, ProductControl productControl)
         {
             _dbProduct = dbProduct;
+            _productControl = productControl;
         }
 
         // Display the shopping cart
@@ -102,14 +106,35 @@ namespace ServiceAPI.Controllers
         }
 
         // Checkout
-        public IActionResult CheckOut()
+        public async Task<IActionResult> CheckOut()
         {
             var cart = HttpContext.Session.GetObjectFromJSON<ShoppingCart>(CartSessionKey);
 
             if (cart != null && cart.Items?.Count > 0)
             {
                 // Handle order processing here (e.g., save to database)
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri("https://localhost:7134/api/Products/");
 
+                    foreach (var product in cart.Items)
+                    {
+                        var carPartName = _productControl;
+
+                        // Prepare the payload
+                        var productViewModel = new ProductViewModel
+                        {
+                            OEM = product.OEM,
+                            ItemAvailable = false // Mark as sold
+                        };
+
+                        // Construct endpoint URL 
+                        var endpoint = $"{product.OEM}/{product.CarPartName}/{product.CarVINNumber}";
+                        // https://localhost:7134/api/Products/OEM/carPartName/carVINNumber
+                        var response = await client.PutAsJsonAsync($"{product.OEM}/{product.CarPartName}/{product.CarVINNumber}", productViewModel);
+
+                    }
+                }
                 // After processing, clear the cart
                 HttpContext.Session.Remove(CartSessionKey);
 

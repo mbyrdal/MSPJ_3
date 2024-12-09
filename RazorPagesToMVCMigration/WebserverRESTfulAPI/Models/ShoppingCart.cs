@@ -9,7 +9,7 @@ namespace ServiceAPI.Models
 
         [Key]
 
-        public int ItemDesctiption { get; set; }
+        public int ItemDescription { get; set; }
 
         [Required]
         public List<Product> Items { get; set; }
