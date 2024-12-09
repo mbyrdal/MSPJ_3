@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace ClientDesktop
 {
-    public partial class DesktopMainPage : Form
+    public partial class DesktopMainForm : Form
     {
-        public DesktopMainPage()
+        public DesktopMainForm()
         {
             InitializeComponent();
         }
@@ -22,8 +22,9 @@ namespace ClientDesktop
 
         }
 
-        
+        private void buttonRemoveProduct_Click(object sender, EventArgs e)
+        {
 
-        
+        }
     }
 }

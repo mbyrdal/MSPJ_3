@@ -46,23 +46,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DesktopMainPage.cs">
+    <Compile Include="DesktopMainForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="DesktopMainPage.Designer.cs">
-      <DependentUpon>DesktopMainPage.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ErrorForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ErrorForm.Designer.cs">
-      <DependentUpon>ErrorForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="AdminDesktop.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="AdminDesktop.Designer.cs">
-      <DependentUpon>AdminDesktop.cs</DependentUpon>
+    <Compile Include="DesktopMainForm.Designer.cs">
+      <DependentUpon>DesktopMainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="ProductDetailsForm.cs">
       <SubType>Form</SubType>
@@ -70,37 +58,13 @@
     <Compile Include="ProductDetailsForm.Designer.cs">
       <DependentUpon>ProductDetailsForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="LoginForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="LoginForm.Designer.cs">
-      <DependentUpon>LoginForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="PaymentForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="PaymentForm.Designer.cs">
-      <DependentUpon>PaymentForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="AdminDesktop.resx">
-      <DependentUpon>AdminDesktop.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="DesktopMainPage.resx">
-      <DependentUpon>DesktopMainPage.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ErrorForm.resx">
-      <DependentUpon>ErrorForm.cs</DependentUpon>
+    <EmbeddedResource Include="DesktopMainForm.resx">
+      <DependentUpon>DesktopMainForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ProductDetailsForm.resx">
       <DependentUpon>ProductDetailsForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="LoginForm.resx">
-      <DependentUpon>LoginForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="PaymentForm.resx">
-      <DependentUpon>PaymentForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
