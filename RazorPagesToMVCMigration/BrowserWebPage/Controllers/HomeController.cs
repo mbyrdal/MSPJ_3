@@ -96,6 +96,86 @@ namespace BrowserWebPage.Controllers
             }
 
             return searchResults;
-        }       
+        }
+
+        [HttpGet]
+        public IActionResult ShoppingCart()
+        {
+            var cart = HttpContext.Session.GetObjectFromJSON<ShoppingCart>("Cart") ?? new ShoppingCart();
+            return View(cart);
+        }
+
+        [HttpPost]
+        public IActionResult AddToCart(int productId)
+        {
+            var cart = HttpContext.Session.GetObjectFromJSON<ShoppingCart>("Cart") ?? new ShoppingCart();
+
+            // Fetch a product using its ID (replace this with actual database logic)
+            var product = new Product
+            {
+                ID = productId,
+                CarPartID = 101,
+                CarID = 202,
+                OEM = "OEM123",
+                Price = 100.50m,
+                DateAvailable = DateTime.Now,
+                Condition = "New",
+                ItemDescription = "High-quality car part",
+                ItemAvailable = true
+            };
+
+            cart.Items.Add(product);
+            cart.TotalPrice = cart.Items.Sum(item => item.Price);
+            HttpContext.Session.SetObjectAsJSON("Cart", cart);
+
+            return RedirectToAction("ShoppingCart");
+        }
+
+        [HttpPost]
+        public IActionResult RemoveFromCart(int productId)
+        {
+            var cart = HttpContext.Session.GetObjectFromJSON<ShoppingCart>("Cart");
+
+            if (cart != null)
+            {
+                var product = cart.Items.FirstOrDefault(p => p.ID == productId);
+                if (product != null)
+                {
+                    cart.Items.Remove(product);
+                    cart.TotalPrice = cart.Items.Sum(item => item.Price);
+                    HttpContext.Session.SetObjectAsJSON("Cart", cart);
+                }
+            }
+
+            return RedirectToAction("ShoppingCart");
+        }
+
+        [HttpPost]
+        public IActionResult ClearCart()
+        {
+            HttpContext.Session.Remove("Cart");
+            return RedirectToAction("ShoppingCart");
+        }
+
+        [HttpPost]
+        public IActionResult CheckOut()
+        {
+            var cart = HttpContext.Session.GetObjectFromJSON<ShoppingCart>("Cart");
+
+            if (cart != null && cart.Items.Any())
+            {
+                // Process the checkout (e.g., save the order to a database)
+                HttpContext.Session.Remove("Cart");
+                return RedirectToAction("OrderConfirmation");
+            }
+
+            TempData["Error"] = "Your cart is empty!";
+            return RedirectToAction("ShoppingCart");
+        }
+
+        public IActionResult OrderConfirmation()
+        {
+            return View();
+        }
     }
 }
