@@ -169,7 +169,7 @@ namespace ServiceAPI.DatabaseAccess
                                                                      "SET OEM=@OEM, " +
                                                                      "Price=@Price, DateAvailable=@DateAvailable, Condition=@Condition, " +
                                                                      "ItemDescription=@ItemDescription, ItemAvailable=@ItemAvailable " +
-                                                                     "WHERE ID = @ID AND CarPartID = @CarPartID AND CarID = @CarID AND ItemAvailable = True", conn))
+                                                                     "WHERE ID = @ID AND CarPartID = @CarPartID AND CarID = @CarID", conn))
                     {
                         // Mapping method input values to sql query input values
                         updateCommand.Parameters.AddWithValue("@ID", productID);
@@ -329,10 +329,10 @@ namespace ServiceAPI.DatabaseAccess
                 using(SqlConnection conn = new SqlConnection(_connectionString))
                 {
                     conn.Open();
-                    string nameSelectorQuery = $"SELECT Name FROM CarPart WHERE ID = @CarPartID";
+                    string nameSelectorQuery = $"SELECT CP.Name FROM Product P INNER JOIN CarPart CP ON P.CarPartID = CP.ID WHERE P.ID = @ProductID";
                     using(SqlCommand getNameCommand = new SqlCommand(nameSelectorQuery, conn))
                     {
-                        getNameCommand.Parameters.AddWithValue("@CarPartID", id);
+                        getNameCommand.Parameters.AddWithValue("@ProductID", id);
                         var tempName = getNameCommand.ExecuteScalar();
                         if(tempName != null && !string.IsNullOrWhiteSpace(tempName.ToString()))
                         {
@@ -356,10 +356,10 @@ namespace ServiceAPI.DatabaseAccess
                 using (SqlConnection conn = new SqlConnection(_connectionString))
                 {
                     conn.Open();
-                    string vinSelectorQuery = $"SELECT VINNumber FROM Car WHERE ID = @CarID";
+                    string vinSelectorQuery = $"SELECT C.VINNumber FROM Product P INNER JOIN Car C ON P.CarID = C.ID WHERE P.ID = @ProductID";
                     using (SqlCommand getVinCommand = new SqlCommand(vinSelectorQuery, conn))
                     {
-                        getVinCommand.Parameters.AddWithValue("@CarID", id);
+                        getVinCommand.Parameters.AddWithValue("@ProductID", id);
                         var tempVin = getVinCommand.ExecuteScalar();
                         if (tempVin != null && !string.IsNullOrWhiteSpace(tempVin.ToString()))
                         {

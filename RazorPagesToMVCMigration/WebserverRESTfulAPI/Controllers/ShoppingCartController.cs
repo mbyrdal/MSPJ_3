@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ServiceAPI.BusinessLogic;
+using ServiceAPI.BusinessLogic.Interfaces;
 using ServiceAPI.DatabaseAccess;
 using ServiceAPI.DTOs;
 using ServiceAPI.Models;
@@ -14,9 +15,9 @@ namespace ServiceAPI.Controllers
 
         private readonly DbProduct _dbProduct;
 
-        private readonly ProductControl _productControl;
+        private readonly IProductControl _productControl;
 
-        public ShoppingCartController(DbProduct dbProduct, ProductControl productControl)
+        public ShoppingCartController(DbProduct dbProduct, IProductControl productControl)
         {
             _dbProduct = dbProduct;
             _productControl = productControl;
@@ -126,6 +127,10 @@ namespace ServiceAPI.Controllers
                         var productViewModel = new ProductViewModel
                         {
                             OEM = product.OEM,
+                            Price = product.Price,
+                            DateAvailable = product.DateAvailable,
+                            Condition = product.Condition,
+                            ItemDescription = product.ItemDescription,
                             ItemAvailable = false // Mark as sold
                         };
 
