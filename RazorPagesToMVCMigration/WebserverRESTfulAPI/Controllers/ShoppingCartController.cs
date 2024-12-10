@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using ServiceAPI.BusinessLogic;
+using ServiceAPI.BusinessLogic.Interfaces;
 using ServiceAPI.DatabaseAccess;
 using ServiceAPI.DTOs;
 using ServiceAPI.Models;
@@ -13,9 +15,12 @@ namespace ServiceAPI.Controllers
 
         private readonly DbProduct _dbProduct;
 
-        public ShoppingCartController(DbProduct dbProduct)
+        private readonly IProductControl _productControl;
+
+        public ShoppingCartController(DbProduct dbProduct, IProductControl productControl)
         {
             _dbProduct = dbProduct;
+            _productControl = productControl;
         }
 
         // Display the shopping cart
@@ -102,14 +107,38 @@ namespace ServiceAPI.Controllers
         }
 
         // Checkout
-        public IActionResult CheckOut()
+        public async Task<IActionResult> CheckOut()
         {
             var cart = HttpContext.Session.GetObjectFromJSON<ShoppingCart>(CartSessionKey);
 
             if (cart != null && cart.Items?.Count > 0)
             {
                 // Handle order processing here (e.g., save to database)
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri("https://localhost:7134/api/Products/");
 
+                    foreach (var product in cart.Items)
+                    {
+                        var productName = _dbProduct.GetProductNameByID(product.ID);
+                        var productVin = _dbProduct.GetProductVINNumberByID(product.ID);
+
+                        // Prepare the payload
+                        var productViewModel = new ProductViewModel
+                        {
+                            OEM = product.OEM,
+                            Price = product.Price,
+                            DateAvailable = product.DateAvailable,
+                            Condition = product.Condition,
+                            ItemDescription = product.ItemDescription,
+                            ItemAvailable = false // Mark as sold
+                        };
+
+                        // Construct endpoint URL 
+                        var endpoint = $"{product.OEM}/{productName}/{productVin}";
+                        var response = await client.PutAsJsonAsync($"{product.OEM}/{productName}/{productVin}", productViewModel);
+                    }
+                }
                 // After processing, clear the cart
                 HttpContext.Session.Remove(CartSessionKey);
 

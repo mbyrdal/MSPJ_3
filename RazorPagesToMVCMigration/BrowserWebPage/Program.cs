@@ -69,7 +69,9 @@ builder.Services.AddSession(options =>
 
 // Other service registrations (DbProduct, ProductControl, etc.)
 builder.Services.AddScoped<DbProduct>();
+builder.Services.AddScoped<DbCarPart>();
 builder.Services.AddScoped<IProductControl, ProductControl>();
+builder.Services.AddScoped<ICarPartControl, CarPartControl>();
 
 var app = builder.Build();
 

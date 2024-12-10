@@ -152,6 +152,7 @@ namespace ServiceAPI.BusinessLogic
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.Message);
+                throw ex;
             }
             return wasProductUpdated;
         }
