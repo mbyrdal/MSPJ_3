@@ -6,7 +6,7 @@ public class ShoppingCartControl
 {
     private readonly ShoppingCart _cart;
 
-    /*public ShoppingCartControl()
+    public ShoppingCartControl()
     {
         // Initialize cart
         _cart = SessionHelper.GetObjectFromJSON<ShoppingCart>("Cart") ?? new ShoppingCart();
@@ -40,6 +40,6 @@ public class ShoppingCartControl
         _cart.Items.Clear();
         _cart.TotalPrice = 0;
         SessionHelper.SetObjectAsJSON("Cart", _cart);
-    }*/
+    }
 }
     
