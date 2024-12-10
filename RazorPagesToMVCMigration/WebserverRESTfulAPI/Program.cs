@@ -74,12 +74,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddScoped<DbProduct>();
-builder.Services.AddScoped<DbCustomer>();
+builder.Services.AddScoped<DbCarPart>();
 builder.Services.AddScoped<DbCar>();
 builder.Services.AddScoped<DbCarTemplate>();
 
 builder.Services.AddScoped<IProductControl, ProductControl>();
-builder.Services.AddScoped<ICustomerControl, CustomerControl>();
+builder.Services.AddScoped<ICarPartControl, CarPartControl>();
 builder.Services.AddScoped<ICarControl, CarControl>();
 builder.Services.AddScoped<ICarTemplateControl, CarTemplateControl>();
 
