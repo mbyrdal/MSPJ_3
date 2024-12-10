@@ -16,8 +16,10 @@
             @foreach (var item in Model.Items)
             {
                 <tr>
-                    <td>@item.CarPartID</td>
-                    <td>@item.Price</td>
+                    <td>@item.OEM</td>
+                    <td>@item.Price.ToString("C")</td>
+                    <td>@item.Condition</td>
+                    <td>@item.ItemDescription</td>
                     <td>
                         <form method="post" action="@Url.Action("RemoveFromCart", "ShoppingCart", new { productID = item.ID })">
                             <button type="submit">Remove</button>
