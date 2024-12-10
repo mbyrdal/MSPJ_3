@@ -404,3 +404,7 @@ FodyWeavers.xsd
 /RazorPagesToMVCMigration/WebserverRESTfulAPI/bin
 /RazorPagesToMVCMigration/BrowserWebPage/bin
 /RazorPagesToMVCMigration/BrowserWebPage/bin
+RazorPagesToMVCMigration/WebserverRESTfulAPI/bin/Debug/net8.0/ServiceAPI.exe
+RazorPagesToMVCMigration/WebserverRESTfulAPI/bin/Debug/net8.0/ServiceAPI.dll
+RazorPagesToMVCMigration/WebserverRESTfulAPI/bin/Debug/net8.0/ServiceAPI.deps.json
+RazorPagesToMVCMigration/TestingEnvironment/bin/Debug/net8.0/.msCoverageSourceRootsMapping_MSPJ.TestingEnvironment

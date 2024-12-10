@@ -48,19 +48,18 @@ namespace ServiceAPI.Controllers
                 {
                     cart.Items.Add(product); // Add product to cart
 
-                    // Update product availability
-                    product.ItemAvailable = false;
-
                     // Convert Product to ProductViewModel for updating
                     var productViewModel = new ProductViewModel
                     {
                         ID = product.ID,
+                        CarPartID = product.CarPartID,
+                        CarID = product.CarID,
                         OEM = product.OEM,
                         Price = product.Price,
                         DateAvailable = product.DateAvailable,
                         Condition = product.Condition,
                         ItemDescription = product.ItemDescription,
-                        ItemAvailable = product.ItemAvailable
+                        ItemAvailable = false
                     };
 
                     // Call UpdateEntity with the correct ViewModel
@@ -107,7 +106,7 @@ namespace ServiceAPI.Controllers
         }
 
         // Checkout
-        public async Task<IActionResult> CheckOut()
+        public IActionResult CheckOut()
         {
             var cart = HttpContext.Session.GetObjectFromJSON<ShoppingCart>(CartSessionKey);
 
@@ -124,7 +123,7 @@ namespace ServiceAPI.Controllers
                         var productVin = _dbProduct.GetProductVINNumberByID(product.ID);
 
                         // Prepare the payload
-                        var productViewModel = new ProductViewModel
+                        var productViewModel = new ProductInventoryViewModel
                         {
                             OEM = product.OEM,
                             Price = product.Price,
@@ -136,7 +135,7 @@ namespace ServiceAPI.Controllers
 
                         // Construct endpoint URL 
                         var endpoint = $"{product.OEM}/{productName}/{productVin}";
-                        var response = await client.PutAsJsonAsync($"{product.OEM}/{productName}/{productVin}", productViewModel);
+                        var response = client.PutAsJsonAsync($"{product.OEM}/{productName}/{productVin}", productViewModel);
                     }
                 }
                 // After processing, clear the cart
