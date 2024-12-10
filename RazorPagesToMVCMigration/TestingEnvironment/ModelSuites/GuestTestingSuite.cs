@@ -1,6 +1,6 @@
 ﻿namespace MSPJ.TestingEnvironment.ModelSuites
 {   /// Alt skal ændres inde i denne fil, det er kun kopieret indtil videre
-    // Til Shemon: Vi arbejder med Customers, og de har kun et unikt ID som attribute.
+    // Vi arbejder med Customers, og de har kun et unikt ID som attribute.
     // Lav evt. nogle tests og edge cases, hvor:
 
     //          - Customer object creation.

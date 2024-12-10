@@ -169,7 +169,7 @@ namespace ServiceAPI.DatabaseAccess
                                                                      "SET OEM=@OEM, " +
                                                                      "Price=@Price, DateAvailable=@DateAvailable, Condition=@Condition, " +
                                                                      "ItemDescription=@ItemDescription, ItemAvailable=@ItemAvailable " +
-                                                                     "WHERE ID = @ID AND CarPartID = @CarPartID AND CarID = @CarID AND ItemAvailable = True", conn))
+                                                                     "WHERE ID = @ID AND CarPartID = @CarPartID AND CarID = @CarID", conn))
                     {
                         // Mapping method input values to sql query input values
                         updateCommand.Parameters.AddWithValue("@ID", productID);
@@ -320,6 +320,60 @@ namespace ServiceAPI.DatabaseAccess
                 Debug.WriteLine($"An error has occurred: {ex.Message}");
             }
             return 0; // Only returns 0 if there does not exist a product with the given OEM
+        }
+
+        internal string GetProductNameByID(int id)
+        {
+            try
+            {
+                using(SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    string nameSelectorQuery = $"SELECT CP.Name FROM Product P INNER JOIN CarPart CP ON P.CarPartID = CP.ID WHERE P.ID = @ProductID";
+                    using(SqlCommand getNameCommand = new SqlCommand(nameSelectorQuery, conn))
+                    {
+                        getNameCommand.Parameters.AddWithValue("@ProductID", id);
+                        var tempName = getNameCommand.ExecuteScalar();
+                        if(tempName != null && !string.IsNullOrWhiteSpace(tempName.ToString()))
+                        {
+                            return tempName.ToString();
+                        }
+                    }
+                    conn.Close();
+                }
+            }
+            catch (SqlException ex)
+            {
+                Debug.WriteLine($"An SQL error has likely occurred: {ex.Message}.");
+            }
+            return "";
+        }
+
+        internal string GetProductVINNumberByID(int id)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    string vinSelectorQuery = $"SELECT C.VINNumber FROM Product P INNER JOIN Car C ON P.CarID = C.ID WHERE P.ID = @ProductID";
+                    using (SqlCommand getVinCommand = new SqlCommand(vinSelectorQuery, conn))
+                    {
+                        getVinCommand.Parameters.AddWithValue("@ProductID", id);
+                        var tempVin = getVinCommand.ExecuteScalar();
+                        if (tempVin != null && !string.IsNullOrWhiteSpace(tempVin.ToString()))
+                        {
+                            return tempVin.ToString();
+                        }
+                    }
+                    conn.Close();
+                }
+            }
+            catch (SqlException ex)
+            {
+                Debug.WriteLine($"An SQL error has likely occurred: {ex.Message}.");
+            }
+            return "";
         }
     }
 }
