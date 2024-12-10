@@ -59,11 +59,8 @@ namespace ServiceAPI.Controllers
                         DateAvailable = product.DateAvailable,
                         Condition = product.Condition,
                         ItemDescription = product.ItemDescription,
-                        ItemAvailable = false
+                        ItemAvailable = product.ItemAvailable
                     };
-
-                    // Call UpdateEntity with the correct ViewModel
-                    _dbProduct.UpdateEntity(productViewModel, productViewModel.ID, productViewModel.CarPartID, productViewModel.CarID); // Update product availability in the database
                 }
 
                 // Update the total price of the cart
@@ -74,28 +71,6 @@ namespace ServiceAPI.Controllers
             }
 
             return RedirectToAction("Index", "ShoppingCart"); // Redirect to the cart page
-        }
-
-
-
-        // Remove a product from the cart
-        [HttpDelete]
-        public JsonResult RemoveFromCart(int productID)
-        {
-            var cart = HttpContext.Session.GetObjectFromJSON<ShoppingCart>(CartSessionKey);
-
-            if (cart?.Items != null)
-            {
-                var productToRemove = cart.Items.FirstOrDefault(i => i.ID == productID);
-                if (productToRemove != null)
-                {
-                    cart.Items.Remove(productToRemove);
-                    cart.TotalPrice = cart.Items.Sum(i => i.Price);
-                    HttpContext.Session.SetObjectAsJSON(CartSessionKey, cart);
-                }
-            }
-
-            return Json(new { success = true, message = "Product removed from cart", cart });
         }
 
         // Clear the cart
@@ -125,6 +100,10 @@ namespace ServiceAPI.Controllers
                         // Prepare the payload
                         var productViewModel = new ProductInventoryViewModel
                         {
+                            ID = product.ID,
+                            CarPartID = product.CarPartID,
+                            CarID = product.CarID,
+                            Name = productName,
                             OEM = product.OEM,
                             Price = product.Price,
                             DateAvailable = product.DateAvailable,
@@ -132,7 +111,9 @@ namespace ServiceAPI.Controllers
                             ItemDescription = product.ItemDescription,
                             ItemAvailable = false // Mark as sold
                         };
-
+                        // Call UpdateEntity with the correct ViewModel
+                        _dbProduct.UpdateEntity(productViewModel, productViewModel.ID, productViewModel.CarPartID, productViewModel.CarID); // Update product availability in the database
+                        
                         // Construct endpoint URL 
                         var endpoint = $"{product.OEM}/{productName}/{productVin}";
                         var response = client.PutAsJsonAsync($"{product.OEM}/{productName}/{productVin}", productViewModel);
@@ -152,6 +133,31 @@ namespace ServiceAPI.Controllers
         public IActionResult OrderConfirmation()
         {
             return View();
+        }
+
+        // Remove a product from the cart
+        [HttpPost]
+        public IActionResult RemoveFromCart(int productID)
+        {
+            var cart = HttpContext.Session.GetObjectFromJSON<ShoppingCart>(CartSessionKey);
+
+            if (cart?.Items != null)
+            {
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri("https://localhost:7134/api/Products/");
+                    var productToRemove = cart.Items.FirstOrDefault(i => i.ID == productID);
+
+                    if (productToRemove != null)
+                    {
+                        cart.Items.Remove(productToRemove);
+                        cart.TotalPrice = cart.Items.Sum(i => i.Price);
+                        HttpContext.Session.SetObjectAsJSON(CartSessionKey, cart);
+                    }
+                }
+            }
+            // Redirect back to the shopping cart page
+            return RedirectToAction(nameof(Index));
         }
     }
 }
