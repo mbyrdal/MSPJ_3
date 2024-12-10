@@ -1,0 +1,51 @@
+﻿@model ServiceAPI.DTOs.CustomerViewModel;
+
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="~/css/styles.css" />
+    <title>Account Details</title>
+</head>
+<body>
+    <header>
+        <img src="~/resources/images/Remove background project.png" alt="Huggerriget Logo" class="logo">
+        <h1>HUGGERRIGET</h1>
+        <p>I HYGGGER, VI HUGGER</p>
+    </header>
+
+    <main class="container">
+        <h2>Kontooplysninger</h2>
+
+        @if (TempData["Message"] != null)
+        {
+            <p class="success-message">@TempData["Message"]</p>
+        }
+
+        <form asp-action="Update" method="post" class="account-form">
+            <div class="form-group">
+                <label for="firstName">Fornavn:</label>
+                <input type="text" id="firstName" name="FirstName" value="@Model?.FirstName" />
+            </div>
+            <div class="form-group">
+                <label for="lastName">Efternavn:</label>
+                <input type="text" id="lastName" name="LastName" value="@Model?.LastName" />
+            </div>
+            <div class="form-group">
+                <label for="address">Adresse:</label>
+                <input type="text" id="address" name="Address" value="@Model?.Address" />
+            </div>
+            <div class="form-group">
+                <label for="phoneNum">Telefonnummer:</label>
+                <input type="text" id="phoneNum" name="PhoneNum" value="@Model?.PhoneNum" />
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="Email" value="@Model?.Email" />
+            </div>
+            <button type="submit" class="btn">Gem ændringer</button>
+        </form>
+    </main>
+</body>
+</html>

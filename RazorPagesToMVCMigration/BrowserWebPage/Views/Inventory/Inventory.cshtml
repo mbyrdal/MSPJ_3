@@ -1,0 +1,76 @@
+﻿@model List<ServiceAPI.DTOs.ProductInventoryViewModel>
+
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="~/css/styles.css" />
+</head>
+<body>
+    <header>
+        <img src="~/resources/images/Remove background project.png" alt="Huggerriget Logo" class="logo">
+        <h1>HUGGERRIGET</h1>
+        <p>I HYGGER, VI HUGGER</p>
+        <div class="top-links">
+            <a href="#">DNK / DK / DKK</a>
+            <a href="#">Log ind</a>
+        </div>
+    </header>
+
+    <main class="container">
+        <aside class="sidebar">
+            <h2>Hvad kigger du efter?</h2>
+            <ul>
+                <li><a href="#">Bil dele</a></li>
+                <li><a href="#">Lastbil dele</a></li>
+                <li><a href="#">Motorcykel- og scooterdele</a></li>
+                <li><a href="#">Autocamper & Campingvogn</a></li>
+                <li><a href="#">Dæk og fælge</a></li>
+                <li><a href="#">Andet</a></li>
+            </ul>
+        </aside>
+
+        <div class="content-area">
+            <!-- Main Search Section -->
+            <section class="search-section">
+                <h2>Søg reservedele</h2>
+                <form id="search-part" method="get">
+                    <input type="text" name="partName" placeholder="Reservedel" id="partNameSearch" />
+                    <button type="submit">Søg</button>
+                </form>
+            </section>
+
+            <!-- Search Results Table -->
+            <section class="search-result">
+                <h3>Lager</h3>
+                <div id="search-results-container">
+                    @Html.Partial("_SearchResults.cshtml", Model)
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script src="~/js/script.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            // When the search form is submitted
+            $('#search-part').on('submit', function (event) {
+                event.preventDefault();  // Prevent the form from submitting normally
+
+                var partName = $('#partNameSearch').val();  // Get the search term
+
+                $.ajax({
+                    url: '@Url.Action("SearchParts", "Home")',  // URL to send the request
+                    data: { partName: partName },  // Send the search term
+                    success: function (data) {
+                        // Update the search results container with the returned partial view
+                        $('#search-results-container').html(data);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

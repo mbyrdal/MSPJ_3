@@ -1,0 +1,154 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="~/css/styles.css" />
+    <title>@ViewData["Title"]</title>
+</head>
+<body>
+    <header>
+        <img src="~/resources/images/Remove background project.png" alt="Huggerriget Logo" class="logo"> <!-- LOGO location -->
+        <h1>HUGGERRIGET</h1>
+        <p>I HYGGGER, VI HUGGER</p>
+        <div class="top-links">
+            <a href="#">DNK / DK / DKK</a>
+            <a href="#">Log ind</a>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Sidebar Section -->
+        <aside class="sidebar">
+            <h2>Hvad kigger du efter?</h2>
+            <ul>
+                <li><a href="#">Bil dele</a></li>
+                <li><a href="#">Lastbil dele</a></li>
+                <li><a href="#">Motorcykel- og scooterdele</a></li>
+                <li><a href="#">Autocamper & Campingvogn</a></li>
+                <li><a href="#">Dæk og fælge</a></li>
+                <li><a href="#">Andet</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Search Section -->
+        <section class="search-section">
+            <h2>Søg reservedele</h2>
+            <form class="search-form">
+                <label for="country">Land:</label>
+                <select id="country" name="country">
+                    <option value="DK">Danmark</option>
+                </select>
+                <input type="text" name="regnr" placeholder="Indtast registreringsnummer" />
+                <button type="submit">Søg</button>
+            </form>
+
+            <div class="divider">Eller</div>
+
+            <div class="other-options">
+                <button>Vælg mærke og model</button>
+                <button>Søg del uden at vælge mærke</button>
+                <button>Afmonteret Køretøj</button>
+            </div>
+
+            <h3>Artikelnummer / Andre koder</h3>
+            <form class="code-search-form">
+                <label><input type="radio" name="codeType" value="OEM"> OEM nummer</label>
+                <label><input type="radio" name="codeType" value="Motorcode"> Motorkode</label>
+                <label><input type="radio" name="codeType" value="Gearcode"> Gearkasse kode</label>
+                <label><input type="radio" name="codeType" value="Part"> Del vare</label>
+                <input type="text" placeholder="Indtast din kode her">
+                <button type="submit">Søg</button>
+            </form>
+        </section>
+
+        <!-- Shopping Cart Section (New) -->
+        <section class="shopping-cart-section">
+            <h2>Din Kurv</h2>
+            <div id="cart-container">
+                @if (Model?.Items != null && Model.Items.Any())
+                {
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Produkt</th>
+                                <th>OEM</th>
+                                <th>Pris</th>
+                                <th>Condition</th>
+                                <th>Beskrivelse</th>
+                                <th>Handling</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Items)
+                            {
+                                <tr>
+                                    <td>@item.Name</td>
+                                    <td>@item.OEM</td>
+                                    <td>@item.Price.ToString("C")</td>
+                                    <td>@item.Condition</td>
+                                    <td>@item.ItemDescription</td>
+                                    <td>
+                                        <button onclick="removeFromCart(@item.ID)">Fjern</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                    <h3>Total: @Model.TotalPrice.ToString("C")</h3>
+                    <button onclick="clearCart()">Ryd Kurv</button>
+                    <button onclick="checkout()">Gå til Checkout</button>
+                }
+                else
+                {
+                    <p>Din kurv er tom!</p>
+                }
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        function addToCart(productId) {
+            const product = { ID: productId };
+            fetch('/ShoppingCart/AddToCart', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(product)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) alert(data.message);
+                    else alert("Failed to add product.");
+                });
+        }
+
+        function removeFromCart(productId) {
+            fetch(`/ShoppingCart/RemoveFromCart?productID=${productId}`, {
+                method: 'DELETE'
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) location.reload();
+                    else alert("Failed to remove product.");
+                });
+        }
+
+        function clearCart() {
+            fetch('/ShoppingCart/ClearCart', { method: 'POST' })
+                .then(() => location.reload());
+        }
+
+        function checkout() {
+            fetch('/ShoppingCart/CheckOut', { method: 'POST' })
+                .then(() => location.href = '/ShoppingCart/OrderConfirmation');
+        }
+
+    </script>
+</body>
+</html>

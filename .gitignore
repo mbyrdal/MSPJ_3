@@ -17,7 +17,8 @@
 mono_crash.*
 
 # Build results
-[Dd]ebug/
+[Dd]ebug
+Debug
 [Dd]ebugPublic/
 [Rr]elease/
 [Rr]eleases/
@@ -27,8 +28,10 @@ x86/
 [Aa][Rr][Mm]/
 [Aa][Rr][Mm]64/
 bld/
-[Bb]in/
+[Bb]in
+Bin
 [Oo]bj/
+Obj
 [Ll]og/
 [Ll]ogs/
 
@@ -396,3 +399,8 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+/RazorPagesToMVCMigration/BrowserWebPage/bin
+/RazorPagesToMVCMigration/BrowserWebPage/bin
+/RazorPagesToMVCMigration/WebserverRESTfulAPI/bin
+/RazorPagesToMVCMigration/BrowserWebPage/bin
+/RazorPagesToMVCMigration/BrowserWebPage/bin
