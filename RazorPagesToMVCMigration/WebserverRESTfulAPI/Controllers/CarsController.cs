@@ -166,7 +166,7 @@ namespace ServiceAPI.Controllers
                 return NotFound($"No existing Car with ID '{ID}' found.");
             }
 
-            var wasCarRemoved = _carControl.AddCar(foundCar);
+            var wasCarRemoved = _carControl.DeleteCar(ID);
 
             if (!wasCarRemoved)
             {

@@ -23,67 +23,67 @@ namespace MSPJ.TestingEnvironment.ModelSuites
         /// <summary>
         /// NEEDED
         /// </summary>
-        [Fact]
-        public void Car_ShouldInitializeWithCorrectProperties()
-        {
-            // Arrange & Act
-            // var car = new CarModel
-            //  { 
-            // vinNumber = "ABCDE12345F123456",
-            // manufacturer = "Honda",
-            // model = "Civic",
-            // productionYear = 1997,
-            // mileage= 123500
-            //  };
+        //[Fact]
+        //public void Car_ShouldInitializeWithCorrectProperties()
+        //{
+        //    // Arrange & Act
+        //    // var car = new CarModel
+        //    //  { 
+        //    // vinNumber = "ABCDE12345F123456",
+        //    // manufacturer = "Honda",
+        //    // model = "Civic",
+        //    // productionYear = 1997,
+        //    // mileage= 123500
+        //    //  };
 
-            // Assert
-            // Assert.Equal("ABCDE12345F123456", car.vinNumber)
-            // Assert.Equal("Honda", car.nimNumber, car.
-            // Assert.Equal("Civic", car.model)
-            // Assert.Equal(1997, car.productionYear)
-            // Assert.Equal(123500, car.mileage)
-        }
+        //    // Assert
+        //    // Assert.Equal("ABCDE12345F123456", car.vinNumber)
+        //    // Assert.Equal("Honda", car.nimNumber, car.
+        //    // Assert.Equal("Civic", car.model)
+        //    // Assert.Equal(1997, car.productionYear)
+        //    // Assert.Equal(123500, car.mileage)
+        //}
 
-        /// <summary>
-        /// We want the VIN number to follow a specific format,
-        /// 17 char for standard VIN numbers.
-        /// </summary>
-        [Fact]
-        public void Car_VinNumber_ShouldBe17Characters()
-        {
-            // Arrange
-            // var car = new CarModel { vinNumber = "1HGCM82633A123456" };
+        ///// <summary>
+        ///// We want the VIN number to follow a specific format,
+        ///// 17 char for standard VIN numbers.
+        ///// </summary>
+        //[Fact]
+        //public void Car_VinNumber_ShouldBe17Characters()
+        //{
+        //    // Arrange
+        //    // var car = new CarModel { vinNumber = "1HGCM82633A123456" };
 
-            // Act
-            // int vinLength = car.vinNumber.Length;
+        //    // Act
+        //    // int vinLength = car.vinNumber.Length;
 
-            // Assert
-            // Assert.Equal(17, vinLength);
-        }
+        //    // Assert
+        //    // Assert.Equal(17, vinLength);
+        //}
 
-        /// <summary>
-        /// We check if the productionYear is valid, meaning any year between now and 1886.
-        /// 1886 is the year the first car was made.
-        /// </summary>
-        [Fact]
-        public void Car_ProductionYearShouldBeValid()
-        {
-            // Arrange
-            // var car = new CarModel { productionYear = 2022 };
+        ///// <summary>
+        ///// We check if the productionYear is valid, meaning any year between now and 1886.
+        ///// 1886 is the year the first car was made.
+        ///// </summary>
+        //[Fact]
+        //public void Car_ProductionYearShouldBeValid()
+        //{
+        //    // Arrange
+        //    // var car = new CarModel { productionYear = 2022 };
 
-            // Act & Assert
-            // Assert.InRange(car.productionYear, 1886, DateTime.Now.Year);
-        }
+        //    // Act & Assert
+        //    // Assert.InRange(car.productionYear, 1886, DateTime.Now.Year);
+        //}
 
-        [Fact]
-        public void Car_MilageHasToBePositive()
-        {
-            // Arrange
-            // var car = new CarModel { mileage = 10000 };
+        //[Fact]
+        //public void Car_MilageHasToBePositive()
+        //{
+        //    // Arrange
+        //    // var car = new CarModel { mileage = 10000 };
 
-            // Act & Assert
-            // Assert.True(car.mileage >= 0, "Mileage should be positives.");
-        }
+        //    // Act & Assert
+        //    // Assert.True(car.mileage >= 0, "Mileage should be positives.");
+        //}
 
         /// <summary>
         /// Ensures that GetCars returns a list of cars when cars exist.
@@ -153,20 +153,20 @@ namespace MSPJ.TestingEnvironment.ModelSuites
         /// <summary>
         /// Ensures that GetCarByID returns NotFound when the car does not exist.
         /// </summary>
-        //[Fact]
-        //public void GetCarByID_ReturnsNotFound_WhenCarDoesNotExist()
-        //{
-        //    // Arrange
-        //    var mockCarControl = new Mock<ICarControl>();
-        //    mockCarControl.Setup(ctrl => ctrl.GetCarByID(1)).Returns((Car)null);
-        //    var controller = new CarsController(mockCarControl.Object);
+        [Fact]
+        public void GetCarByID_ReturnsNotFound_WhenCarDoesNotExist()
+        {
+            // Arrange
+            var mockCarControl = new Mock<ICarControl>();
+            mockCarControl.Setup(ctrl => ctrl.GetCarByID(1)).Returns((Car)null);
+            var controller = new CarsController(mockCarControl.Object);
 
-        //    // Act
-        //    var result = controller.GetCar(1);
+            // Act
+            var result = controller.GetCar(1);
 
-        //    // Assert
-        //    Assert.IsType<NotFoundObjectResult>(result.Result);
-        //}
+            // Assert
+            Assert.IsType<NotFoundObjectResult>(result.Result);
+        }
 
         /// <summary>
         /// Ensures that CreateCar returns Created when a car is successfully added.
@@ -226,7 +226,7 @@ namespace MSPJ.TestingEnvironment.ModelSuites
             var result = controller.UpdateCar(1, car);
 
             // Assert
-            Assert.IsType<NoContentResult>(result);
+            Assert.IsType<NoContentResult>(result); // Maybe we should return an "okay" in update car instead of 'NoContent'
         }
 
         /// <summary>
@@ -251,22 +251,24 @@ namespace MSPJ.TestingEnvironment.ModelSuites
 
         /// <summary>
         /// Ensures that DeleteCar returns NotFound when the car does not exist.
+        /// This test is here because success returns no content is important to
+        /// see that there is in fact an error when you cannot delete the car.
         /// </summary>
-        //[Fact]
-        //public void DeleteCar_ReturnsNotFound_WhenCarDoesNotExist()
-        //{
-        //    // Arrange
-        //    var mockCarControl = new Mock<ICarControl>();
-        //    mockCarControl.Setup(ctrl => ctrl.GetCarByID(1)).Returns((Car?)null);
+        [Fact]
+        public void DeleteCar_ReturnsNotFound_WhenCarDoesNotExist()
+        {
+            // Arrange
+            var mockCarControl = new Mock<ICarControl>();
+            mockCarControl.Setup(ctrl => ctrl.GetCarByID(1)).Returns((Car?)null);
 
-        //    var controller = new CarsController(mockCarControl.Object);
+            var controller = new CarsController(mockCarControl.Object);
 
-        //    // Act
-        //    var result = controller.DeleteCar(1);
+            // Act
+            var result = controller.DeleteCar(1);
 
-        //    // Assert
-        //    Assert.IsType<NotFoundResult>(result);
-        //}
+            // Assert
+            Assert.IsType<NotFoundObjectResult>(result);
+        }
 
     }
 }

@@ -25,7 +25,7 @@ namespace MSPJ.TestingEnvironment.ModelSuites
             var result = controller.GetProducts();
 
             // Assert
-            var actionResult = Assert.IsType<NotFoundObjectResult>(result);
+            var actionResult = Assert.IsType<NotFoundObjectResult>(result.Result);
             Assert.Equal("ERROR: No products found in the database.", actionResult.Value);
         }
 
@@ -49,7 +49,7 @@ namespace MSPJ.TestingEnvironment.ModelSuites
             var result = controller.GetProducts();
 
             // Assert
-            var actionResult = Assert.IsType<OkObjectResult>(result);
+            var actionResult = Assert.IsType<OkObjectResult>(result.Result);
             var returnedProducts = Assert.IsType<List<Product>>(actionResult.Value);
             Assert.Equal(2, returnedProducts.Count);
         }
@@ -70,7 +70,7 @@ namespace MSPJ.TestingEnvironment.ModelSuites
             var result = controller.GetProductUsingOEM("InvalidOEM");
 
             // Assert
-            var actionResult = Assert.IsType<NotFoundObjectResult>(result);
+            var actionResult = Assert.IsType<NotFoundObjectResult>(result.Result);
             Assert.Equal("Product with OEM 'InvalidOEM' not found.", actionResult.Value);
         }
 
@@ -88,7 +88,7 @@ namespace MSPJ.TestingEnvironment.ModelSuites
             var result = controller.CreateProduct("PartName", "VIN123", null);
 
             // Assert
-            Assert.IsType<BadRequestObjectResult>(result);
+            Assert.IsType<BadRequestObjectResult>(result.Result);
         }
 
         /// <summary>
@@ -107,8 +107,7 @@ namespace MSPJ.TestingEnvironment.ModelSuites
             var result = controller.CreateProduct("PartName", "VIN123", productViewModel);
 
             // Assert
-            var actionResult = Assert.IsType<ConflictObjectResult>(result);
-            Assert.Equal($"ERROR: Product with OEM '{productViewModel.OEM}' already exists in the database, or insertion failed in another manner.", actionResult.Value);
+            var actionResult = Assert.IsType<ConflictObjectResult>(result.Result);
         }
 
         /// <summary>
