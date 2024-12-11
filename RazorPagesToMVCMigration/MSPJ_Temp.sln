@@ -12,7 +12,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BrowserWebPage", "BrowserWe
 		{ACD8744B-2137-417F-9290-A2A773619354} = {ACD8744B-2137-417F-9290-A2A773619354}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientDesktop", "..\..\..\..\OneDrive\Skrivebord\ClientDesktop\ClientDesktop\ClientDesktop.csproj", "{53CFC57F-FC88-413E-92A0-999FC7BBFDBE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientDesktop", "ClientDesktop\ClientDesktop.csproj", "{53CFC57F-FC88-413E-92A0-999FC7BBFDBE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
