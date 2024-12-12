@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using ClientDesktop.DTOs;
 
 public class ApiClient
 {
@@ -13,19 +14,19 @@ public class ApiClient
         _httpClient = new HttpClient { BaseAddress = new Uri(baseUrl) };
     }
 
-    public async Task<List<Product>> GetAllProductsAsync()
+    public async Task<List<ProductInventoryViewModel>> GetAllProductsAsync()
     {
         var response = await _httpClient.GetAsync("Products");
         response.EnsureSuccessStatusCode();
         var json = await response.Content.ReadAsStringAsync();
-        return JsonConvert.DeserializeObject<List<Product>>(json);
+        return JsonConvert.DeserializeObject<List<ProductInventoryViewModel>>(json);
     }
 
-    public async Task<Product> GetProductByOEMAsync(string oem)
+    public async Task<ProductInventoryViewModel> GetProductByOEMAsync(string oem)
     {
         var response = await _httpClient.GetAsync($"Products/{oem}");
         response.EnsureSuccessStatusCode();
         var json = await response.Content.ReadAsStringAsync();
-        return JsonConvert.DeserializeObject<Product>(json);
+        return JsonConvert.DeserializeObject<ProductInventoryViewModel>(json);
     }
 }
