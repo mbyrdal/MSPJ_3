@@ -43,6 +43,19 @@ namespace ServiceAPI.BusinessLogic
             return productPlaceholder;
         }
 
+        public string GetProductName(Product product)
+        {
+            string namePlaceholder = "";
+            try
+            {
+                namePlaceholder = _dbProductAccess.GetProductNameByID(product.ID);
+            }
+            catch (ArgumentException ex)
+            {
+                Debug.WriteLine($"Error: no existing product with the ID '{product.ID}' has a name '{namePlaceholder}': {ex.Message}");
+            }
+            return namePlaceholder;
+        }
         public Product GetProduct(string OEM, string carPartName, string carVINNumber)
         {
             Product productPlaceholder = null;
