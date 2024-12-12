@@ -72,11 +72,16 @@ namespace ServiceAPI.Controllers
             }
 
             string productName = _productControl.GetProductName(foundProduct);
-            ProductInventoryViewModel productWithName = 
-                new ProductInventoryViewModel(foundProduct.ID, foundProduct.CarID, foundProduct.CarID,
-                                              productName, foundProduct.OEM, foundProduct.Price, 
-                                              foundProduct.DateAvailable, foundProduct.Condition,
-                                              foundProduct.ItemDescription, foundProduct.ItemAvailable);
+            ProductInventoryViewModel productWithName = new ProductInventoryViewModel
+            {
+                ID = foundProduct.ID,
+                Name = productName,
+                OEM = foundProduct.OEM,
+                Price = foundProduct.Price,
+                Condition = foundProduct.Condition,
+                ItemDescription = foundProduct.ItemDescription,
+                ItemAvailable = foundProduct.ItemAvailable
+            };
 
             // Return 200: OK
             return Ok(productWithName);

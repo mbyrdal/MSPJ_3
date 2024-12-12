@@ -324,29 +324,39 @@ namespace ServiceAPI.DatabaseAccess
 
         internal string GetProductNameByID(int id)
         {
+            string tempName = "";
             try
             {
-                using(SqlConnection conn = new SqlConnection(_connectionString))
+                using (SqlConnection conn = new SqlConnection(_connectionString))
                 {
                     conn.Open();
-                    string nameSelectorQuery = $"SELECT Name FROM CarPart WHERE ID = @CarPartID";
+                    string nameSelectorQuery = $"SELECT CarPart.Name FROM CarPart WHERE ID = @CarPartID";
                     using(SqlCommand getNameCommand = new SqlCommand(nameSelectorQuery, conn))
                     {
+
                         getNameCommand.Parameters.AddWithValue("@CarPartID", id);
-                        var tempName = getNameCommand.ExecuteScalar();
-                        if(tempName != null && !string.IsNullOrWhiteSpace(tempName.ToString()))
+                        var cmdResult = getNameCommand.ExecuteScalar();
+                        if(cmdResult == null || cmdResult == DBNull.Value)
                         {
-                            return tempName.ToString();
+                            Debug.WriteLine("The CarPart.Name is NULL in the database.");
+                            return string.Empty;
+                        }
+                        tempName = cmdResult.ToString();
+                        if(string.IsNullOrWhiteSpace(tempName))
+                        {
+                            Debug.WriteLine($"The Name retrieved using ID '{id}' is erroneous.");
+                            throw new InvalidDataException("Invalid Name retrieved.");
                         }
                     }
                     conn.Close();
+                    return tempName;
                 }
             }
             catch (SqlException ex)
             {
                 Debug.WriteLine($"An SQL error has likely occurred: {ex.Message}.");
             }
-            return "";
+            return tempName;
         }
 
         internal string GetProductVINNumberByID(int id)

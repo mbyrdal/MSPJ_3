@@ -413,3 +413,5 @@ RazorPagesToMVCMigration/TestingEnvironment/bin/Debug/net8.0/.msCoverageSourceRo
 RazorPagesToMVCMigration/TestingEnvironment/bin/Debug/net8.0/.msCoverageSourceRootsMapping_MSPJ.TestingEnvironment
 RazorPagesToMVCMigration/WebserverRESTfulAPI/bin/Debug/net8.0/ServiceAPI.dll
 RazorPagesToMVCMigration/WebserverRESTfulAPI/bin/Debug/net8.0/ServiceAPI.exe
+*.dll
+*.exe

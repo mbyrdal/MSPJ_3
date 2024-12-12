@@ -48,11 +48,11 @@ namespace ServiceAPI.BusinessLogic
             string namePlaceholder = "";
             try
             {
-                namePlaceholder = _dbProductAccess.GetProductNameByID(product.ID);
+                namePlaceholder = _dbProductAccess.GetProductNameByID(product.CarPartID);
             }
             catch (ArgumentException ex)
             {
-                Debug.WriteLine($"Error: no existing product with the ID '{product.ID}' has a name '{namePlaceholder}': {ex.Message}");
+                Debug.WriteLine($"Error: no existing product with the OEM '{product.OEM}' has a name '{namePlaceholder}': {ex.Message}");
             }
             return namePlaceholder;
         }
