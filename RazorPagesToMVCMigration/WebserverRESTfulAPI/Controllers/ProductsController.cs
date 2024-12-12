@@ -41,6 +41,40 @@ namespace ServiceAPI.Controllers
             return Ok(allProducts);
         }
 
+        // GET: https://localhost:7134/api/products/withNames
+        [HttpGet("withNames")]
+        public ActionResult<List<ProductInventoryViewModel>> GetProductsWithNames()
+        {
+            var allProducts = _productControl.GetAllProducts();
+
+            if (allProducts == null)
+            {
+                // Return 400: Bad request response
+                return BadRequest("ERROR: List of products is null. A bad GET request was made.");
+            }
+
+            if (allProducts.Count == 0)
+            {
+                // Return 404: No products found
+                return NotFound("ERROR: No products found in the database.");
+            }
+
+            List<ProductInventoryViewModel> productsWithNames = new List<ProductInventoryViewModel>();
+            productsWithNames = allProducts.Select(product => new ProductInventoryViewModel
+            {
+                ID = product.ID,
+                Name = _productControl.GetProductName(product),
+                OEM = product.OEM,
+                Price = product.Price,
+                Condition = product.Condition,
+                ItemDescription = product.ItemDescription,
+                ItemAvailable = product.ItemAvailable
+            }).ToList();
+
+            // Return 200: OK
+            return Ok(productsWithNames);
+        }
+
         // GET: https://localhost:7134/api/Products/OEM/
         [HttpGet("{OEM}")]
         public ActionResult<Product> GetProductUsingOEM(string OEM)
@@ -58,8 +92,8 @@ namespace ServiceAPI.Controllers
             return Ok(foundProduct);
         }
 
-        // GET https://localhost:7134/api/Products/OEM/
-        [HttpGet("GetProductName/{OEM}")]
+        // GET https://localhost:7134/api/Products/GetProductWithName/OEM/
+        [HttpGet("GetProductWithName/{OEM}")]
         public ActionResult<ProductInventoryViewModel> GetProductWithNameUsingOEM(string OEM)
         {
             int productID = _productControl.GetProductID(OEM);
