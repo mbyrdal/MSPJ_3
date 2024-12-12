@@ -59,7 +59,7 @@ namespace ServiceAPI.Controllers
         }
 
         // GET https://localhost:7134/api/Products/OEM/
-        [HttpGet("{OEM}")]
+        [HttpGet("GetProductName/{OEM}")]
         public ActionResult<ProductInventoryViewModel> GetProductWithNameUsingOEM(string OEM)
         {
             int productID = _productControl.GetProductID(OEM);
