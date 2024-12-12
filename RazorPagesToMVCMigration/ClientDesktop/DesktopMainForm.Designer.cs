@@ -28,10 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.comboBoxBrand = new System.Windows.Forms.ComboBox();
-            this.comboBoxModel = new System.Windows.Forms.ComboBox();
-            this.comboBoxVersion = new System.Windows.Forms.ComboBox();
-            this.comboBoxPartSelect = new System.Windows.Forms.ComboBox();
             this.buttonRemoveProduct = new System.Windows.Forms.Button();
             this.buttonDetailsForProduct = new System.Windows.Forms.Button();
             this.buttonAddProduct = new System.Windows.Forms.Button();
@@ -47,42 +43,6 @@
             this.Lager = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewProductSearchResult)).BeginInit();
             this.SuspendLayout();
-            // 
-            // comboBoxBrand
-            // 
-            this.comboBoxBrand.FormattingEnabled = true;
-            this.comboBoxBrand.Location = new System.Drawing.Point(12, 63);
-            this.comboBoxBrand.Name = "comboBoxBrand";
-            this.comboBoxBrand.Size = new System.Drawing.Size(122, 24);
-            this.comboBoxBrand.TabIndex = 1;
-            this.comboBoxBrand.Text = "Mærke";
-            // 
-            // comboBoxModel
-            // 
-            this.comboBoxModel.FormattingEnabled = true;
-            this.comboBoxModel.Location = new System.Drawing.Point(140, 63);
-            this.comboBoxModel.Name = "comboBoxModel";
-            this.comboBoxModel.Size = new System.Drawing.Size(122, 24);
-            this.comboBoxModel.TabIndex = 2;
-            this.comboBoxModel.Text = "Model";
-            // 
-            // comboBoxVersion
-            // 
-            this.comboBoxVersion.FormattingEnabled = true;
-            this.comboBoxVersion.Location = new System.Drawing.Point(268, 63);
-            this.comboBoxVersion.Name = "comboBoxVersion";
-            this.comboBoxVersion.Size = new System.Drawing.Size(122, 24);
-            this.comboBoxVersion.TabIndex = 3;
-            this.comboBoxVersion.Text = "Version";
-            // 
-            // comboBoxPartSelect
-            // 
-            this.comboBoxPartSelect.FormattingEnabled = true;
-            this.comboBoxPartSelect.Location = new System.Drawing.Point(396, 63);
-            this.comboBoxPartSelect.Name = "comboBoxPartSelect";
-            this.comboBoxPartSelect.Size = new System.Drawing.Size(122, 24);
-            this.comboBoxPartSelect.TabIndex = 4;
-            this.comboBoxPartSelect.Text = "Reservedel";
             // 
             // buttonRemoveProduct
             // 
@@ -167,7 +127,7 @@
             this.dataGridViewProductSearchResult.RowHeadersVisible = false;
             this.dataGridViewProductSearchResult.RowHeadersWidth = 51;
             this.dataGridViewProductSearchResult.RowTemplate.Height = 24;
-            this.dataGridViewProductSearchResult.Size = new System.Drawing.Size(506, 360);
+            this.dataGridViewProductSearchResult.Size = new System.Drawing.Size(937, 360);
             this.dataGridViewProductSearchResult.TabIndex = 17;
             this.dataGridViewProductSearchResult.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewProductSearchResult_CellContentClick);
             // 
@@ -189,7 +149,7 @@
             // 
             // Description
             // 
-            this.Description.DataPropertyName = "ItemDescription";
+            this.Description.DataPropertyName = "Description";
             this.Description.HeaderText = "Beskrivelse";
             this.Description.MinimumWidth = 6;
             this.Description.Name = "Description";
@@ -205,7 +165,7 @@
             // 
             // Lager
             // 
-            this.Lager.DataPropertyName = "ItemAvailable";
+            this.Lager.DataPropertyName = "Availability";
             this.Lager.HeaderText = "Lager";
             this.Lager.MinimumWidth = 6;
             this.Lager.Name = "Lager";
@@ -217,7 +177,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(534, 495);
+            this.ClientSize = new System.Drawing.Size(962, 495);
             this.Controls.Add(this.dataGridViewProductSearchResult);
             this.Controls.Add(this.buttonFetchInventory);
             this.Controls.Add(this.buttonEdit);
@@ -226,10 +186,6 @@
             this.Controls.Add(this.buttonAddProduct);
             this.Controls.Add(this.buttonDetailsForProduct);
             this.Controls.Add(this.buttonRemoveProduct);
-            this.Controls.Add(this.comboBoxPartSelect);
-            this.Controls.Add(this.comboBoxVersion);
-            this.Controls.Add(this.comboBoxModel);
-            this.Controls.Add(this.comboBoxBrand);
             this.Name = "DesktopMainForm";
             this.Text = "HuggerRiget Home";
             this.Load += new System.EventHandler(this.DesktopMainPage_Load);
@@ -240,10 +196,6 @@
         }
 
         #endregion
-        private System.Windows.Forms.ComboBox comboBoxBrand;
-        private System.Windows.Forms.ComboBox comboBoxModel;
-        private System.Windows.Forms.ComboBox comboBoxVersion;
-        private System.Windows.Forms.ComboBox comboBoxPartSelect;
         
         private System.Windows.Forms.Button buttonRemoveProduct;
         private System.Windows.Forms.Button buttonDetailsForProduct;

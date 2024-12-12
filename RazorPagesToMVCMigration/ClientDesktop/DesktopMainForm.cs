@@ -43,6 +43,7 @@ namespace ClientDesktop
                     // Transform the data to only include the desired fields
                     var filteredProducts = products.Select(product => new
                     {
+                        product.Name,
                         product.OEM,
                         Description = product.ItemDescription, // Adjust property names based on your model
                         product.Price,
