@@ -29,4 +29,22 @@ public class ApiClient
         var json = await response.Content.ReadAsStringAsync();
         return JsonConvert.DeserializeObject<ProductInventoryViewModel>(json);
     }
+
+    public async Task<ProductInventoryViewModel> CreateProductAsync(ProductInventoryViewModel product)
+    {
+        var json = JsonConvert.SerializeObject(product);
+        var response = await _httpClient.PostAsync("Products", new StringContent(json, System.Text.Encoding.UTF8, "application/json"));
+        response.EnsureSuccessStatusCode();
+        var jsonResponse = await response.Content.ReadAsStringAsync();
+        return JsonConvert.DeserializeObject<ProductInventoryViewModel>(jsonResponse);
+    }
+
+
+    
+    public void DeleteProductAsync(string oem)
+    {
+        var response = _httpClient.DeleteAsync($"Products/{oem}");
+        response.Wait();
+        response.Result.EnsureSuccessStatusCode();
+    }
 }
