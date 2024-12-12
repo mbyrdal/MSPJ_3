@@ -36,18 +36,6 @@ namespace ServiceAPI.DTOs
         [Required]
         public bool ItemAvailable { get; set; }
 
-        /*
-        [Required]
-        [ForeignKey("CarPartID")]
-        public CarPart ProductCarPartOrigin { get; set; }
-
-        [Required]
-        [ForeignKey("CarID")]
-        public Car ProductCarOrigin { get; set; }
-        */
-
-        //, CarPart myCarPart, Car myCar
-
         public ProductViewModel() { }
 
         public ProductViewModel(int ID, int carPartID, int carID, string oem, decimal price, DateTime dt, string cond, string itemDesc, bool itemAvailable)

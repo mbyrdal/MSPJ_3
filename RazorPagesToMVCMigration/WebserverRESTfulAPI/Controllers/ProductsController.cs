@@ -58,6 +58,30 @@ namespace ServiceAPI.Controllers
             return Ok(foundProduct);
         }
 
+        // GET https://localhost:7134/api/Products/OEM/
+        [HttpGet("{OEM}")]
+        public ActionResult<ProductInventoryViewModel> GetProductWithNameUsingOEM(string OEM)
+        {
+            int productID = _productControl.GetProductID(OEM);
+            var foundProduct = _productControl.GetProductByID(productID);
+
+            if(foundProduct == null)
+            {
+                // Return 404: No product found, null
+                return NotFound($"Product with OEM '{OEM}' not found.");
+            }
+
+            string productName = _productControl.GetProductName(foundProduct);
+            ProductInventoryViewModel productWithName = 
+                new ProductInventoryViewModel(foundProduct.ID, foundProduct.CarID, foundProduct.CarID,
+                                              productName, foundProduct.OEM, foundProduct.Price, 
+                                              foundProduct.DateAvailable, foundProduct.Condition,
+                                              foundProduct.ItemDescription, foundProduct.ItemAvailable);
+
+            // Return 200: OK
+            return Ok(productWithName);
+        }
+
         // GET: https://localhost:7134/api/Products/OEM/carPartName/carVINNumber
         [HttpGet("{OEM}/{carPartName}/{carVINNumber}")]
         public ActionResult<Product> GetProduct(string OEM, string carPartName, string carVINNumber)
