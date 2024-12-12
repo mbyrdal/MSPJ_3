@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             this.buttonRemoveProduct = new System.Windows.Forms.Button();
-            this.buttonDetailsForProduct = new System.Windows.Forms.Button();
             this.buttonAddProduct = new System.Windows.Forms.Button();
             this.textBoxSearchForParts = new System.Windows.Forms.TextBox();
             this.buttonSearch = new System.Windows.Forms.Button();
@@ -46,46 +45,41 @@
             // 
             // buttonRemoveProduct
             // 
-            this.buttonRemoveProduct.Location = new System.Drawing.Point(140, 460);
+            this.buttonRemoveProduct.Location = new System.Drawing.Point(107, 341);
+            this.buttonRemoveProduct.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.buttonRemoveProduct.Name = "buttonRemoveProduct";
-            this.buttonRemoveProduct.Size = new System.Drawing.Size(102, 23);
+            this.buttonRemoveProduct.Size = new System.Drawing.Size(76, 19);
             this.buttonRemoveProduct.TabIndex = 7;
             this.buttonRemoveProduct.Text = "Fjern";
             this.buttonRemoveProduct.UseVisualStyleBackColor = true;
             this.buttonRemoveProduct.Click += new System.EventHandler(this.buttonRemoveProduct_Click);
             // 
-            // buttonDetailsForProduct
-            // 
-            this.buttonDetailsForProduct.Location = new System.Drawing.Point(396, 460);
-            this.buttonDetailsForProduct.Name = "buttonDetailsForProduct";
-            this.buttonDetailsForProduct.Size = new System.Drawing.Size(101, 23);
-            this.buttonDetailsForProduct.TabIndex = 11;
-            this.buttonDetailsForProduct.Text = "Detaljer";
-            this.buttonDetailsForProduct.UseVisualStyleBackColor = true;
-            // 
             // buttonAddProduct
             // 
-            this.buttonAddProduct.Location = new System.Drawing.Point(12, 460);
+            this.buttonAddProduct.Location = new System.Drawing.Point(11, 341);
+            this.buttonAddProduct.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.buttonAddProduct.Name = "buttonAddProduct";
-            this.buttonAddProduct.Size = new System.Drawing.Size(102, 23);
+            this.buttonAddProduct.Size = new System.Drawing.Size(76, 19);
             this.buttonAddProduct.TabIndex = 12;
             this.buttonAddProduct.Text = "Tilføj";
             this.buttonAddProduct.UseVisualStyleBackColor = true;
             // 
             // textBoxSearchForParts
             // 
-            this.textBoxSearchForParts.Location = new System.Drawing.Point(12, 12);
+            this.textBoxSearchForParts.Location = new System.Drawing.Point(9, 10);
+            this.textBoxSearchForParts.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBoxSearchForParts.Name = "textBoxSearchForParts";
-            this.textBoxSearchForParts.Size = new System.Drawing.Size(162, 22);
+            this.textBoxSearchForParts.Size = new System.Drawing.Size(122, 20);
             this.textBoxSearchForParts.TabIndex = 13;
             this.textBoxSearchForParts.Text = "Søg";
             this.textBoxSearchForParts.TextChanged += new System.EventHandler(this.textBoxSearchForParts_TextChanged);
             // 
             // buttonSearch
             // 
-            this.buttonSearch.Location = new System.Drawing.Point(180, 12);
+            this.buttonSearch.Location = new System.Drawing.Point(135, 10);
+            this.buttonSearch.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.buttonSearch.Name = "buttonSearch";
-            this.buttonSearch.Size = new System.Drawing.Size(75, 23);
+            this.buttonSearch.Size = new System.Drawing.Size(56, 19);
             this.buttonSearch.TabIndex = 14;
             this.buttonSearch.Text = "Søg";
             this.buttonSearch.UseVisualStyleBackColor = true;
@@ -93,18 +87,21 @@
             // 
             // buttonEdit
             // 
-            this.buttonEdit.Location = new System.Drawing.Point(268, 460);
+            this.buttonEdit.Location = new System.Drawing.Point(203, 341);
+            this.buttonEdit.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.buttonEdit.Name = "buttonEdit";
-            this.buttonEdit.Size = new System.Drawing.Size(102, 23);
+            this.buttonEdit.Size = new System.Drawing.Size(76, 19);
             this.buttonEdit.TabIndex = 15;
-            this.buttonEdit.Text = "Rediger";
+            this.buttonEdit.Text = "Ændre";
             this.buttonEdit.UseVisualStyleBackColor = true;
+            this.buttonEdit.Click += new System.EventHandler(this.buttonEdit_Click);
             // 
             // buttonFetchInventory
             // 
-            this.buttonFetchInventory.Location = new System.Drawing.Point(336, 11);
+            this.buttonFetchInventory.Location = new System.Drawing.Point(252, 9);
+            this.buttonFetchInventory.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.buttonFetchInventory.Name = "buttonFetchInventory";
-            this.buttonFetchInventory.Size = new System.Drawing.Size(139, 23);
+            this.buttonFetchInventory.Size = new System.Drawing.Size(104, 19);
             this.buttonFetchInventory.TabIndex = 16;
             this.buttonFetchInventory.Text = "Hent Lager";
             this.buttonFetchInventory.UseVisualStyleBackColor = true;
@@ -121,13 +118,15 @@
             this.Price,
             this.Lager});
             this.dataGridViewProductSearchResult.Cursor = System.Windows.Forms.Cursors.Default;
-            this.dataGridViewProductSearchResult.Location = new System.Drawing.Point(12, 94);
+            this.dataGridViewProductSearchResult.Location = new System.Drawing.Point(11, 34);
+            this.dataGridViewProductSearchResult.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.dataGridViewProductSearchResult.Name = "dataGridViewProductSearchResult";
             this.dataGridViewProductSearchResult.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.dataGridViewProductSearchResult.RowHeadersVisible = false;
             this.dataGridViewProductSearchResult.RowHeadersWidth = 51;
             this.dataGridViewProductSearchResult.RowTemplate.Height = 24;
-            this.dataGridViewProductSearchResult.Size = new System.Drawing.Size(937, 360);
+            this.dataGridViewProductSearchResult.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dataGridViewProductSearchResult.Size = new System.Drawing.Size(508, 292);
             this.dataGridViewProductSearchResult.TabIndex = 17;
             this.dataGridViewProductSearchResult.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewProductSearchResult_CellContentClick);
             // 
@@ -173,19 +172,19 @@
             // 
             // DesktopMainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(962, 495);
+            this.ClientSize = new System.Drawing.Size(530, 395);
             this.Controls.Add(this.dataGridViewProductSearchResult);
             this.Controls.Add(this.buttonFetchInventory);
             this.Controls.Add(this.buttonEdit);
             this.Controls.Add(this.buttonSearch);
             this.Controls.Add(this.textBoxSearchForParts);
             this.Controls.Add(this.buttonAddProduct);
-            this.Controls.Add(this.buttonDetailsForProduct);
             this.Controls.Add(this.buttonRemoveProduct);
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "DesktopMainForm";
             this.Text = "HuggerRiget Home";
             this.Load += new System.EventHandler(this.DesktopMainPage_Load);
@@ -198,7 +197,6 @@
         #endregion
         
         private System.Windows.Forms.Button buttonRemoveProduct;
-        private System.Windows.Forms.Button buttonDetailsForProduct;
         private System.Windows.Forms.Button buttonAddProduct;
         private System.Windows.Forms.TextBox textBoxSearchForParts;
         private System.Windows.Forms.Button buttonSearch;

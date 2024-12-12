@@ -30,7 +30,24 @@ namespace ClientDesktop
 
         private void buttonRemoveProduct_Click(object sender, EventArgs e)
         {
+            if (dataGridViewProductSearchResult.SelectedRows.Count > 0)
+            {
+                // Get the index of the selected row
+                int selectedIndex = dataGridViewProductSearchResult.SelectedRows[0].Index;
 
+                // Get the ID or primary key of the selected item (if needed for database operations)
+                string oem = Convert.ToString(dataGridViewProductSearchResult.SelectedRows[0].Cells["OEM"].Value);
+
+                // Remove the row from the DataGridView
+               // dataGridViewProductSearchResult.Rows.RemoveAt(selectedIndex);
+
+                // Optional: Remove the item from the database or collection
+                _apiClient.DeleteProductAsync(oem);
+            }
+            else
+            {
+                MessageBox.Show("Please select a row to delete.");
+            }
         }
 
         private async void buttonFetchInventory_Click(object sender, EventArgs e)
@@ -110,6 +127,16 @@ namespace ClientDesktop
         }
 
         private void dataGridViewProductSearchResult_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void buttonEdit_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label2_Click(object sender, EventArgs e)
         {
 
         }
