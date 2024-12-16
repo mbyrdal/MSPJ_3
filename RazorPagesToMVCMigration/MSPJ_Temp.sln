@@ -5,9 +5,9 @@ VisualStudioVersion = 17.11.35222.181
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MSPJ.TestingEnvironment", "TestingEnvironment\MSPJ.TestingEnvironment.csproj", "{EBBCE2ED-F8D2-4CB9-BE5A-99349D0ED272}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceAPI", "WebserverRESTfulAPI\ServiceAPI.csproj", "{ACD8744B-2137-417F-9290-A2A773619354}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebAPI", "WebserverRESTfulAPI\WebAPI.csproj", "{ACD8744B-2137-417F-9290-A2A773619354}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BrowserWebPage", "BrowserWebPage\BrowserWebPage.csproj", "{E3F1EB3B-53E5-4B33-9301-7C17884AE691}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClientWeb", "BrowserWebPage\ClientWeb.csproj", "{E3F1EB3B-53E5-4B33-9301-7C17884AE691}"
 	ProjectSection(ProjectDependencies) = postProject
 		{ACD8744B-2137-417F-9290-A2A773619354} = {ACD8744B-2137-417F-9290-A2A773619354}
 	EndProjectSection

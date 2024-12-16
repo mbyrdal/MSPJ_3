@@ -40,7 +40,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WebserverRESTfulAPI\ServiceAPI.csproj" />
+    <ProjectReference Include="..\WebserverRESTfulAPI\WebAPI.csproj" />
   </ItemGroup>
 
 </Project>

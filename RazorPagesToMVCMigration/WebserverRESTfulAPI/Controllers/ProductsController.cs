@@ -172,7 +172,6 @@ namespace ServiceAPI.Controllers
             return Conflict($"ERROR: Product with OEM '{newProduct.OEM}' already exists in the database, or insertion failed in another manner.");
         }
 
-        // TODO: trim and remove existingProduct logic since _productControl.UpdateProduct handles existing product issue already.
         // PUT: https://localhost:7134/api/Products/OEM/carPartName/carVINNumber
         [HttpPut("{OEM}/{carPartName}/{carVINNumber}")]
         public IActionResult UpdateProduct(string OEM, string carPartName, string carVINNumber, [FromBody] ProductDTO updatedProduct)
