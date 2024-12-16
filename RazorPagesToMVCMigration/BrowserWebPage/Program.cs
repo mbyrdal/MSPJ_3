@@ -48,8 +48,8 @@ app.MapRazorPages();
 
 app.Run();
 */
-using ServiceAPI.BusinessLogic.Interfaces;
-using ServiceAPI.BusinessLogic;
+using BrowserWebPage.BusinessLogic.Interfaces;
+using BrowserWebPage.BusinessLogic;
 using ServiceAPI.DatabaseAccess;
 
 var builder = WebApplication.CreateBuilder(args);

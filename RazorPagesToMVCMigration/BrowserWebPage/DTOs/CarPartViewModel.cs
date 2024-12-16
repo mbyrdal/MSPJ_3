@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace ServiceAPI.DTOs
+namespace BrowserWebPage.DTOs
 {
     public class CarPartViewModel
     {

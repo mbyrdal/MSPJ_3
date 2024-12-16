@@ -1,13 +1,13 @@
 using BrowserWebPage.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
-using ServiceAPI.BusinessLogic;
-using ServiceAPI.BusinessLogic.Interfaces;
-using ServiceAPI.DTOs;
-using ServiceAPI.Models;
-using ServiceAPI.Utilities;
+using BrowserWebPage.BusinessLogic;
+using BrowserWebPage.BusinessLogic.Interfaces;
+using BrowserWebPage.DTOs;
+using BrowserWebPage.Utilities;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Json;
 
 namespace BrowserWebPage.Controllers
 {
@@ -34,11 +34,16 @@ namespace BrowserWebPage.Controllers
             return View();
         }
 
-        public IActionResult Inventory()
+        public async Task<IActionResult> Inventory()
         {
             // Initial list of products to display when the page loads (optional)
-            List<Product> productList = new List<Product>(); // Fetch actual data here
-            productList = _productControl.GetAllProducts();
+            List<Product> productList = new List<Product>();
+
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("https://localhost:7134/api/Products/");
+                productList = await client.GetFromJsonAsync<List<Product>>(client.BaseAddress.ToString()); // Fetch actual data
+            }
 
             List<ProductInventoryViewModel> products = new List<ProductInventoryViewModel>();
             products = productList.Select(product => new ProductInventoryViewModel

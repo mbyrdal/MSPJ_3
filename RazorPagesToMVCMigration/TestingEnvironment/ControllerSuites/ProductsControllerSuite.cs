@@ -45,6 +45,7 @@ namespace MSPJ.TestingEnvironment.ControllerSuites
         }
         // All the tests beneath this comment were created with the help of ChatGPT, and further adapted and verified
         // Here is a link to the chat https://chatgpt.com/share/675ff953-2908-8004-a69e-bba7a6b98069
+
         /// <summary>
         /// Ensures the GetProducts endpoint returns NotFound when no products exist in the database.
         /// </summary>

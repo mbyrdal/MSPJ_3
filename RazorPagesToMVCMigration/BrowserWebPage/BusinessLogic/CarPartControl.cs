@@ -1,11 +1,11 @@
-﻿using ServiceAPI.BusinessLogic.Interfaces;
+﻿using BrowserWebPage.BusinessLogic.Interfaces;
 using ServiceAPI.DatabaseAccess;
-using ServiceAPI.DTOs;
-using ServiceAPI.Models;
+using BrowserWebPage.DTOs;
+using BrowserWebPage.Models;
 using System.Diagnostics;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace ServiceAPI.BusinessLogic
+namespace BrowserWebPage.BusinessLogic
 {
     public class CarPartControl : ICarPartControl
     {
@@ -43,7 +43,7 @@ namespace ServiceAPI.BusinessLogic
             return wasCarPartInserted;
         }
 
-        public bool AddCarPartDTO(CarPartDTO carPart)
+        public bool AddCarPartDTO(CarPartViewModel carPart)
         {
             bool carPartExists = false;
             bool wasCarPartInserted = false;
@@ -135,7 +135,7 @@ namespace ServiceAPI.BusinessLogic
             return wasCarPartUpdated;
         }
 
-        public bool UpdateCarPartDTO(CarPartDTO carPart)
+        public bool UpdateCarPartDTO(CarPartViewModel carPart)
         {
             bool carPartExists = false;
             bool wasCarPartUpdated = false;
