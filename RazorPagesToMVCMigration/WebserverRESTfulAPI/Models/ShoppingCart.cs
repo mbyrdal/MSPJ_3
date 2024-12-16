@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using ServiceAPI.DTOs;
+using System.ComponentModel.DataAnnotations;
 
 namespace ServiceAPI.Models
 {
@@ -12,24 +13,24 @@ namespace ServiceAPI.Models
         public int ItemDescription { get; set; }
 
         [Required]
-        public List<Product> Items { get; set; }
+        public List<ProductInventoryViewModel> Items { get; set; }
 
         [Required]
         public decimal TotalPrice { get; set; }
 
         public ShoppingCart()
         {
-            Items = new List<Product>();
+            Items = new List<ProductInventoryViewModel>();
             TotalPrice = 0;
         }
 
-        public ShoppingCart(List<Product> items)
+        public ShoppingCart(List<ProductInventoryViewModel> items)
         {
             Items = items;
             TotalPrice = items.Sum(item => item.Price);
         }
 
-        public ShoppingCart(List<Product> items, decimal totalPrice)
+        public ShoppingCart(List<ProductInventoryViewModel> items, decimal totalPrice)
         {
             Items = items;
             TotalPrice = totalPrice;

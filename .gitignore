@@ -417,3 +417,4 @@ RazorPagesToMVCMigration/WebserverRESTfulAPI/bin/Debug/net8.0/ServiceAPI.dll
 RazorPagesToMVCMigration/WebserverRESTfulAPI/bin/Debug/net8.0/ServiceAPI.exe
 *.dll
 *.exe
+*.dll

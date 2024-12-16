@@ -41,19 +41,19 @@ namespace ServiceAPI.Controllers
             if (product != null && product.ItemAvailable == true)
             {
                 var cart = HttpContext.Session.GetObjectFromJSON<ShoppingCart>(CartSessionKey) ?? new ShoppingCart();
+                ProductInventoryViewModel viewModel = new ProductInventoryViewModel();
 
                 // Check if the product is already in the cart
                 var existingProduct = cart.Items.FirstOrDefault(i => i.ID == product.ID);
                 if (existingProduct == null)
                 {
-                    cart.Items.Add(product); // Add product to cart
-
                     // Convert Product to ProductViewModel for updating
-                    var productViewModel = new ProductViewModel
+                    var productInventoryViewModel = new ProductInventoryViewModel
                     {
                         ID = product.ID,
                         CarPartID = product.CarPartID,
                         CarID = product.CarID,
+                        Name = _dbProduct.GetProductNameByID(product.CarPartID),
                         OEM = product.OEM,
                         Price = product.Price,
                         DateAvailable = product.DateAvailable,
@@ -61,8 +61,8 @@ namespace ServiceAPI.Controllers
                         ItemDescription = product.ItemDescription,
                         ItemAvailable = product.ItemAvailable
                     };
+                    cart.Items.Add(productInventoryViewModel); // Add product to cart
                 }
-
                 // Update the total price of the cart
                 cart.TotalPrice = cart.Items.Sum(i => i.Price);
 

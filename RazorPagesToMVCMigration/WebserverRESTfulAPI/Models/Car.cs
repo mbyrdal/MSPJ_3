@@ -21,10 +21,6 @@ namespace ServiceAPI.Models
         [Required]
         public int Mileage { get; set; }
 
-        // Navigation Property for CarTemplate
-        // [ForeignKey("CarTemplate")]
-        // public CarTemplate CarTemplate { get; set; }
-
         public Car() { }
 
         public Car(int ID, int carTemplateID, string vin, DateTime py, int mileage)

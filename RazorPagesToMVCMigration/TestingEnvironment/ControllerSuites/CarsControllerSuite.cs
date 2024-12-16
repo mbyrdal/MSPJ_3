@@ -13,12 +13,12 @@ using Microsoft.AspNetCore.Mvc;
 using ServiceAPI.BusinessLogic.Interfaces;
 using ServiceAPI.Controllers;
 
-namespace MSPJ.TestingEnvironment.ModelSuites
+namespace MSPJ.TestingEnvironment.ControllerSuites
 {   /// <summary>
     /// 
     /// </summary>
 
-    public class CarTestingSuite //Should be renamed to CustomerTestingSuite but im scared it deletes the entire document if i do it again:(
+    public class CarsControllerSuite //Should be renamed to CustomerTestingSuite but im scared it deletes the entire document if i do it again:(
     {
         /// <summary>
         /// NEEDED

@@ -20,7 +20,7 @@
                 <tr>
                     <td>@product.Name</td>
                     <td>@product.OEM</td>
-                    <td>@product.Price</td>
+                    <td>@product.Price.ToString("C", new System.Globalization.CultureInfo("da-DK"))</td>
                     <td>@product.Condition</td>
                     <td>@product.ItemDescription</td>
                     <td>@product.ItemAvailable</td>
