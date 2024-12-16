@@ -43,7 +43,7 @@ namespace ServiceAPI.Controllers
 
         // GET: https://localhost:7134/api/products/withNames
         [HttpGet("withNames")]
-        public ActionResult<List<ProductInventoryViewModel>> GetProductsWithNames()
+        public ActionResult<List<ProductInventoryDTO>> GetProductsWithNames()
         {
             var allProducts = _productControl.GetAllProducts();
 
@@ -59,10 +59,12 @@ namespace ServiceAPI.Controllers
                 return NotFound("ERROR: No products found in the database.");
             }
 
-            List<ProductInventoryViewModel> productsWithNames = new List<ProductInventoryViewModel>();
-            productsWithNames = allProducts.Select(product => new ProductInventoryViewModel
+            List<ProductInventoryDTO> productsWithNames = new List<ProductInventoryDTO>();
+            productsWithNames = allProducts.Select(product => new ProductInventoryDTO
             {
                 ID = product.ID,
+                CarPartID = product.CarPartID,
+                CarID = product.CarID,
                 Name = _productControl.GetProductName(product),
                 OEM = product.OEM,
                 Price = product.Price,
@@ -94,7 +96,7 @@ namespace ServiceAPI.Controllers
 
         // GET https://localhost:7134/api/Products/GetProductWithName/OEM/
         [HttpGet("GetProductWithName/{OEM}")]
-        public ActionResult<ProductInventoryViewModel> GetProductWithNameUsingOEM(string OEM)
+        public ActionResult<ProductInventoryDTO> GetProductWithNameUsingOEM(string OEM)
         {
             int productID = _productControl.GetProductID(OEM);
             var foundProduct = _productControl.GetProductByID(productID);
@@ -106,7 +108,7 @@ namespace ServiceAPI.Controllers
             }
 
             string productName = _productControl.GetProductName(foundProduct);
-            ProductInventoryViewModel productWithName = new ProductInventoryViewModel
+            ProductInventoryDTO productWithName = new ProductInventoryDTO
             {
                 ID = foundProduct.ID,
                 Name = productName,
@@ -139,7 +141,7 @@ namespace ServiceAPI.Controllers
 
         // POST: https://localhost:7134/api/Products
         [HttpPost]
-        public ActionResult<ProductViewModel> CreateProduct(string carPartName, string carVINNumber, [FromBody] ProductViewModel newProduct)
+        public ActionResult<ProductDTO> CreateProduct(string carPartName, string carVINNumber, [FromBody] ProductDTO newProduct)
         {
             if (newProduct == null)
             {
@@ -170,7 +172,7 @@ namespace ServiceAPI.Controllers
         // TODO: trim and remove existingProduct logic since _productControl.UpdateProduct handles existing product issue already.
         // PUT: https://localhost:7134/api/Products/OEM/carPartName/carVINNumber
         [HttpPut("{OEM}/{carPartName}/{carVINNumber}")]
-        public IActionResult UpdateProduct(string OEM, string carPartName, string carVINNumber, [FromBody] ProductViewModel updatedProduct)
+        public IActionResult UpdateProduct(string OEM, string carPartName, string carVINNumber, [FromBody] ProductDTO updatedProduct)
         {
             if (updatedProduct == null)
             {

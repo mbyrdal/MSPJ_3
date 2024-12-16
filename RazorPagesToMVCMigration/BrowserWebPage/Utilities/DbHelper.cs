@@ -1,6 +1,6 @@
 ﻿using BrowserWebPage.Utilities;
 using Microsoft.Data.SqlClient;
-using ServiceAPI.DTOs;
+using BrowserWebPage.DTOs;
 
 public class DbHelper
 {
@@ -30,10 +30,10 @@ public class DbHelper
         return entityExists;
     }
 
-    // Executes a query and returns a list of ProductViewModels
-    public List<ProductViewModel> ExecuteQuery(string query, params SqlParameter[] parameters)
+    // Executes a query and returns a list of ProductDTOs
+    public List<ProductDTO> ExecuteQuery(string query, params SqlParameter[] parameters)
     {
-        List<ProductViewModel> products = new List<ProductViewModel>();
+        List<ProductDTO> products = new List<ProductDTO>();
 
         using (SqlConnection conn = new SqlConnection(_connectionString))
         {
@@ -47,7 +47,7 @@ public class DbHelper
                 {
                     while (reader.Read())
                     {
-                        products.Add(new ProductViewModel
+                        products.Add(new ProductDTO
                         {
                             CarPartID = reader.GetInt32(0),
                             CarID = reader.GetInt32(1),

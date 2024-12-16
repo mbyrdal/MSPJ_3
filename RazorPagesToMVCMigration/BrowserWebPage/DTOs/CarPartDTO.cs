@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace BrowserWebPage.DTOs
 {
-    public class CarPartViewModel
+    public class CarPartDTO
     {
         [Key]
         public int ID { get; set; }
@@ -22,9 +22,9 @@ namespace BrowserWebPage.DTOs
         // [ForeignKey("CarModelID")]
         // public CarModel CarModel { get; set; }
 
-        public CarPartViewModel() { }
+        public CarPartDTO() { }
 
-        public CarPartViewModel(int ID, int carID, string name, string notes)
+        public CarPartDTO(int ID, int carID, string name, string notes)
         {
             this.ID = ID;
             CarID = carID;

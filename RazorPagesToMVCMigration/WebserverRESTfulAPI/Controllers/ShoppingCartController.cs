@@ -30,8 +30,6 @@ namespace ServiceAPI.Controllers
             return View(cart);
         }
 
-
-
         // Add a product to the cart
         [HttpPost]
         public IActionResult AddToCart(int productID)
@@ -41,14 +39,14 @@ namespace ServiceAPI.Controllers
             if (product != null && product.ItemAvailable == true)
             {
                 var cart = HttpContext.Session.GetObjectFromJSON<ShoppingCart>(CartSessionKey) ?? new ShoppingCart();
-                ProductInventoryViewModel viewModel = new ProductInventoryViewModel();
+                ProductInventoryDTO viewModel = new ProductInventoryDTO();
 
                 // Check if the product is already in the cart
                 var existingProduct = cart.Items.FirstOrDefault(i => i.ID == product.ID);
                 if (existingProduct == null)
                 {
                     // Convert Product to ProductViewModel for updating
-                    var productInventoryViewModel = new ProductInventoryViewModel
+                    var productInventoryViewModel = new ProductInventoryDTO
                     {
                         ID = product.ID,
                         CarPartID = product.CarPartID,
@@ -98,7 +96,7 @@ namespace ServiceAPI.Controllers
                         var productVin = _dbProduct.GetProductVINNumberByID(product.ID);
 
                         // Prepare the payload
-                        var productViewModel = new ProductInventoryViewModel
+                        var productViewModel = new ProductInventoryDTO
                         {
                             ID = product.ID,
                             CarPartID = product.CarPartID,

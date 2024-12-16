@@ -9,8 +9,8 @@ namespace ServiceAPI.BusinessLogic.Interfaces
         string GetProductName(Product product);
         Product GetProduct(string OEM, string carPartName, string carVINNumber);
         List<Product> GetAllProducts();
-        bool AddProduct(ProductViewModel productViewModel, string carPartName, string carVINNumber);
-        bool UpdateProduct(string OEM, ProductViewModel product,  string carPartName, string carVINNumber);
+        bool AddProduct(ProductDTO productViewModel, string carPartName, string carVINNumber);
+        bool UpdateProduct(string OEM, ProductDTO product,  string carPartName, string carVINNumber);
         bool DeleteProduct(string OEM);
     }
 }

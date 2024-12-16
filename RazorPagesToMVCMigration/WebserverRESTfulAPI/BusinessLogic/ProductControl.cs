@@ -96,7 +96,7 @@ namespace ServiceAPI.BusinessLogic
             return allProducts;
         }
 
-        public bool AddProduct(ProductViewModel product, string carPartName, string carVINNumber)
+        public bool AddProduct(ProductDTO product, string carPartName, string carVINNumber)
         {
             bool productExists = false;
             bool carAndCarPartExists = false;
@@ -134,7 +134,7 @@ namespace ServiceAPI.BusinessLogic
             return wasProductInserted;
         }
 
-        public bool UpdateProduct(string OEM, ProductViewModel product, string carPartName, string carVINNumber)
+        public bool UpdateProduct(string OEM, ProductDTO product, string carPartName, string carVINNumber)
         {
             bool productExists = false;
             bool wasProductUpdated = false;

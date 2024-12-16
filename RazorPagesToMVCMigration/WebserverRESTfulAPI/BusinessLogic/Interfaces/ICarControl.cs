@@ -8,9 +8,9 @@ namespace ServiceAPI.BusinessLogic.Interfaces
         Car GetCarByID(int ID);
         List<Car> GetAllCars();
         bool AddCar(Car model);
-        bool AddCarDTO(CarViewModel model);
+        bool AddCarDTO(CarDTO model);
         bool UpdateCar(Car model);
-        bool UpdateCarDTO(CarViewModel model);
+        bool UpdateCarDTO(CarDTO model);
         bool DeleteCar(int ID);
     }
 }

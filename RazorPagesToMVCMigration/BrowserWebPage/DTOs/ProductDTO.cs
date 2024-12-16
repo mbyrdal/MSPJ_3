@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 
 namespace BrowserWebPage.DTOs
 {
-    public class ProductViewModel
+    public class ProductDTO
     {
         [Key]
         [JsonIgnore]
@@ -36,9 +36,9 @@ namespace BrowserWebPage.DTOs
         [Required]
         public bool ItemAvailable { get; set; }
 
-        public ProductViewModel() { }
+        public ProductDTO() { }
 
-        public ProductViewModel(int ID, int carPartID, int carID, string oem, decimal price, DateTime dt, string cond, string itemDesc, bool itemAvailable)
+        public ProductDTO(int ID, int carPartID, int carID, string oem, decimal price, DateTime dt, string cond, string itemDesc, bool itemAvailable)
         {
             this.ID = ID;
             CarPartID = carPartID;

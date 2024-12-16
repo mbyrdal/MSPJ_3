@@ -135,9 +135,9 @@ namespace MSPJ.TestingEnvironment.ControllerSuites
         {
             // Arrange
             var mockProductControl = new Mock<IProductControl>();
-            mockProductControl.Setup(pc => pc.AddProduct(It.IsAny<ProductViewModel>(), It.IsAny<string>(), It.IsAny<string>())).Returns(false);
+            mockProductControl.Setup(pc => pc.AddProduct(It.IsAny<ProductDTO>(), It.IsAny<string>(), It.IsAny<string>())).Returns(false);
             var controller = new ProductsController(mockProductControl.Object);
-            var productViewModel = new ProductViewModel { ID = 1, OEM = "OEM123" };
+            var productViewModel = new ProductDTO { ID = 1, OEM = "OEM123" };
 
             // Act
             var result = controller.CreateProduct("PartName", "VIN123", productViewModel);
@@ -156,9 +156,9 @@ namespace MSPJ.TestingEnvironment.ControllerSuites
             var mockProductControl = new Mock<IProductControl>();
             var existingProduct = new Product { OEM = "OEM123" };
             mockProductControl.Setup(pc => pc.GetProduct(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(existingProduct);
-            mockProductControl.Setup(pc => pc.UpdateProduct(It.IsAny<string>(), It.IsAny<ProductViewModel>(), It.IsAny<string>(), It.IsAny<string>())).Returns(true);
+            mockProductControl.Setup(pc => pc.UpdateProduct(It.IsAny<string>(), It.IsAny<ProductDTO>(), It.IsAny<string>(), It.IsAny<string>())).Returns(true);
             var controller = new ProductsController(mockProductControl.Object);
-            var productViewModel = new ProductViewModel { OEM = "OEM123" };
+            var productViewModel = new ProductDTO { OEM = "OEM123" };
 
             // Act
             var result = controller.UpdateProduct("OEM123", "PartName", "VIN123", productViewModel);

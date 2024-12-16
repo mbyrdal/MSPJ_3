@@ -1,4 +1,4 @@
-﻿@model List<ServiceAPI.DTOs.ProductInventoryViewModel>
+﻿@model List<BrowserWebPage.DTOs.ProductInventoryDTO>
 
 <table>
     <thead>
@@ -28,7 +28,7 @@
                     <!-- Add to Cart Button -->
                     <td>
                         <form action="@Url.Action("AddToCart", "ShoppingCart")" method="post">
-                            <input type="hidden" name="productID" value="@product.ID" />
+                            <input type="hidden" name="OEM" value="@product.OEM" />
                             <button type="submit">Add to Cart</button>
                         </form>
                     </td>

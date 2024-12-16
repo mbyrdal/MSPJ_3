@@ -1,4 +1,4 @@
-﻿using ServiceAPI.DTOs;
+﻿using BrowserWebPage.DTOs;
 using System.ComponentModel.DataAnnotations;
 
 namespace BrowserWebPage.Models
@@ -9,28 +9,27 @@ namespace BrowserWebPage.Models
         public int ID { get; set; }
 
         [Key]
-
         public int ItemDescription { get; set; }
 
         [Required]
-        public List<ProductInventoryViewModel> Items { get; set; }
+        public List<ProductInventoryDTO> Items { get; set; }
 
         [Required]
         public decimal TotalPrice { get; set; }
 
         public ShoppingCart()
         {
-            Items = new List<ProductInventoryViewModel>();
+            Items = new List<ProductInventoryDTO>();
             TotalPrice = 0;
         }
 
-        public ShoppingCart(List<ProductInventoryViewModel> items)
+        public ShoppingCart(List<ProductInventoryDTO> items)
         {
             Items = items;
             TotalPrice = items.Sum(item => item.Price);
         }
 
-        public ShoppingCart(List<ProductInventoryViewModel> items, decimal totalPrice)
+        public ShoppingCart(List<ProductInventoryDTO> items, decimal totalPrice)
         {
             Items = items;
             TotalPrice = totalPrice;

@@ -41,7 +41,7 @@ namespace ServiceAPI.BusinessLogic
             return wasCarInserted;
         }
 
-        public bool AddCarDTO(CarViewModel car)
+        public bool AddCarDTO(CarDTO car)
         {
             bool carExists = false;
             bool wasCarInserted = false;
@@ -119,7 +119,7 @@ namespace ServiceAPI.BusinessLogic
             return wasCarUpdated;
         }
 
-        public bool UpdateCarDTO(CarViewModel car)
+        public bool UpdateCarDTO(CarDTO car)
         {
             bool carExists = false;
             bool wasCarUpdated = false;

@@ -1,17 +1,17 @@
-﻿using ServiceAPI.Models;
+﻿using BrowserWebPage.Models;
 
-namespace ServiceAPI.DTOs
+namespace BrowserWebPage.DTOs
 
 {
-    public class ProductInventoryViewModel : ProductViewModel
+    public class ProductInventoryDTO : ProductDTO
     {
         public string Name { get; set; } = string.Empty;
 
-        public ProductInventoryViewModel()
+        public ProductInventoryDTO()
         {
         }
 
-        public ProductInventoryViewModel(int ID, int carPartID, int carID, string name, string oem, decimal price, DateTime dt, string cond, string itemDesc, bool itemAvailable) : base(ID, carPartID, carID, oem, price, dt, cond, itemDesc, itemAvailable)
+        public ProductInventoryDTO(int ID, int carPartID, int carID, string name, string oem, decimal price, DateTime dt, string cond, string itemDesc, bool itemAvailable) : base(ID, carPartID, carID, oem, price, dt, cond, itemDesc, itemAvailable)
         {
             this.ID = ID;
             CarPartID = carPartID;

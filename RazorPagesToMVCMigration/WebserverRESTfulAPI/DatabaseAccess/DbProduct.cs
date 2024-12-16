@@ -128,7 +128,7 @@ namespace ServiceAPI.DatabaseAccess
             return product;
         }
 
-        public int CreateEntity(ProductViewModel newProduct, int carPartID, int carID) 
+        public int CreateEntity(ProductDTO newProduct, int carPartID, int carID) 
         {
             int numberOfRowsInserted;
             using (SqlConnection conn = new SqlConnection(_connectionString))
@@ -157,7 +157,7 @@ namespace ServiceAPI.DatabaseAccess
             return numberOfRowsInserted;
         }
 
-        public int UpdateEntity(ProductViewModel updateProduct, int productID, int carPartID, int carID)
+        public int UpdateEntity(ProductDTO updateProduct, int productID, int carPartID, int carID)
         {
             int numberOfRowsUpdated = 0;
             using (SqlConnection conn = new SqlConnection(_connectionString))
