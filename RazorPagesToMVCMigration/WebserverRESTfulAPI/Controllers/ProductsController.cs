@@ -111,9 +111,12 @@ namespace ServiceAPI.Controllers
             ProductInventoryDTO productWithName = new ProductInventoryDTO
             {
                 ID = foundProduct.ID,
+                CarPartID = foundProduct.CarPartID,
+                CarID = foundProduct.CarID,
                 Name = productName,
                 OEM = foundProduct.OEM,
                 Price = foundProduct.Price,
+                DateAvailable = foundProduct.DateAvailable,
                 Condition = foundProduct.Condition,
                 ItemDescription = foundProduct.ItemDescription,
                 ItemAvailable = foundProduct.ItemAvailable

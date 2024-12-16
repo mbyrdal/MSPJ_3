@@ -8,13 +8,10 @@ namespace ServiceAPI.DTOs
     public class ProductDTO
     {
         [Key]
-        [JsonIgnore]
         public int ID { get; set; }
 
-        [JsonIgnore]
         public int CarPartID { get; set; }
 
-        [JsonIgnore]
         public int CarID { get; set; }
 
         [Required]

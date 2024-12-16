@@ -39,7 +39,6 @@ namespace ServiceAPI.Controllers
             if (product != null && product.ItemAvailable == true)
             {
                 var cart = HttpContext.Session.GetObjectFromJSON<ShoppingCart>(CartSessionKey) ?? new ShoppingCart();
-                ProductInventoryDTO viewModel = new ProductInventoryDTO();
 
                 // Check if the product is already in the cart
                 var existingProduct = cart.Items.FirstOrDefault(i => i.ID == product.ID);

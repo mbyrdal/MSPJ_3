@@ -6,9 +6,11 @@ namespace ServiceAPI.DTOs
     public class CarPartDTO
     {
         [Key]
+        [JsonIgnore]
         public int ID { get; set; }
 
         [Required]
+        [JsonIgnore]
         public int CarID { get; set; }
 
         [Required]

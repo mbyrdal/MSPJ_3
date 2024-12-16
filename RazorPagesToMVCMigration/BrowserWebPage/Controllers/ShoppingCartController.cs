@@ -30,16 +30,15 @@ namespace BrowserWebPage.Controllers
         [HttpPost]
         public async Task<IActionResult> AddToCart(string OEM)
         {
-            ProductInventoryDTO tempProduct = new ProductInventoryDTO();
-
             using (_httpClient)
             {
                 string getProductEndpoint = $"{_httpClient.BaseAddress.ToString()}api/Products/GetProductWithName/{OEM}";
-                tempProduct = await _httpClient.GetFromJsonAsync<ProductInventoryDTO>(getProductEndpoint);
+                var tempProduct = await _httpClient.GetFromJsonAsync<ProductInventoryDTO>(getProductEndpoint);
 
                 if(tempProduct != null && tempProduct.ItemAvailable == true)
                 {
                     var cart = HttpContext.Session.GetObjectFromJSON<ShoppingCart>(CartSessionKey) ?? new ShoppingCart();
+
                     var productAlreadyInCart = cart.Items.FirstOrDefault(i => i.OEM == tempProduct.OEM);
                     if(productAlreadyInCart == null)
                     {
@@ -101,7 +100,7 @@ namespace BrowserWebPage.Controllers
                         
                         // Construct endpoint URL 
                         var productUpdateEndpoint = $"{_httpClient.BaseAddress.ToString()}api/Products/{soldProduct.OEM}/{soldProduct.Name}/{carResponse.VINNumber}";
-                        var response = _httpClient.PutAsJsonAsync($"{productUpdateEndpoint}", soldProduct);
+                        var response = await _httpClient.PutAsJsonAsync($"{productUpdateEndpoint}", soldProduct);
                     }
                 }
                 // After processing, clear the cart
