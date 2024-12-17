@@ -1,9 +1,9 @@
-﻿using BrowserWebPage.Models;
+﻿using ClientWeb.Models;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
-namespace BrowserWebPage.DTOs
+namespace ClientWeb.DTOs
 {
     public class ProductDTO
     {

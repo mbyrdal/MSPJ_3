@@ -1,4 +1,4 @@
-﻿namespace BrowserWebPage.Utilities
+﻿namespace ClientWeb.Utilities
 {
     public class ConnectionHelper
     {

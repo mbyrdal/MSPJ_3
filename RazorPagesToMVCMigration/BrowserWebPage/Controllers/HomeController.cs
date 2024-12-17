@@ -1,13 +1,13 @@
-using BrowserWebPage.Models;
+using ClientWeb.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
-using BrowserWebPage.DTOs;
-using BrowserWebPage.Utilities;
+using ClientWeb.DTOs;
+using ClientWeb.Utilities;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Json;
 
-namespace BrowserWebPage.Controllers
+namespace ClientWeb.Controllers
 {
     public class HomeController : Controller
     {

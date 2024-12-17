@@ -1,6 +1,6 @@
-﻿using BrowserWebPage.Models;
+﻿using ClientWeb.Models;
 
-namespace BrowserWebPage.DTOs
+namespace ClientWeb.DTOs
 
 {
     public class ProductInventoryDTO : ProductDTO

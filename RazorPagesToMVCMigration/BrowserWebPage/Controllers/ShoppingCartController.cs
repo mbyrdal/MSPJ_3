@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using BrowserWebPage.DTOs;
-using BrowserWebPage.Models;
-using BrowserWebPage.Utilities;
+using ClientWeb.DTOs;
+using ClientWeb.Models;
+using ClientWeb.Utilities;
 using System.Linq;
 
-namespace BrowserWebPage.Controllers
+namespace ClientWeb.Controllers
 {
     public class ShoppingCartController : Controller
     {

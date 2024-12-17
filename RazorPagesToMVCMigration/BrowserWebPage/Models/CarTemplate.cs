@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace BrowserWebPage.Models
+namespace ClientWeb.Models
 {
     public class CarTemplate
     {

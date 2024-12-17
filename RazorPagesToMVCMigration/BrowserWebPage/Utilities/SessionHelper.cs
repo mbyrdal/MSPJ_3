@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 
-namespace BrowserWebPage.Utilities
+namespace ClientWeb.Utilities
 {
     public static class SessionHelper
     {

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace BrowserWebPage.DTOs
+namespace ClientWeb.DTOs
 {
     public class CarPartDTO
     {

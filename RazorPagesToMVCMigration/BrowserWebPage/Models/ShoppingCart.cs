@@ -1,7 +1,7 @@
-﻿using BrowserWebPage.DTOs;
+﻿using ClientWeb.DTOs;
 using System.ComponentModel.DataAnnotations;
 
-namespace BrowserWebPage.Models
+namespace ClientWeb.Models
 {
     public class ShoppingCart
     {

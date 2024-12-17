@@ -1,6 +1,6 @@
-﻿using BrowserWebPage.Utilities;
+﻿using ClientWeb.Utilities;
 using Microsoft.Data.SqlClient;
-using BrowserWebPage.DTOs;
+using ClientWeb.DTOs;
 
 public class DbHelper
 {
