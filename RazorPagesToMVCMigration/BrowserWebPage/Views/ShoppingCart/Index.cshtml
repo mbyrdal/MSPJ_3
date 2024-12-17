@@ -20,7 +20,7 @@
                     <td>@item.Price.ToString("C", new System.Globalization.CultureInfo("da-DK"))</td>
                     <td>@item.ItemDescription</td>
                     <td>
-                        <form method="post" action="@Url.Action("RemoveFromCart", "ShoppingCart", new { productID = item.ID })">
+                        <form method="post" action="@Url.Action("RemoveFromCart", "ShoppingCart", new { OEM = item.OEM })">
                             <button type="submit">Remove</button>
                         </form>
                     </td>
