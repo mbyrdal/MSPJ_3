@@ -85,6 +85,10 @@ namespace MSPJ.TestingEnvironment.ControllerSuites
         //    // Assert.True(car.mileage >= 0, "Mileage should be positives.");
         //}
 
+
+        // All the tests beneath this comment were created with the help of ChatGPT, and further adapted and verified
+        // Here is a link to the chat https://chatgpt.com/share/675ff953-2908-8004-a69e-bba7a6b98069
+
         /// <summary>
         /// Ensures that GetCars returns a list of cars when cars exist.
         /// </summary>
