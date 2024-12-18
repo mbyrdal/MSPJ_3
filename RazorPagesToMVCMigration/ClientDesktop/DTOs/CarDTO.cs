@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace ClientDesktop.DTOs
 {
-    public class CarViewModel
+    public class CarDTO
     {
         [Key]
         [JsonIgnore]
@@ -27,9 +27,9 @@ namespace ClientDesktop.DTOs
         // [ForeignKey("CarTemplate")]
         // public CarTemplate CarTemplate { get; set; }
 
-        public CarViewModel() { }
+        public CarDTO() { }
 
-        public CarViewModel(int ID, int carTemplateID, string vin, DateTime py, int mileage)
+        public CarDTO(int ID, int carTemplateID, string vin, DateTime py, int mileage)
         {
             this.ID = ID;
             CarTemplateID = carTemplateID;

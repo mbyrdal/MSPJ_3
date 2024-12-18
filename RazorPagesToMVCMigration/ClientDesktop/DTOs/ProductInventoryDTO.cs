@@ -1,7 +1,7 @@
 ﻿namespace ClientDesktop.DTOs
 
 {
-    public class ProductInventoryViewModel : ProductViewModel
+    public class ProductInventoryDTO : ProductDTO
     {
         public string Name { get; set; } = string.Empty;
     }

@@ -232,11 +232,11 @@
     <Compile Include="DesktopMainForm.Designer.cs">
       <DependentUpon>DesktopMainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="DTOs\CarPartViewModel.cs" />
-    <Compile Include="DTOs\CarViewModel.cs" />
-    <Compile Include="DTOs\CustomerViewModel.cs" />
-    <Compile Include="DTOs\ProductInventoryViewModel.cs" />
-    <Compile Include="DTOs\ProductViewModel.cs" />
+    <Compile Include="DTOs\CarPartDTO.cs" />
+    <Compile Include="DTOs\CarDTO.cs" />
+    <Compile Include="DTOs\CustomerDTO.cs" />
+    <Compile Include="DTOs\ProductInventoryDTO.cs" />
+    <Compile Include="DTOs\ProductDTO.cs" />
     <Compile Include="Product.cs" />
     <Compile Include="ProductDetailsForm.cs">
       <SubType>Form</SubType>

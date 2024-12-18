@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 namespace ClientDesktop.DTOs
 {
     // DTO VERSION
-    public class CustomerViewModel
+    public class CustomerDTO
     {
         [Key]
         [JsonIgnore]
@@ -30,9 +30,9 @@ namespace ClientDesktop.DTOs
         [StringLength(40)]
         public string Email { get; set; } = string.Empty;
 
-        public CustomerViewModel() { }
+        public CustomerDTO() { }
 
-        public CustomerViewModel(int ID, string firstName, string lastName, string address, string phoneNum, string email)
+        public CustomerDTO(int ID, string firstName, string lastName, string address, string phoneNum, string email)
         {
             this.ID = ID;
             FirstName = firstName;

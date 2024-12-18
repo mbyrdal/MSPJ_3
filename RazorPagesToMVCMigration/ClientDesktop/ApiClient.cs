@@ -14,32 +14,30 @@ public class ApiClient
         _httpClient = new HttpClient { BaseAddress = new Uri(baseUrl) };
     }
 
-    public async Task<List<ProductInventoryViewModel>> GetAllProductsAsync()
+    public async Task<List<ProductInventoryDTO>> GetAllProductsAsync()
     {
         var response = await _httpClient.GetAsync("Products");
         response.EnsureSuccessStatusCode();
         var json = await response.Content.ReadAsStringAsync();
-        return JsonConvert.DeserializeObject<List<ProductInventoryViewModel>>(json);
+        return JsonConvert.DeserializeObject<List<ProductInventoryDTO>>(json);
     }
 
-    public async Task<ProductInventoryViewModel> GetProductByOEMAsync(string oem)
+    public async Task<ProductInventoryDTO> GetProductByOEMAsync(string oem)
     {
         var response = await _httpClient.GetAsync($"Products/{oem}");
         response.EnsureSuccessStatusCode();
         var json = await response.Content.ReadAsStringAsync();
-        return JsonConvert.DeserializeObject<ProductInventoryViewModel>(json);
+        return JsonConvert.DeserializeObject<ProductInventoryDTO>(json);
     }
 
-    public async Task<ProductInventoryViewModel> CreateProductAsync(ProductInventoryViewModel product)
+    public async Task<ProductInventoryDTO> CreateProductAsync(ProductInventoryDTO product)
     {
         var json = JsonConvert.SerializeObject(product);
         var response = await _httpClient.PostAsync("Products", new StringContent(json, System.Text.Encoding.UTF8, "application/json"));
         response.EnsureSuccessStatusCode();
         var jsonResponse = await response.Content.ReadAsStringAsync();
-        return JsonConvert.DeserializeObject<ProductInventoryViewModel>(jsonResponse);
+        return JsonConvert.DeserializeObject<ProductInventoryDTO>(jsonResponse);
     }
-
-
     
     public void DeleteProductAsync(string oem)
     {
